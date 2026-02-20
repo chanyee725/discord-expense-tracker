@@ -567,7 +567,7 @@ Wave 4 (Final):
 
 ---
 
-- [ ] 4. 토스 파서 + 카테고리 + DB 저장 + Embed 응답 완성
+- [x] 4. 토스 파서 + 카테고리 + DB 저장 + Embed 응답 완성
 
   **What to do**:
   - `bot/parser.py` — 토스 이체내역 OCR 텍스트 파싱
