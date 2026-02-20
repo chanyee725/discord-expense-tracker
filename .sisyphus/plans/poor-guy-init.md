@@ -449,7 +449,7 @@ Wave 4 (Final):
 
 ---
 
-- [ ] 3. 디스코드 봇 + OCR 인식 — 이미지 수신 → Vision API → raw text 응답
+- [x] 3. 디스코드 봇 + OCR 인식 — 이미지 수신 → Vision API → raw text 응답
 
   **What to do**:
   - `bot/main.py` — discord.py 봇 엔트리포인트
