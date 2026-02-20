@@ -1,30 +1,46 @@
 import os
 import sys
+import discord
+import json
+
 from pathlib import Path
 from dotenv import load_dotenv
-import discord
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from bot.ocr import extract_text
-from bot.parser import parse_toss_transaction
-from bot.categories import get_category
-from bot.db import create_pool, insert_transaction
+
+from bot.expense_parser import ExpenseParser
+# from bot.db import create_pool, insert_transaction # DB 연동 시 사용
 
 load_dotenv()
 
+# class ConfirmView(discord.ui.View):
+#     def __init__(self, data):
+#         super().__init__(timeout=2)
+#         self.data = data
+
+#     @discord.ui.button(label="확인 (O)", style=discord.ButtonStyle.success, emoji="✅")
+#     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+#         # await insert_transaction(self.data) 
+#         await interaction.response.edit_message(content="✅ 가계부에 기록되었습니다!", embed=None, view=None)
+#         print(f"DB 저장 완료")
+
+#     @discord.ui.button(label="취소 (X)", style=discord.ButtonStyle.danger, emoji="✖️")
+#     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
+#         await interaction.response.send_message("❌ 기록이 취소되었습니다.", ephemeral=True)
+
+# --- 봇 설정 ---
 intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
-db_pool = None
 
+expense_parser = None
 
 @client.event
 async def on_ready():
-    global db_pool
-    db_pool = await create_pool()
+    global expense_parser
+    # .env 등에 저장된 API 키를 가져오거나 기본 설정 사용
+    expense_parser = ExpenseParser()
     print(f"Bot logged in as {client.user}")
-    print("Database pool created")
-
 
 @client.event
 async def on_message(message):
@@ -36,73 +52,33 @@ async def on_message(message):
     
     for attachment in message.attachments:
         if attachment.content_type and attachment.content_type.startswith('image/'):
-            try:
-                image_bytes = await attachment.read()
-                text = extract_text(image_bytes)
-                
-                if not text:
-                    await message.channel.send("No text found in image.")
-                    continue
-                
-                parsed = parse_toss_transaction(text)
-                
-                if not parsed:
+            async with message.channel.typing():
+                try:
+                    image_bytes = await attachment.read()
+                    result = expense_parser.analyze(image_bytes)
+
+                    embed = discord.Embed(
+                        title=f"{result.get('title', '지출 내역 확인')}",
+                        description="━━━━━━━━━━━━━━━━━━━━━━━━",
+                        color=0x5865F2 
+                    )
+                    
+                    embed.add_field(name="금액", value=f"{result.get('amount', 0):,}원", inline=True)
+                    embed.add_field(name="카테고리", value=result.get('category') or "미분류", inline=True)
+                    embed.add_field(name="일시", value=result.get('transaction_date') or "정보 없음", inline=False)
+                    embed.add_field(name="출금처", value=result.get('withdrawal_source') or "정보 없음", inline=True)
+                    embed.add_field(name="입금처", value=result.get('deposit_destination') or "정보 없음", inline=True)
+                    
+                    # view = ConfirmView(result)
+                    await message.reply(embed=embed)  # , view=view)
+
+                except Exception as e:
                     error_embed = discord.Embed(
-                        title="❌ 파싱 실패",
-                        description="거래 내역을 인식할 수 없습니다. 토스 영수증 이미지인지 확인해주세요.",
+                        title="❌ 분석 오류",
+                        description=f"데이터를 읽는 중 오류가 발생했습니다:\n```{str(e)}```",
                         color=0xff0000
                     )
-                    error_embed.add_field(name="OCR 텍스트", value=f"```\n{text[:500]}\n```", inline=False)
-                    await message.channel.send(embed=error_embed)
-                    continue
-                
-                category = get_category(parsed.get('merchant', ''))
-                parsed['category'] = category
-                
-                await insert_transaction(db_pool, parsed)
-                
-                success_embed = discord.Embed(
-                    title="💰 지출 내역",
-                    color=0x00ff00
-                )
-                
-                amount = parsed['amount']
-                success_embed.add_field(
-                    name="금액", 
-                    value=f"{amount:,}원", 
-                    inline=True
-                )
-                
-                merchant = parsed.get('merchant') or "알 수 없음"
-                success_embed.add_field(
-                    name="상호명", 
-                    value=merchant, 
-                    inline=True
-                )
-                
-                success_embed.add_field(
-                    name="카테고리", 
-                    value=category, 
-                    inline=True
-                )
-                
-                if parsed.get('transacted_at'):
-                    success_embed.add_field(
-                        name="일시", 
-                        value=parsed['transacted_at'].strftime("%Y.%m.%d %H:%M"), 
-                        inline=False
-                    )
-                
-                await message.channel.send(embed=success_embed)
-                    
-            except Exception as e:
-                error_embed = discord.Embed(
-                    title="❌ 오류 발생",
-                    description=f"처리 중 오류가 발생했습니다:\n```{str(e)}```",
-                    color=0xff0000
-                )
-                await message.channel.send(embed=error_embed)
-
+                    await message.reply(embed=error_embed)
 
 if __name__ == "__main__":
     token = os.getenv("DISCORD_BOT_TOKEN")
