@@ -14,6 +14,8 @@ interface CalendarViewProps {
   currentDate: string;
 }
 
+const CATEGORIES = ["주거", "구독", "통신", "보험", "교통", "교육", "기타"];
+
 export default function CalendarView({
   transactions,
   currentDate,
@@ -21,6 +23,15 @@ export default function CalendarView({
   const router = useRouter();
   const current = dayjs(currentDate);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [isEditPanelOpen, setIsEditPanelOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState<CalendarTransaction | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    title: "",
+    amount: 0,
+    category: "",
+    transaction_date: "",
+    raw_ocr_text: "",
+  });
 
   const daysInMonth = current.daysInMonth();
   const firstDayOfMonth = current.startOf("month").day();
@@ -40,24 +51,57 @@ export default function CalendarView({
     );
   };
 
+  const handleTransactionClick = (transaction: CalendarTransaction) => {
+    setEditingTransaction(transaction);
+    setEditFormData({
+      title: transaction.title || "",
+      amount: transaction.amount,
+      category: transaction.category || "",
+      transaction_date: transaction.transaction_date || "",
+      raw_ocr_text: transaction.raw_ocr_text || "",
+    });
+    setIsEditPanelOpen(true);
+  };
+
+  const handleSave = () => {
+    if (!editingTransaction) return;
+    alert("저장되었습니다 (DB 연동 예정)");
+    setIsEditPanelOpen(false);
+    setEditingTransaction(null);
+  };
+
+  const handleDelete = () => {
+    if (!editingTransaction) return;
+    if (confirm("정말 삭제하시겠습니까?")) {
+      alert("삭제되었습니다 (DB 연동 예정)");
+      setIsEditPanelOpen(false);
+      setEditingTransaction(null);
+    }
+  };
+
+  const handleClosePanel = () => {
+    setIsEditPanelOpen(false);
+    setEditingTransaction(null);
+  };
+
   const weekDays = ["일", "월", "화", "수", "목", "금", "토"];
 
   return (
-    <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div className="flex items-center justify-between border-b border-stroke px-4 py-4 dark:border-strokedark sm:px-6 xl:px-7.5">
-        <h3 className="font-medium text-black dark:text-white">
+    <div className="rounded-sm border border-stroke bg-white shadow-default">
+      <div className="flex items-center justify-between border-b border-stroke px-4 py-4 sm:px-6 xl:px-7.5">
+        <h3 className="font-medium text-black">
           {monthName}
         </h3>
         <div className="flex space-x-2">
           <button
             onClick={handlePrevMonth}
-            className="flex h-8 w-8 items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-meta-4"
+            className="flex h-8 w-8 items-center justify-center rounded hover:bg-gray-100"
           >
             ←
           </button>
           <button
             onClick={handleNextMonth}
-            className="flex h-8 w-8 items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-meta-4"
+            className="flex h-8 w-8 items-center justify-center rounded hover:bg-gray-100"
           >
             →
           </button>
@@ -65,16 +109,16 @@ export default function CalendarView({
       </div>
 
       <div className="p-4">
-        <div className="grid grid-cols-7 gap-px border-b border-l border-stroke bg-stroke dark:bg-strokedark">
+        <div className="grid grid-cols-7 gap-px border-b border-l border-stroke bg-stroke">
           {weekDays.map((day, index) => (
             <div
               key={day}
-              className={`flex h-10 items-center justify-center border-r border-t border-stroke bg-white px-1 py-1 text-sm font-semibold dark:border-strokedark dark:bg-boxdark ${
+              className={`flex h-10 items-center justify-center border-r border-t border-stroke bg-white px-1 py-1 text-sm font-semibold ${
                 index === 0
                   ? "text-red-600"
                   : index === 6
                   ? "text-blue-600"
-                  : "text-black dark:text-white"
+                  : "text-black"
               }`}
             >
               {day}
@@ -84,7 +128,7 @@ export default function CalendarView({
           {Array.from({ length: firstDayOfMonth }).map((_, i) => (
             <div
               key={`empty-${i}`}
-              className="flex h-[110px] flex-col border-r border-stroke bg-white p-1 dark:border-strokedark dark:bg-boxdark"
+              className="flex h-[110px] flex-col border-r border-stroke bg-white p-1"
             />
           ))}
 
@@ -106,8 +150,8 @@ export default function CalendarView({
             return (
               <div
                 key={day}
-                className={`group relative flex h-[110px] cursor-pointer flex-col border-r border-b border-stroke p-1 transition hover:bg-gray dark:border-strokedark dark:bg-boxdark dark:hover:bg-meta-4 ${
-                  isToday ? "bg-gray dark:bg-meta-4" : "bg-white"
+                className={`group relative flex h-[110px] cursor-pointer flex-col border-r border-b border-stroke p-1 transition hover:bg-gray ${
+                  isToday ? "bg-gray" : "bg-white"
                 }`}
                 onClick={() =>
                   setSelectedDate(currentDayDate.format("YYYY-MM-DD"))
@@ -121,7 +165,7 @@ export default function CalendarView({
                           ? "text-red-600"
                           : dayOfWeek === 6
                           ? "text-blue-600"
-                          : "text-black dark:text-white"
+                          : "text-black"
                       }`}
                     >
                       {day}
@@ -135,7 +179,14 @@ export default function CalendarView({
                   
                   <div className="flex flex-col gap-1 overflow-hidden">
                     {dayTransactions.slice(0, 3).map((t) => (
-                      <div key={t.id} className="flex justify-between text-xs">
+                      <div
+                        key={t.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleTransactionClick(t);
+                        }}
+                        className="flex justify-between text-xs cursor-pointer hover:bg-gray-100 p-0.5 rounded transition-colors"
+                      >
                         <span className="truncate text-gray-500">{t.title}</span>
                         <span className="whitespace-nowrap font-medium text-red-600">
                           {Number(t.amount).toLocaleString()}
@@ -156,10 +207,163 @@ export default function CalendarView({
           {Array.from({ length: (7 - ((daysInMonth + firstDayOfMonth) % 7)) % 7 }).map((_, i) => (
              <div
               key={`empty-end-${i}`}
-              className="flex h-[110px] flex-col border-r border-stroke bg-white p-1 dark:border-strokedark dark:bg-boxdark"
+              className="flex h-[110px] flex-col border-r border-stroke bg-white p-1"
             />
           ))}
         </div>
+      </div>
+
+      {/* Edit Panel Backdrop */}
+      {isEditPanelOpen && (
+        <div
+          className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-40 transition-opacity"
+          onClick={handleClosePanel}
+        />
+      )}
+
+      {/* Edit Panel Slide-in */}
+      <div
+        className={`fixed top-0 right-0 h-full w-full sm:w-[420px] bg-white shadow-2xl z-50 transition-transform duration-300 ${
+          isEditPanelOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        {editingTransaction && (
+          <div className="flex flex-col h-full">
+            {/* Panel Header */}
+            <div className="flex items-center justify-between border-b border-stroke px-6 py-4">
+        <h3 className="font-medium text-black">
+                거래 편집
+              </h3>
+              <button
+                onClick={handleClosePanel}
+                className="flex h-8 w-8 items-center justify-center rounded hover:bg-gray-100 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Panel Content - Form */}
+            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+              {/* Date Field */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-black">
+                  날짜
+                </label>
+                <input
+                  type="date"
+                  value={editFormData.transaction_date}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      transaction_date: e.target.value,
+                    })
+                  }
+                  className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
+                />
+              </div>
+
+              {/* Name Field */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-black">
+                  이름
+                </label>
+                <input
+                  type="text"
+                  value={editFormData.title}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      title: e.target.value,
+                    })
+                  }
+                  className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
+                />
+              </div>
+
+              {/* Amount Field */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-black">
+                  금액
+                </label>
+                <input
+                  type="number"
+                  value={editFormData.amount}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      amount: Number(e.target.value),
+                    })
+                  }
+                  className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
+                />
+              </div>
+
+              {/* Category Field */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-black">
+                  카테고리
+                </label>
+                <select
+                  value={editFormData.category}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      category: e.target.value,
+                    })
+                  }
+                  className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
+                >
+                  <option value="">선택하기</option>
+                  {CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Memo Field */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-black">
+                  메모
+                </label>
+                <textarea
+                  value={editFormData.raw_ocr_text}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      raw_ocr_text: e.target.value,
+                    })
+                  }
+                  rows={4}
+                  className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
+                />
+              </div>
+            </div>
+
+            {/* Panel Footer - Buttons */}
+            <div className="border-t border-stroke px-6 py-4 space-y-2">
+              <button
+                onClick={handleSave}
+                className="w-full rounded bg-gray-900 py-2 px-4 font-medium text-white hover:bg-gray-800 transition-colors"
+              >
+                저장
+              </button>
+              <button
+                onClick={handleDelete}
+                className="w-full rounded border border-red-500 py-2 px-4 font-medium text-red-500 hover:bg-red-50 transition-colors"
+              >
+                삭제
+              </button>
+              <button
+                onClick={handleClosePanel}
+                className="w-full rounded border border-stroke py-2 px-4 font-medium text-black hover:bg-gray-50 transition-colors"
+              >
+                취소
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

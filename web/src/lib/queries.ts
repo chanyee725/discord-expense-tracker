@@ -9,6 +9,19 @@ import sql from "./db";
 import { Transaction } from "../types/transaction";
 
 /**
+ * Account balance history record from account_balance_history table
+ */
+export interface AccountBalanceHistory {
+  id: string;
+  account_id: string;
+  account_name: string;
+  bank_name: string;
+  balance: number;
+  snapshot_date: string; // ISO date string
+  created_at: string; // ISO timestamp
+}
+
+/**
  * Get paginated list of transactions ordered by creation date (newest first)
  */
 export async function getTransactions(
@@ -191,4 +204,107 @@ export async function getTransactionsByMonth(
       AND EXTRACT(MONTH FROM created_at) = ${month}
     ORDER BY created_at ASC
   `;
+}
+
+/**
+ * Insert a new account balance snapshot
+ * Records the balance of a specific account at a point in time
+ */
+export async function insertAccountBalanceSnapshot(
+  account_id: string,
+  account_name: string,
+  bank_name: string,
+  balance: number,
+  snapshot_date: string
+): Promise<AccountBalanceHistory> {
+  const result = await sql<[AccountBalanceHistory]>`
+    INSERT INTO account_balance_history
+      (account_id, account_name, bank_name, balance, snapshot_date)
+    VALUES
+      (${account_id}, ${account_name}, ${bank_name}, ${balance}, ${snapshot_date})
+    RETURNING
+      id,
+      account_id,
+      account_name,
+      bank_name,
+      balance,
+      snapshot_date,
+      created_at
+  `;
+
+  return result[0];
+}
+
+/**
+ * Get account balance history for a specific account
+ * Returns all snapshots ordered by most recent first
+ */
+export async function getAccountBalanceHistory(
+  account_id: string,
+  limit?: number
+): Promise<AccountBalanceHistory[]> {
+  if (limit === undefined) {
+    return sql<AccountBalanceHistory[]>`
+      SELECT
+        id,
+        account_id,
+        account_name,
+        bank_name,
+        balance,
+        snapshot_date,
+        created_at
+      FROM account_balance_history
+      WHERE account_id = ${account_id}
+      ORDER BY snapshot_date DESC
+    `;
+  }
+
+  return sql<AccountBalanceHistory[]>`
+    SELECT
+      id,
+      account_id,
+      account_name,
+      bank_name,
+      balance,
+      snapshot_date,
+      created_at
+    FROM account_balance_history
+    WHERE account_id = ${account_id}
+    ORDER BY snapshot_date DESC
+    LIMIT ${limit}
+  `;
+}
+
+/**
+ * Get monthly asset growth for a given year
+ * Sums all account balances per month across all accounts
+ * Returns data for all 12 months (Jan-Dec), with 0 for months with no data
+ */
+export async function getMonthlyAssetGrowth(
+  year: number
+): Promise<Array<{ month: number; total_balance: number }>> {
+  const result = await sql<
+    Array<{ month: number; total_balance: number }>
+  >`
+    SELECT
+      EXTRACT(MONTH FROM snapshot_date)::int as month,
+      SUM(balance)::int as total_balance
+    FROM account_balance_history
+    WHERE EXTRACT(YEAR FROM snapshot_date) = ${year}
+    GROUP BY month
+    ORDER BY month ASC
+  `;
+
+  // Fill in missing months with 0
+  const monthMap = new Map(result.map((row) => [row.month, row.total_balance]));
+  const fullYear: Array<{ month: number; total_balance: number }> = [];
+
+  for (let month = 1; month <= 12; month++) {
+    fullYear.push({
+      month,
+      total_balance: monthMap.get(month) ?? 0,
+    });
+  }
+
+  return fullYear;
 }

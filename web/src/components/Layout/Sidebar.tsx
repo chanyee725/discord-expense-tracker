@@ -156,41 +156,6 @@ const Sidebar = () => {
             </Link>
 
             <Link
-              href="/savings-plan"
-              className={cn(
-                "menu-item",
-                pathname.includes("savings-plan")
-                  ? "menu-item-active"
-                  : "menu-item-inactive"
-              )}
-            >
-              <div className={cn(
-                pathname.includes("savings-plan")
-                  ? "menu-item-icon-active"
-                  : "menu-item-icon-inactive"
-              )}>
-                <svg
-                  className="fill-current"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 18 18"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M9 1.5C4.85786 1.5 1.5 4.85786 1.5 9C1.5 13.1421 4.85786 16.5 9 16.5C13.1421 16.5 16.5 13.1421 16.5 9C16.5 4.85786 13.1421 1.5 9 1.5ZM9 15C5.68629 15 3 12.3137 3 9C3 5.68629 5.68629 3 9 3C12.3137 3 15 5.68629 15 9C15 12.3137 12.3137 15 9 15Z"
-                    fill=""
-                  />
-                  <path
-                    d="M9 12C10.6569 12 12 10.6569 12 9C12 7.34315 10.6569 6 9 6C7.34315 6 6 7.34315 6 9C6 10.6569 7.34315 12 9 12Z"
-                    fill=""
-                  />
-                </svg>
-              </div>
-              <span className="menu-item-text">저축 플랜</span>
-            </Link>
-
-            <Link
               href="/assets"
               className={cn(
                 "menu-item",
@@ -227,16 +192,57 @@ const Sidebar = () => {
             </Link>
 
             <Link
-              href="/settings"
+              href="/recurring-management"
               className={cn(
                 "menu-item",
-                pathname.includes("settings")
+                pathname.includes("recurring-management")
                   ? "menu-item-active"
                   : "menu-item-inactive"
               )}
             >
               <div className={cn(
-                pathname.includes("settings")
+                pathname.includes("recurring-management")
+                  ? "menu-item-icon-active"
+                  : "menu-item-icon-inactive"
+              )}>
+                <svg
+                  className="fill-current"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M1 4V10H7M23 20V14H17"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 03.51 15"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+              <span className="menu-item-text">반복 관리</span>
+            </Link>
+
+            <Link
+              href="/settings"
+              className={cn(
+                "menu-item",
+                pathname === "/settings"
+                  ? "menu-item-active"
+                  : "menu-item-inactive"
+              )}
+            >
+              <div className={cn(
+                pathname === "/settings"
                   ? "menu-item-icon-active"
                   : "menu-item-icon-inactive"
               )}>
@@ -254,7 +260,7 @@ const Sidebar = () => {
                   />
                 </svg>
               </div>
-              <span className="menu-item-text">반복 관리</span>
+              <span className="menu-item-text">설정</span>
             </Link>
           </div>
         </nav>

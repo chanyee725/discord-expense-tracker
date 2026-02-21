@@ -9,6 +9,7 @@ import {
 import MonthlyExpenseChart from "@/components/Charts/MonthlyExpenseChart";
 import CategoryDonutChart from "@/components/Charts/CategoryDonutChart";
 import DailyExpenseChart from "@/components/Charts/DailyExpenseChart";
+import MonthlyExpenseCard from "@/components/Dashboard/MonthlyExpenseCard";
 import dayjs from "dayjs";
 
 export const dynamic = "force-dynamic";
@@ -111,25 +112,7 @@ export default async function DashboardPage() {
   return (
     <div className="grid grid-cols-12 gap-4 md:gap-6">
       <div className="col-span-12 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 md:gap-6">
-        <Card
-          title="이번 달 총 지출"
-          value={`${totalExpense.toLocaleString("ko-KR")}원`}
-          icon={
-            <svg
-              className="fill-current"
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.15-1.46-3.27-3.4h1.96c.1 1.05 1.18 1.91 2.53 1.91 1.29 0 2.13-.81 2.13-1.88 0-2.69-3.77-2.79-3.77-5.32 0-1.28.96-2.28 2.42-2.54V5h2.67v1.95c1.47.34 2.65 1.34 2.87 3.06h-1.99c-.11-.84-.96-1.52-2.12-1.52-1.32 0-1.92.83-1.92 1.76 0 2.8 3.77 2.69 3.77 5.4 0 1.43-1.15 2.37-2.58 2.54z"
-                fill=""
-              />
-            </svg>
-          }
-        />
+        <MonthlyExpenseCard totalExpense={totalExpense} />
         <Card
           title="이번 달 거래 건수"
           value={`${transactionCount}건`}

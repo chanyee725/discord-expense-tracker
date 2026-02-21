@@ -45,6 +45,39 @@ const CategoryDonutChart: React.FC<CategoryDonutChartProps> = ({
         donut: {
           size: "65%",
           background: "transparent",
+          labels: {
+            show: true,
+            name: {
+              show: true,
+              fontSize: "16px",
+              fontFamily: "Outfit, sans-serif",
+              color: "#667085",
+              offsetY: -10,
+            },
+            value: {
+              show: true,
+              fontSize: "20px",
+              fontFamily: "Outfit, sans-serif",
+              color: "#111827",
+              offsetY: 10,
+              formatter: function (val) {
+                return parseInt(String(val)).toLocaleString("ko-KR") + " 원";
+              },
+            },
+            total: {
+              show: true,
+              label: "총 지출",
+              color: "#667085",
+              fontFamily: "Outfit, sans-serif",
+              formatter: function (w) {
+                return (
+                  w.globals.seriesTotals
+                    .reduce((a: number, b: number) => a + b, 0)
+                    .toLocaleString("ko-KR") + " 원"
+                );
+              },
+            },
+          },
         },
       },
     },
@@ -70,12 +103,7 @@ const CategoryDonutChart: React.FC<CategoryDonutChartProps> = ({
       },
     ],
     tooltip: {
-      theme: "light",
-      y: {
-        formatter: function (val) {
-          return val.toLocaleString("ko-KR") + " 원";
-        },
-      },
+      enabled: false,
     },
   };
 
