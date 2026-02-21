@@ -7,7 +7,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Satoshi"', ...defaultTheme.fontFamily.sans],
+        sans: ["Outfit", "sans-serif"],
       },
       screens: {
         "2xsm": "375px",
@@ -15,11 +15,25 @@ const config: Config = {
         "3xl": "2000px",
       },
       colors: {
+        brand: {
+          25: "#F2F7FF",
+          50: "#ECF3FF",
+          100: "#DDE9FF",
+          200: "#C2D6FF",
+          300: "#9CB9FF",
+          400: "#7592FF",
+          500: "#465FFF",
+          600: "#3641F5",
+          700: "#2A31D8",
+          800: "#252DAE",
+          900: "#262E89",
+          950: "#161950"
+        },
         current: "currentColor",
         transparent: "transparent",
         white: "#FFFFFF",
-        primary: "#5750F1",
-        stroke: "#E6EBF1",
+        primary: "#465FFF",
+        stroke: "#E4E7EC",
         "stroke-dark": "#27303E",
         dark: {
           DEFAULT: "#111928",
@@ -32,15 +46,18 @@ const config: Config = {
           8: "#E5E7EB",
         },
         gray: {
-          DEFAULT: "#EFF4FB",
-          dark: "#122031",
-          1: "#F9FAFB",
-          2: "#F3F4F6",
-          3: "#E5E7EB",
-          4: "#D1D5DB",
-          5: "#9CA3AF",
-          6: "#6B7280",
-          7: "#374151",
+          25: "#FCFCFD",
+          50: "#F9FAFB",
+          100: "#F2F4F7",
+          200: "#E4E7EC",
+          300: "#D0D5DD",
+          400: "#98A2B3",
+          500: "#667085",
+          600: "#475467",
+          700: "#344054",
+          800: "#1D2939",
+          900: "#101828",
+          950: "#0C111D"
         },
         green: {
           DEFAULT: "#22AD5C",
@@ -94,6 +111,25 @@ const config: Config = {
             4: "#FFFBEB",
           },
         },
+        success: {
+          50: "#ECFDF3",
+          500: "#12B76A",
+          600: "#039855",
+          700: "#027A48"
+        },
+        error: {
+          50: "#FEF3F2",
+          500: "#F04438",
+          600: "#D92D20",
+          700: "#B42318"
+        },
+        warning: {
+          50: "#FFFAEB",
+          500: "#F79009",
+          600: "#DC6803",
+          700: "#B54708"
+        },
+        body: "#667085",
       },
       fontSize: {
         "heading-1": ["60px", "72px"],
@@ -105,6 +141,12 @@ const config: Config = {
         "body-2xlg": ["22px", "28px"],
         "body-sm": ["14px", "22px"],
         "body-xs": ["12px", "20px"],
+        "theme-xs": ["12px", { lineHeight: "18px" }],
+        "theme-sm": ["14px", { lineHeight: "20px" }],
+        "theme-xl": ["20px", { lineHeight: "30px" }],
+        "title-sm": ["30px", { lineHeight: "38px" }],
+        "title-md": ["36px", { lineHeight: "44px" }],
+        "title-md2": ["26px", { lineHeight: "30px" }],
       },
       spacing: {
         4.5: "1.125rem",
@@ -303,6 +345,12 @@ const config: Config = {
         5: "0px 10px 30px 0px rgba(85, 106, 235, 0.12), 0px 4px 10px 0px rgba(85, 106, 235, 0.04), 0px -18px 38px 0px rgba(85, 106, 235, 0.04)",
         6: "0px 12px 34px 0px rgba(13, 10, 44, 0.08), 0px 34px 26px 0px rgba(13, 10, 44, 0.05)",
         7: "0px 18px 25px 0px rgba(113, 116, 152, 0.05)",
+        "theme-xs": "0px 1px 2px 0px rgba(16, 24, 40, 0.05)",
+        "theme-sm": "0px 1px 3px 0px rgba(16, 24, 40, 0.1), 0px 1px 2px 0px rgba(16, 24, 40, 0.06)",
+        "theme-md": "0px 4px 8px -2px rgba(16, 24, 40, 0.1), 0px 2px 4px -2px rgba(16, 24, 40, 0.06)",
+        "theme-lg": "0px 12px 16px -4px rgba(16, 24, 40, 0.08), 0px 4px 6px -2px rgba(16, 24, 40, 0.03)",
+        "theme-xl": "0px 20px 24px -4px rgba(16, 24, 40, 0.08), 0px 8px 8px -4px rgba(16, 24, 40, 0.03)",
+        "focus-ring": "0px 0px 0px 4px rgba(70, 95, 255, 0.12)",
       },
       dropShadow: {
         card: "0px 8px 13px rgba(0, 0, 0, 0.07)",
