@@ -21,9 +21,9 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
   categories,
 }) => {
   const options: ApexOptions = {
-    colors: ["#3C50E0", "#80CAEE"],
+    colors: ["#465FFF", "#9CB9FF"],
     chart: {
-      fontFamily: "Satoshi, sans-serif",
+      fontFamily: "Outfit, sans-serif",
       type: "bar",
       height: 335,
       stacked: true,
@@ -63,7 +63,7 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
       categories: categories,
       labels: {
         style: {
-          colors: "#64748B",
+          colors: "#667085",
         },
       },
       axisBorder: {
@@ -76,7 +76,7 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
     yaxis: {
       labels: {
         style: {
-          colors: "#64748B",
+          colors: "#667085",
         },
         formatter: (val) => {
           return val.toLocaleString("ko-KR") + "원";
@@ -86,11 +86,11 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
     legend: {
       position: "top",
       horizontalAlign: "left",
-      fontFamily: "Satoshi",
+      fontFamily: "Outfit",
       fontWeight: 500,
       fontSize: "14px",
       labels: {
-        colors: "#64748B",
+        colors: "#667085",
       },
     },
     fill: {
@@ -105,7 +105,7 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
       },
     },
     grid: {
-      borderColor: "#e0e0e0",
+      borderColor: "#E4E7EC",
       strokeDashArray: 5,
       xaxis: {
         lines: {
@@ -121,23 +121,25 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
   };
 
   return (
-    <div className="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default md:col-span-7 xl:col-span-8">
+    <div className="col-span-12 rounded-2xl border border-gray-200 bg-white p-5 md:p-6 xl:col-span-7">
       <div className="mb-4 justify-between gap-4 sm:flex">
         <div>
-          <h4 className="text-xl font-semibold text-black">
+          <h4 className="text-lg font-semibold text-gray-800">
             월별 지출 추이
           </h4>
         </div>
       </div>
 
       <div>
-        <div id="chartOne" className="-ml-5 h-[355px] w-[105%]">
-          <ReactApexChart
-            options={options}
-            series={series}
-            type="bar"
-            height={350}
-          />
+        <div id="chartOne" className="max-w-full overflow-x-auto custom-scrollbar">
+          <div className="min-w-[1000px] xl:min-w-full">
+            <ReactApexChart
+              options={options}
+              series={series}
+              type="bar"
+              height={350}
+            />
+          </div>
         </div>
       </div>
     </div>
