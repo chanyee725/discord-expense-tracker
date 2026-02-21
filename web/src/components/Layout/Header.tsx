@@ -1,156 +1,80 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import { useTheme } from "next-themes";
 import { useSidebar } from "@/context/SidebarContext";
-import { cn } from "@/lib/utils";
 
 const Header = () => {
-  const { toggleSidebar, sidebarOpen } = useSidebar();
-  const { theme, setTheme } = useTheme();
+  const { toggleSidebar, toggleMobileSidebar } = useSidebar();
+
+  const handleToggle = () => {
+    if (typeof window !== "undefined") {
+      if (window.innerWidth >= 1024) {
+        toggleSidebar();
+      } else {
+        toggleMobileSidebar();
+      }
+    }
+  };
 
   return (
-    <header className="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
-      <div className="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
-        <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
-          {/* Hamburger Toggle BTN */}
+    <header className="sticky top-0 flex w-full bg-white border-gray-200 z-[99999] lg:border-b">
+      <div className="flex flex-col items-center justify-between grow lg:flex-row lg:px-6">
+        <div className="flex items-center justify-between w-full px-4 py-4 border-b border-gray-200 lg:w-auto lg:border-b-0 lg:py-0 lg:px-0">
           <button
-            aria-controls="sidebar"
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleSidebar();
-            }}
-            className="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden"
+            onClick={handleToggle}
+            className="flex items-center justify-center w-10 h-10 text-gray-500 rounded-lg lg:h-11 lg:w-11 lg:border lg:border-gray-200"
           >
-            <span className="relative block h-5.5 w-5.5 cursor-pointer">
-              <span className="du-block absolute right-0 h-full w-full">
-                <span
-                  className={cn(
-                    "relative top-0 left-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[0] duration-200 ease-in-out dark:bg-white",
-                    !sidebarOpen && "!w-full delay-300"
-                  )}
-                ></span>
-                <span
-                  className={cn(
-                    "relative top-0 left-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-150 duration-200 ease-in-out dark:bg-white",
-                    !sidebarOpen && "delay-400 !w-full"
-                  )}
-                ></span>
-                <span
-                  className={cn(
-                    "relative top-0 left-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-200 duration-200 ease-in-out dark:bg-white",
-                    !sidebarOpen && "!w-full delay-500"
-                  )}
-                ></span>
-              </span>
-              <span className="absolute right-0 h-full w-full rotate-45">
-                <span
-                  className={cn(
-                    "absolute left-2.5 top-0 block h-full w-0.5 rounded-sm bg-black delay-300 duration-200 ease-in-out dark:bg-white",
-                    !sidebarOpen && "!h-0 !delay-[0]"
-                  )}
-                ></span>
-                <span
-                  className={cn(
-                    "delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm bg-black duration-200 ease-in-out dark:bg-white",
-                    !sidebarOpen && "!h-0 !delay-200"
-                  )}
-                ></span>
-              </span>
-            </span>
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
           </button>
-          {/* Hamburger Toggle BTN */}
 
-          <Link className="block flex-shrink-0 lg:hidden" href="/">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary text-white text-xs font-bold">
+          <div className="flex items-center lg:hidden">
+            <div className="flex h-8 w-8 items-center justify-center rounded bg-brand-500 text-white text-xs font-bold">
               PG
             </div>
-          </Link>
+          </div>
+
+          <div className="w-10 lg:hidden" />
         </div>
 
-        <div className="hidden sm:block">
-          <form action="https://formbold.com/s/unique_form_id" method="POST">
-            <div className="relative">
-              <button className="absolute left-0 top-1/2 -translate-y-1/2">
-                <svg
-                  className="fill-body hover:fill-primary dark:fill-bodydark dark:hover:fill-primary"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M9.16666 3.33332C5.945 3.33332 3.33332 5.945 3.33332 9.16666C3.33332 12.3883 5.945 15 9.16666 15C12.3883 15 15 12.3883 15 9.16666C15 5.945 12.3883 3.33332 9.16666 3.33332ZM1.66666 9.16666C1.66666 5.02452 5.02452 1.66666 9.16666 1.66666C13.3088 1.66666 16.6667 5.02452 16.6667 9.16666C16.6667 13.3088 13.3088 16.6667 9.16666 16.6667C5.02452 16.6667 1.66666 13.3088 1.66666 9.16666Z"
-                    fill=""
-                  />
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M13.2857 13.2857C13.6112 12.9603 14.1388 12.9603 14.4642 13.2857L18.0892 16.9107C18.4147 17.2362 18.4147 17.7638 18.0892 18.0892C17.7638 18.4147 17.2362 18.4147 16.9107 18.0892L13.2857 14.4642C12.9603 14.1388 12.9603 13.6112 13.2857 13.2857Z"
-                    fill=""
-                  />
-                </svg>
-              </button>
-
-              <input
-                type="text"
-                placeholder="Type to search..."
-                className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white xl:w-125"
+        <div className="hidden lg:block lg:py-4">
+          <div className="relative">
+            <svg
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
-            </div>
-          </form>
+            </svg>
+            <input
+              type="text"
+              placeholder="검색..."
+              className="h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring-4 focus:ring-brand-500/10 xl:w-[430px]"
+            />
+          </div>
         </div>
 
-        <div className="flex items-center gap-3 2xsm:gap-7">
-          <ul className="flex items-center gap-2 2xsm:gap-4">
-            {/* Dark Mode Toggle */}
-            <li>
-              <button
-                className="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border-[0.5px] border-stroke bg-gray hover:text-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              >
-                <span className={cn("absolute", theme === "dark" && "hidden")}>
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                     <path
-                      d="M12 21a9 9 0 0 1-9-9c0-4.97 4.03-9 9-9a9 9 0 0 1 9 9c0 4.97-4.03 9-9 9M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </span>
-                <span className={cn("absolute", theme !== "dark" && "hidden")}>
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </span>
-              </button>
-            </li>
-            {/* Dark Mode Toggle */}
-          </ul>
+        <div className="hidden lg:flex items-center gap-3 lg:py-4">
+          <div className="w-10 h-10 rounded-full bg-gray-100" />
         </div>
       </div>
     </header>
