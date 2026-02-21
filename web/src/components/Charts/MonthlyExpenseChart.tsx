@@ -3,7 +3,6 @@
 import { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
 import React from "react";
-import { useTheme } from "next-themes";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
@@ -21,9 +20,6 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
   series,
   categories,
 }) => {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
-
   const options: ApexOptions = {
     colors: ["#3C50E0", "#80CAEE"],
     chart: {
@@ -67,7 +63,7 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
       categories: categories,
       labels: {
         style: {
-          colors: isDark ? "#A0AEC0" : "#64748B",
+          colors: "#64748B",
         },
       },
       axisBorder: {
@@ -80,7 +76,7 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
     yaxis: {
       labels: {
         style: {
-          colors: isDark ? "#A0AEC0" : "#64748B",
+          colors: "#64748B",
         },
         formatter: (val) => {
           return val.toLocaleString("ko-KR") + "원";
@@ -94,14 +90,14 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
       fontWeight: 500,
       fontSize: "14px",
       labels: {
-        colors: isDark ? "#A0AEC0" : "#64748B",
+        colors: "#64748B",
       },
     },
     fill: {
       opacity: 1,
     },
     tooltip: {
-      theme: isDark ? "dark" : "light",
+      theme: "light",
       y: {
         formatter: function (val) {
           return val.toLocaleString("ko-KR") + " 원";
@@ -109,7 +105,7 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
       },
     },
     grid: {
-      borderColor: isDark ? "#333" : "#e0e0e0",
+      borderColor: "#e0e0e0",
       strokeDashArray: 5,
       xaxis: {
         lines: {
@@ -125,10 +121,10 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
   };
 
   return (
-    <div className="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark md:col-span-7 xl:col-span-8">
+    <div className="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default md:col-span-7 xl:col-span-8">
       <div className="mb-4 justify-between gap-4 sm:flex">
         <div>
-          <h4 className="text-xl font-semibold text-black dark:text-white">
+          <h4 className="text-xl font-semibold text-black">
             월별 지출 추이
           </h4>
         </div>

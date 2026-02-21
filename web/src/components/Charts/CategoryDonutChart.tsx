@@ -3,7 +3,6 @@
 import { ApexOptions } from "apexcharts";
 import React from "react";
 import dynamic from "next/dynamic";
-import { useTheme } from "next-themes";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
@@ -18,9 +17,6 @@ const CategoryDonutChart: React.FC<CategoryDonutChartProps> = ({
   series,
   labels,
 }) => {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
-
   const options: ApexOptions = {
     chart: {
       type: "donut",
@@ -40,7 +36,7 @@ const CategoryDonutChart: React.FC<CategoryDonutChartProps> = ({
       show: true,
       position: "bottom",
       labels: {
-        colors: isDark ? "#A0AEC0" : "#64748B",
+        colors: "#64748B",
       },
     },
     plotOptions: {
@@ -73,7 +69,7 @@ const CategoryDonutChart: React.FC<CategoryDonutChartProps> = ({
       },
     ],
     tooltip: {
-      theme: isDark ? "dark" : "light",
+      theme: "light",
       y: {
         formatter: function (val) {
           return val.toLocaleString("ko-KR") + " 원";
@@ -83,10 +79,10 @@ const CategoryDonutChart: React.FC<CategoryDonutChartProps> = ({
   };
 
   return (
-    <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 md:col-span-5 xl:col-span-4">
+    <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default sm:px-7.5 md:col-span-5 xl:col-span-4">
       <div className="mb-3 justify-between gap-4 sm:flex">
         <div>
-          <h5 className="text-xl font-semibold text-black dark:text-white">
+          <h5 className="text-xl font-semibold text-black">
             카테고리별 지출
           </h5>
         </div>

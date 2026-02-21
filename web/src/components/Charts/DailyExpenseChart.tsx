@@ -3,7 +3,6 @@
 import { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
 import React from "react";
-import { useTheme } from "next-themes";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
@@ -21,9 +20,6 @@ const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
   series,
   categories,
 }) => {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
-
   const options: ApexOptions = {
     legend: {
       show: false,
@@ -80,7 +76,7 @@ const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
           show: true,
         },
       },
-      borderColor: isDark ? "#333" : "#e0e0e0",
+      borderColor: "#e0e0e0",
       strokeDashArray: 5,
     },
     dataLabels: {
@@ -111,7 +107,7 @@ const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
       },
       labels: {
         style: {
-          colors: isDark ? "#A0AEC0" : "#64748B",
+          colors: "#64748B",
         },
       },
     },
@@ -123,7 +119,7 @@ const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
       },
       labels: {
         style: {
-          colors: isDark ? "#A0AEC0" : "#64748B",
+          colors: "#64748B",
         },
         formatter: (val) => {
           return val.toLocaleString("ko-KR") + "원";
@@ -131,7 +127,7 @@ const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
       },
     },
     tooltip: {
-      theme: isDark ? "dark" : "light",
+      theme: "light",
       y: {
         formatter: function (val) {
           return val.toLocaleString("ko-KR") + " 원";
@@ -141,10 +137,10 @@ const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
   };
 
   return (
-    <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-12">
+    <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default sm:px-7.5 xl:col-span-12">
       <div className="mb-3 justify-between gap-4 sm:flex">
         <div>
-          <h4 className="text-xl font-semibold text-black dark:text-white">
+          <h4 className="text-xl font-semibold text-black">
             일별 지출 패턴 (이번 달)
           </h4>
         </div>
