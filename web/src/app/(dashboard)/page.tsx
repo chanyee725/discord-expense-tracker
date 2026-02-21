@@ -89,14 +89,14 @@ export default async function DashboardPage() {
   const hasData = transactionCount > 0 || monthlyExpenses.length > 0;
 
   return (
-    <>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
+    <div className="grid grid-cols-12 gap-4 md:gap-6">
+      <div className="col-span-12 grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6">
         <Card
           title="이번 달 총 지출"
           value={`${totalExpense.toLocaleString("ko-KR")}원`}
           icon={
             <svg
-              className="fill-primary dark:fill-white"
+              className="fill-current"
               width="22"
               height="22"
               viewBox="0 0 24 24"
@@ -115,7 +115,7 @@ export default async function DashboardPage() {
           value={`${transactionCount}건`}
           icon={
             <svg
-              className="fill-primary dark:fill-white"
+              className="fill-current"
               width="22"
               height="22"
               viewBox="0 0 24 24"
@@ -134,7 +134,7 @@ export default async function DashboardPage() {
           value={`${dailyAverage.toLocaleString("ko-KR")}원`}
           icon={
             <svg
-              className="fill-primary dark:fill-white"
+              className="fill-current"
               width="22"
               height="22"
               viewBox="0 0 24 24"
@@ -153,7 +153,7 @@ export default async function DashboardPage() {
           value={topCategoryName}
           icon={
             <svg
-              className="fill-primary dark:fill-white"
+              className="fill-current"
               width="22"
               height="22"
               viewBox="0 0 24 24"
@@ -166,34 +166,38 @@ export default async function DashboardPage() {
         />
       </div>
 
-      <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-        {!hasData ? (
-          <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 py-10 text-center shadow-default dark:border-strokedark dark:bg-boxdark">
-            <h3 className="text-xl font-medium text-black dark:text-white">
-              아직 거래 데이터가 없습니다.
-            </h3>
-            <p className="mt-2 text-body">
-              Discord 봇으로 영수증을 업로드해보세요.
-            </p>
-          </div>
-        ) : (
-          <>
-            <MonthlyExpenseChart
-              series={[{ name: "지출", data: monthlyChartData }]}
-              categories={monthlyChartCategories}
-            />
-            <CategoryDonutChart
-              series={categorySeries}
-              labels={categoryLabels}
-            />
+      {!hasData ? (
+        <div className="col-span-12 rounded-2xl border border-gray-200 bg-white px-5 py-10 text-center">
+          <h3 className="text-2xl font-medium text-gray-800">
+            아직 거래 데이터가 없습니다.
+          </h3>
+          <p className="mt-2 text-gray-500">
+            Discord 봇으로 영수증을 업로드해보세요.
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="col-span-12">
             <DailyExpenseChart
               series={[{ name: "지출", data: dailyChartData }]}
               categories={dailyChartCategories}
             />
-          </>
-        )}
-      </div>
-    </>
+          </div>
+          <div className="col-span-12 xl:col-span-5">
+            <CategoryDonutChart
+              series={categorySeries}
+              labels={categoryLabels}
+            />
+          </div>
+          <div className="col-span-12 xl:col-span-7">
+            <MonthlyExpenseChart
+              series={[{ name: "지출", data: monthlyChartData }]}
+              categories={monthlyChartCategories}
+            />
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -207,17 +211,17 @@ function Card({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div className="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
+    <div className="rounded-2xl border border-gray-200 bg-white p-5 md:p-6">
+      <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl">
         {icon}
       </div>
 
-      <div className="mt-4 flex items-end justify-between">
+      <div className="flex items-end justify-between mt-5">
         <div>
-          <h4 className="text-title-md font-bold text-black dark:text-white">
+          <span className="text-sm text-gray-500">{title}</span>
+          <h4 className="mt-2 font-bold text-gray-800 text-2xl">
             {value}
           </h4>
-          <span className="text-sm font-medium">{title}</span>
         </div>
       </div>
     </div>
