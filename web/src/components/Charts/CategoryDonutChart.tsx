@@ -20,6 +20,7 @@ const CategoryDonutChart: React.FC<CategoryDonutChartProps> = ({
   const options: ApexOptions = {
     chart: {
       type: "donut",
+      fontFamily: "Outfit, sans-serif",
     },
     colors: [
       "#10B981",
@@ -36,7 +37,7 @@ const CategoryDonutChart: React.FC<CategoryDonutChartProps> = ({
       show: true,
       position: "bottom",
       labels: {
-        colors: "#64748B",
+        colors: "#667085",
       },
     },
     plotOptions: {
@@ -79,10 +80,10 @@ const CategoryDonutChart: React.FC<CategoryDonutChartProps> = ({
   };
 
   return (
-    <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default sm:px-7.5 md:col-span-5 xl:col-span-4">
+    <div className="col-span-12 rounded-2xl border border-gray-200 bg-white p-5 md:p-6 xl:col-span-5">
       <div className="mb-3 justify-between gap-4 sm:flex">
         <div>
-          <h5 className="text-xl font-semibold text-black">
+          <h5 className="text-lg font-semibold text-gray-800">
             카테고리별 지출
           </h5>
         </div>
