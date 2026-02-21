@@ -26,13 +26,38 @@ export async function getTransactions(
       deposit_destination,
       withdrawal_source,
       transaction_date,
-      raw_ocr_text,
       created_at
     FROM transactions
     ORDER BY created_at DESC
     LIMIT ${limit}
     OFFSET ${offset}
   `;
+}
+
+/**
+ * Get monthly transaction statistics (total expense and count)
+ * Uses created_at for reliable date filtering
+ */
+export async function getMonthlyTransactionStats(
+  year: number,
+  month: number
+): Promise<{ total_expense: number; transaction_count: number }> {
+  const result = await sql<
+    [{ total_expense: number | null; transaction_count: number }]
+  >`
+    SELECT
+      SUM(amount)::int as total_expense,
+      COUNT(*)::int as transaction_count
+    FROM transactions
+    WHERE
+      EXTRACT(YEAR FROM created_at) = ${year}
+      AND EXTRACT(MONTH FROM created_at) = ${month}
+  `;
+
+  return {
+    total_expense: result[0]?.total_expense ?? 0,
+    transaction_count: result[0]?.transaction_count ?? 0,
+  };
 }
 
 /**
@@ -122,7 +147,6 @@ export async function getRecentTransactions(
       deposit_destination,
       withdrawal_source,
       transaction_date,
-      raw_ocr_text,
       created_at
     FROM transactions
     ORDER BY created_at DESC
