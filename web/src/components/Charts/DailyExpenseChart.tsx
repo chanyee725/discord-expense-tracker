@@ -26,14 +26,14 @@ const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
       position: "top",
       horizontalAlign: "left",
     },
-    colors: ["#3C50E0", "#80CAEE"],
+    colors: ["#465FFF", "#9CB9FF"],
     chart: {
-      fontFamily: "Satoshi, sans-serif",
+      fontFamily: "Outfit, sans-serif",
       height: 335,
       type: "area",
       dropShadow: {
         enabled: true,
-        color: "#623CEA14",
+        color: "#465FFF14",
         top: 10,
         blur: 4,
         left: 0,
@@ -76,7 +76,7 @@ const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
           show: true,
         },
       },
-      borderColor: "#e0e0e0",
+      borderColor: "#E4E7EC",
       strokeDashArray: 5,
     },
     dataLabels: {
@@ -85,7 +85,7 @@ const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
     markers: {
       size: 4,
       colors: "#fff",
-      strokeColors: ["#3056D3", "#80CAEE"],
+      strokeColors: ["#465FFF", "#9CB9FF"],
       strokeWidth: 3,
       strokeOpacity: 0.9,
       strokeDashArray: 0,
@@ -107,7 +107,7 @@ const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
       },
       labels: {
         style: {
-          colors: "#64748B",
+          colors: "#667085",
         },
       },
     },
@@ -119,7 +119,7 @@ const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
       },
       labels: {
         style: {
-          colors: "#64748B",
+          colors: "#667085",
         },
         formatter: (val) => {
           return val.toLocaleString("ko-KR") + "원";
@@ -137,23 +137,25 @@ const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
   };
 
   return (
-    <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default sm:px-7.5 xl:col-span-12">
+    <div className="col-span-12 rounded-2xl border border-gray-200 bg-white p-5 md:p-6 xl:col-span-12">
       <div className="mb-3 justify-between gap-4 sm:flex">
         <div>
-          <h4 className="text-xl font-semibold text-black">
+          <h4 className="text-lg font-semibold text-gray-800">
             일별 지출 패턴 (이번 달)
           </h4>
         </div>
       </div>
 
       <div>
-        <div id="chartTwo" className="-ml-5 h-[355px] w-[105%]">
-          <ReactApexChart
-            options={options}
-            series={series}
-            type="area"
-            height={350}
-          />
+        <div id="chartTwo" className="max-w-full overflow-x-auto custom-scrollbar">
+          <div className="min-w-[1000px] xl:min-w-full">
+            <ReactApexChart
+              options={options}
+              series={series}
+              type="area"
+              height={350}
+            />
+          </div>
         </div>
       </div>
     </div>
