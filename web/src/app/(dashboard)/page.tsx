@@ -1,6 +1,7 @@
 import React from "react";
 import {
   getMonthlyExpenses,
+  getMonthlyIncome,
   getCategoryBreakdown,
   getDailyExpenses,
   getMonthlyTransactionStats,
@@ -21,27 +22,39 @@ export default async function DashboardPage() {
   const [
     monthlyStats,
     monthlyExpenses,
+    monthlyIncome,
     categoryBreakdown,
     dailyExpenses,
     prevYearMonthlyExpenses,
+    prevYearMonthlyIncome,
   ] = await Promise.all([
     getMonthlyTransactionStats(currentYear, currentMonth),
     getMonthlyExpenses(currentYear),
+    getMonthlyIncome(currentYear),
     getCategoryBreakdown(currentYear, currentMonth),
     getDailyExpenses(currentYear, currentMonth),
     currentMonth < 6
       ? getMonthlyExpenses(currentYear - 1)
       : Promise.resolve([]),
+    currentMonth < 6
+      ? getMonthlyIncome(currentYear - 1)
+      : Promise.resolve([]),
   ]);
 
   let combinedMonthly: { month: number; total: number; year: number }[] = [];
+  let combinedMonthlyIncome: { month: number; total: number; year: number }[] = [];
   if (currentMonth < 6) {
     combinedMonthly = [
       ...prevYearMonthlyExpenses.map((m) => ({ ...m, year: currentYear - 1 })),
       ...monthlyExpenses.map((m) => ({ ...m, year: currentYear })),
     ];
+    combinedMonthlyIncome = [
+      ...prevYearMonthlyIncome.map((m) => ({ ...m, year: currentYear - 1 })),
+      ...monthlyIncome.map((m) => ({ ...m, year: currentYear })),
+    ];
   } else {
     combinedMonthly = monthlyExpenses.map((m) => ({ ...m, year: currentYear }));
+    combinedMonthlyIncome = monthlyIncome.map((m) => ({ ...m, year: currentYear }));
   }
 
   const last6Months = [];
@@ -56,6 +69,13 @@ export default async function DashboardPage() {
 
   const monthlyChartData = last6Months.map((m) => {
     const found = combinedMonthly.find(
+      (item) => item.month === m.month && item.year === m.year
+    );
+    return found ? found.total : 0;
+  });
+
+  const monthlyChartIncomeData = last6Months.map((m) => {
+    const found = combinedMonthlyIncome.find(
       (item) => item.month === m.month && item.year === m.year
     );
     return found ? found.total : 0;
@@ -191,7 +211,10 @@ export default async function DashboardPage() {
           </div>
           <div className="col-span-12 xl:col-span-7">
             <MonthlyExpenseChart
-              series={[{ name: "지출", data: monthlyChartData }]}
+              series={[
+                { name: "지출", data: monthlyChartData },
+                { name: "수입", data: monthlyChartIncomeData },
+              ]}
               categories={monthlyChartCategories}
             />
           </div>

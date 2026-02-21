@@ -21,7 +21,7 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
   categories,
 }) => {
   const options: ApexOptions = {
-    colors: ["#465FFF", "#9CB9FF"],
+    colors: ["#EF4444", "#3B82F6"],
     chart: {
       fontFamily: "Outfit, sans-serif",
       type: "bar",
@@ -125,7 +125,7 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
       <div className="mb-4 justify-between gap-4 sm:flex">
         <div>
           <h4 className="text-lg font-semibold text-gray-800">
-            월별 지출 추이
+            월별 수입/지출 추이
           </h4>
         </div>
       </div>

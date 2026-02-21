@@ -3,30 +3,16 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSidebar } from "@/context/SidebarContext";
 import { cn } from "@/lib/utils";
 
 const Sidebar = () => {
   const pathname = usePathname();
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
-
-  const isWide = isExpanded || isHovered || isMobileOpen;
 
   return (
     <aside
-      onMouseEnter={() => !isExpanded && setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className={cn(
-        "fixed top-0 left-0 z-50 h-screen flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out px-5",
-        isWide ? "w-[290px]" : "w-[90px]",
-        isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
-        "mt-16 lg:mt-0"
-      )}
+      className="fixed top-0 left-0 z-50 h-screen flex flex-col bg-white border-r border-gray-200 w-[290px] px-5"
     >
-      <div className={cn(
-        "py-8 flex",
-        !isWide && "lg:justify-center"
-      )}>
+      <div className="py-8 flex">
         <Link href="/" className="flex items-center gap-2">
           <div className="flex h-10 w-10 items-center justify-center rounded bg-brand-500 text-white flex-shrink-0">
             <svg
@@ -62,21 +48,16 @@ const Sidebar = () => {
               />
             </svg>
           </div>
-          {isWide && (
-            <span className="text-xl font-bold text-gray-800">
-              POOR GUY
-            </span>
-          )}
+          <span className="text-xl font-bold text-gray-800">
+            POOR GUY
+          </span>
         </Link>
       </div>
 
       <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
         <nav className="mb-6">
-          <div className={cn(
-            "mb-4 text-xs uppercase leading-5 text-gray-400",
-            !isWide && "lg:justify-center"
-          )}>
-            {isWide && "MENU"}
+          <div className="mb-4 text-xs uppercase leading-5 text-gray-400">
+            MENU
           </div>
 
           <div className="flex flex-col gap-4">
@@ -108,7 +89,7 @@ const Sidebar = () => {
                   />
                 </svg>
               </div>
-              {isWide && <span className="menu-item-text">대시보드</span>}
+              <span className="menu-item-text">대시보드</span>
             </Link>
 
             <Link
@@ -140,7 +121,7 @@ const Sidebar = () => {
                   <path d="M4.5 10.125H6.75V11.25H4.5V10.125Z" fill="" />
                 </svg>
               </div>
-              {isWide && <span className="menu-item-text">거래 내역</span>}
+              <span className="menu-item-text">거래 내역</span>
             </Link>
 
             <Link
@@ -171,7 +152,7 @@ const Sidebar = () => {
                   />
                 </svg>
               </div>
-              {isWide && <span className="menu-item-text">카테고리별 지출 내역</span>}
+              <span className="menu-item-text">카테고리별 지출 내역</span>
             </Link>
 
             <Link
@@ -206,7 +187,7 @@ const Sidebar = () => {
                   />
                 </svg>
               </div>
-              {isWide && <span className="menu-item-text">저축 플랜</span>}
+              <span className="menu-item-text">저축 플랜</span>
             </Link>
 
             <Link
@@ -242,7 +223,7 @@ const Sidebar = () => {
                   <path d="M12 9.375H14.25V10.5H12V9.375Z" fill="" />
                 </svg>
               </div>
-              {isWide && <span className="menu-item-text">자산 관리</span>}
+              <span className="menu-item-text">자산 관리</span>
             </Link>
 
             <Link
@@ -273,7 +254,7 @@ const Sidebar = () => {
                   />
                 </svg>
               </div>
-              {isWide && <span className="menu-item-text">설정</span>}
+              <span className="menu-item-text">반복 관리</span>
             </Link>
           </div>
         </nav>

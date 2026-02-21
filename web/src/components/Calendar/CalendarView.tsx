@@ -5,8 +5,12 @@ import dayjs from "dayjs";
 import { Transaction } from "@/types/transaction";
 import { useRouter } from "next/navigation";
 
+interface CalendarTransaction extends Omit<Transaction, "created_at"> {
+  created_at: string;
+}
+
 interface CalendarViewProps {
-  transactions: Transaction[];
+  transactions: CalendarTransaction[];
   currentDate: string;
 }
 
@@ -61,25 +65,35 @@ export default function CalendarView({
       </div>
 
       <div className="p-4">
-        <div className="grid grid-cols-7 gap-2">
-          {weekDays.map((day) => (
+        <div className="grid grid-cols-7 gap-px border-b border-l border-stroke bg-stroke dark:bg-strokedark">
+          {weekDays.map((day, index) => (
             <div
               key={day}
-              className="text-center font-medium text-gray-700 dark:text-gray-300"
+              className={`flex h-10 items-center justify-center border-r border-t border-stroke bg-white px-1 py-1 text-sm font-semibold dark:border-strokedark dark:bg-boxdark ${
+                index === 0
+                  ? "text-red-600"
+                  : index === 6
+                  ? "text-blue-600"
+                  : "text-black dark:text-white"
+              }`}
             >
               {day}
             </div>
           ))}
 
           {Array.from({ length: firstDayOfMonth }).map((_, i) => (
-            <div key={`empty-${i}`} className="min-h-[100px]" />
+            <div
+              key={`empty-${i}`}
+              className="flex h-[110px] flex-col border-r border-stroke bg-white p-1 dark:border-strokedark dark:bg-boxdark"
+            />
           ))}
 
           {Array.from({ length: daysInMonth }).map((_, i) => {
             const day = i + 1;
             const currentDayDate = current.date(day);
             const isToday = dayjs().isSame(currentDayDate, "day");
-            
+            const dayOfWeek = currentDayDate.day();
+
             const dayTransactions = transactions.filter((t) =>
               dayjs(t.created_at).isSame(currentDayDate, "day")
             );
@@ -92,47 +106,59 @@ export default function CalendarView({
             return (
               <div
                 key={day}
-                className={`flex min-h-[120px] flex-col rounded-lg border p-2 transition-all hover:shadow-md ${
-                  isToday
-                    ? "border-primary bg-primary/5"
-                    : "border-gray-200 bg-white dark:border-strokedark dark:bg-boxdark"
+                className={`group relative flex h-[110px] cursor-pointer flex-col border-r border-b border-stroke p-1 transition hover:bg-gray dark:border-strokedark dark:bg-boxdark dark:hover:bg-meta-4 ${
+                  isToday ? "bg-gray dark:bg-meta-4" : "bg-white"
                 }`}
-                onClick={() => setSelectedDate(currentDayDate.format("YYYY-MM-DD"))}
+                onClick={() =>
+                  setSelectedDate(currentDayDate.format("YYYY-MM-DD"))
+                }
               >
-                <div className="mb-2 flex items-center justify-between">
-                  <span
-                    className={`flex h-6 w-6 items-center justify-center rounded-full text-sm ${
-                      isToday
-                        ? "bg-primary text-white"
-                        : "text-gray-700 dark:text-gray-300"
-                    }`}
-                  >
-                    {day}
-                  </span>
-                  {dayTransactions.length > 0 && (
-                    <span className="text-xs font-medium text-gray-500">
-                      {totalAmount.toLocaleString()}원
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex flex-1 flex-col gap-1 overflow-y-auto custom-scrollbar">
-                  {dayTransactions.map((t) => (
-                    <div
-                      key={t.id}
-                      className="group relative cursor-pointer truncate rounded bg-gray-50 px-1 py-0.5 text-xs text-gray-700 hover:bg-gray-100 dark:bg-meta-4 dark:text-gray-300"
-                      title={`${t.title} - ${Number(t.amount).toLocaleString()}원`}
+                <div className="flex flex-col h-full">
+                  <div className="flex items-center justify-between mb-1">
+                    <span
+                      className={`font-medium text-sm ${
+                        dayOfWeek === 0
+                          ? "text-red-600"
+                          : dayOfWeek === 6
+                          ? "text-blue-600"
+                          : "text-black dark:text-white"
+                      }`}
                     >
-                      <span className="font-medium">{t.title}</span>
-                      <span className="ml-1 text-gray-500">
-                        {Number(t.amount).toLocaleString()}
-                      </span>
-                    </div>
-                  ))}
+                      {day}
+                    </span>
+                    {totalAmount > 0 && (
+                       <span className="text-xs font-medium text-red-600">
+                         -{totalAmount.toLocaleString()}
+                       </span>
+                    )}
+                  </div>
+                  
+                  <div className="flex flex-col gap-1 overflow-hidden">
+                    {dayTransactions.slice(0, 3).map((t) => (
+                      <div key={t.id} className="flex justify-between text-xs">
+                        <span className="truncate text-gray-500">{t.title}</span>
+                        <span className="whitespace-nowrap font-medium text-red-600">
+                          {Number(t.amount).toLocaleString()}
+                        </span>
+                      </div>
+                    ))}
+                    {dayTransactions.length > 3 && (
+                      <div className="text-xs text-gray-400 text-right">
+                        +{dayTransactions.length - 3} more
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             );
           })}
+          
+          {Array.from({ length: (7 - ((daysInMonth + firstDayOfMonth) % 7)) % 7 }).map((_, i) => (
+             <div
+              key={`empty-end-${i}`}
+              className="flex h-[110px] flex-col border-r border-stroke bg-white p-1 dark:border-strokedark dark:bg-boxdark"
+            />
+          ))}
         </div>
       </div>
     </div>

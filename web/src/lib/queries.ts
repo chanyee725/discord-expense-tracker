@@ -90,6 +90,19 @@ export async function getMonthlyExpenses(
 }
 
 /**
+ * Get monthly income totals for a given year, grouped by month
+ * Currently returns empty array as income tracking is not yet implemented
+ * Uses created_at for reliable date filtering
+ */
+export async function getMonthlyIncome(
+  year: number
+): Promise<Array<{ month: number; total: number }>> {
+  // Placeholder for future income tracking
+  // When income transactions are supported, query here for positive amounts or specific category
+  return [];
+}
+
+/**
  * Get expense breakdown by category for a given month
  * Uses created_at for reliable date filtering
  */

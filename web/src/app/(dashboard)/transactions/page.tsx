@@ -27,6 +27,11 @@ export default async function TransactionsPage({
   // Fetch transactions for the specified month
   const transactions = await getTransactionsByMonth(yearParam, monthParam);
 
+  const serializedTransactions = transactions.map((t) => ({
+    ...t,
+    created_at: t.created_at.toISOString(),
+  }));
+
   return (
     <div className="mx-auto max-w-7xl">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -36,7 +41,7 @@ export default async function TransactionsPage({
       </div>
 
       <div className="flex flex-col gap-5">
-        <CalendarView transactions={transactions} currentDate={currentDate} />
+        <CalendarView transactions={serializedTransactions} currentDate={currentDate} />
       </div>
     </div>
   );
