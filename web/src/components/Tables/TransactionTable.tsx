@@ -37,7 +37,7 @@ const TransactionTable = ({ transactions }: TransactionTableProps) => {
             </tr>
           </thead>
           <tbody>
-            {transactions.map((transaction, key) => (
+            {transactions.map((transaction) => (
               <tr key={transaction.id} className="hover:bg-primary/5 dark:hover:bg-meta-4">
                 <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
                   <p className="text-black dark:text-white">

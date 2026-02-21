@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Sidebar from "@/components/Layout/Sidebar";
 import Header from "@/components/Layout/Header";
 import { SidebarProvider } from "@/context/SidebarContext";
