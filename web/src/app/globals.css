@@ -2,20 +2,94 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    @apply relative z-[1] bg-gray-50 font-normal text-dark;
+    font-family: "Outfit", sans-serif;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  /* Scrollbar utilities */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #E4E7EC;
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Sidebar menu item utilities */
+  .menu-item {
+    @apply relative flex items-center w-full gap-3 px-3 py-2 font-medium rounded-lg text-sm leading-5;
+  }
+  .menu-item-active {
+    @apply bg-brand-50 text-brand-500;
+  }
+  .menu-item-inactive {
+    @apply text-gray-700 hover:bg-gray-100;
+  }
+  .menu-item-icon-active {
+    @apply text-brand-500;
+  }
+  .menu-item-icon-inactive {
+    @apply text-gray-700;
+  }
+  .menu-item-text {
+    @apply whitespace-nowrap;
+  }
+
+  /* Sidebar dropdown menu utilities */
+  .menu-dropdown-item {
+    @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm leading-5 font-medium;
+  }
+  .menu-dropdown-item-active {
+    @apply text-brand-500;
+  }
+  .menu-dropdown-item-inactive {
+    @apply text-gray-500 hover:text-gray-700;
+  }
+}
+
+/* ApexCharts overrides */
+.apexcharts-legend-text {
+  color: #344054 !important;
+  font-family: "Outfit", sans-serif !important;
+}
+.apexcharts-text {
+  fill: #667085 !important;
+  font-family: "Outfit", sans-serif !important;
+}
+.apexcharts-tooltip {
+  background: #ffffff !important;
+  border: 1px solid #E4E7EC !important;
+  border-radius: 8px !important;
+  box-shadow: 0px 4px 8px -2px rgba(16, 24, 40, 0.1), 0px 2px 4px -2px rgba(16, 24, 40, 0.06) !important;
+}
+.apexcharts-tooltip .apexcharts-tooltip-title {
+  background: #F9FAFB !important;
+  border-bottom: 1px solid #E4E7EC !important;
+  font-family: "Outfit", sans-serif !important;
+}
+.apexcharts-xaxistooltip,
+.apexcharts-yaxistooltip {
+  background: #ffffff !important;
+  border: 1px solid #E4E7EC !important;
+  border-radius: 4px !important;
+  color: #344054 !important;
+}
+.apexcharts-gridline {
+  stroke: #E4E7EC !important;
 }
