@@ -153,3 +153,29 @@ export async function getRecentTransactions(
     LIMIT ${limit}
   `;
 }
+
+/**
+ * Get all transactions for a specific month
+ * Uses created_at for reliable date filtering
+ */
+export async function getTransactionsByMonth(
+  year: number,
+  month: number
+): Promise<Transaction[]> {
+  return sql<Transaction[]>`
+    SELECT
+      id,
+      title,
+      amount,
+      category,
+      deposit_destination,
+      withdrawal_source,
+      transaction_date,
+      created_at
+    FROM transactions
+    WHERE
+      EXTRACT(YEAR FROM created_at) = ${year}
+      AND EXTRACT(MONTH FROM created_at) = ${month}
+    ORDER BY created_at ASC
+  `;
+}

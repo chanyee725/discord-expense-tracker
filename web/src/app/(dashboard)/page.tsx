@@ -90,7 +90,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="grid grid-cols-12 gap-4 md:gap-6">
-      <div className="col-span-12 grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6">
+      <div className="col-span-12 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 md:gap-6">
         <Card
           title="이번 달 총 지출"
           value={`${totalExpense.toLocaleString("ko-KR")}원`}

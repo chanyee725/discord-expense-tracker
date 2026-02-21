@@ -1,28 +1,31 @@
 import { Metadata } from "next";
-import { getTransactionCount, getTransactions } from "@/lib/queries";
-import TransactionTable from "@/components/Tables/TransactionTable";
-import Pagination from "@/components/Pagination/Pagination";
+import { getTransactionsByMonth } from "@/lib/queries";
+import CalendarView from "@/components/Calendar/CalendarView";
+import dayjs from "dayjs";
 
 export const metadata: Metadata = {
   title: "Transactions | Poor Guy Dashboard",
-  description: "View all transaction history",
+  description: "View all transaction history in calendar format",
 };
 
 export default async function TransactionsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ year?: string; month?: string }>;
 }) {
   const params = await searchParams;
-  const currentPage = Number(params?.page) || 1;
-  const limit = 20;
+  const now = dayjs();
+  
+  // Parse year and month from URL params, defaulting to current
+  const yearParam = params?.year ? Number(params.year) : now.year();
+  const monthParam = params?.month ? Number(params.month) : now.month() + 1; // 1-12
+  
+  // Construct a valid date string for the calendar
+  // Use dayjs to ensure valid date formatting (e.g., 2023-01-01)
+  const currentDate = dayjs(`${yearParam}-${monthParam}-01`).format("YYYY-MM-DD");
 
-  const [transactions, totalCount] = await Promise.all([
-    getTransactions(currentPage, limit),
-    getTransactionCount(),
-  ]);
-
-  const totalPages = Math.ceil(totalCount / limit);
+  // Fetch transactions for the specified month
+  const transactions = await getTransactionsByMonth(yearParam, monthParam);
 
   return (
     <div className="mx-auto max-w-7xl">
@@ -33,11 +36,7 @@ export default async function TransactionsPage({
       </div>
 
       <div className="flex flex-col gap-5">
-        <TransactionTable transactions={transactions} />
-        
-        {totalPages > 1 && (
-          <Pagination currentPage={currentPage} totalPages={totalPages} />
-        )}
+        <CalendarView transactions={transactions} currentDate={currentDate} />
       </div>
     </div>
   );

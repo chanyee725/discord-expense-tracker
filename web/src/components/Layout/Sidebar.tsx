@@ -144,6 +144,108 @@ const Sidebar = () => {
             </Link>
 
             <Link
+              href="/category-expenses"
+              className={cn(
+                "menu-item",
+                pathname.includes("category-expenses")
+                  ? "menu-item-active"
+                  : "menu-item-inactive"
+              )}
+            >
+              <div className={cn(
+                pathname.includes("category-expenses")
+                  ? "menu-item-icon-active"
+                  : "menu-item-icon-inactive"
+              )}>
+                <svg
+                  className="fill-current"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M9 16.5C13.1421 16.5 16.5 13.1421 16.5 9C16.5 4.85786 13.1421 1.5 9 1.5C4.85786 1.5 1.5 4.85786 1.5 9C1.5 13.1421 4.85786 16.5 9 16.5ZM9 15V9H3C3 5.68629 5.68629 3 9 3V9H15C15 12.3137 12.3137 15 9 15Z"
+                    fill=""
+                  />
+                </svg>
+              </div>
+              {isWide && <span className="menu-item-text">카테고리별 지출 내역</span>}
+            </Link>
+
+            <Link
+              href="/savings-plan"
+              className={cn(
+                "menu-item",
+                pathname.includes("savings-plan")
+                  ? "menu-item-active"
+                  : "menu-item-inactive"
+              )}
+            >
+              <div className={cn(
+                pathname.includes("savings-plan")
+                  ? "menu-item-icon-active"
+                  : "menu-item-icon-inactive"
+              )}>
+                <svg
+                  className="fill-current"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M9 1.5C4.85786 1.5 1.5 4.85786 1.5 9C1.5 13.1421 4.85786 16.5 9 16.5C13.1421 16.5 16.5 13.1421 16.5 9C16.5 4.85786 13.1421 1.5 9 1.5ZM9 15C5.68629 15 3 12.3137 3 9C3 5.68629 5.68629 3 9 3C12.3137 3 15 5.68629 15 9C15 12.3137 12.3137 15 9 15Z"
+                    fill=""
+                  />
+                  <path
+                    d="M9 12C10.6569 12 12 10.6569 12 9C12 7.34315 10.6569 6 9 6C7.34315 6 6 7.34315 6 9C6 10.6569 7.34315 12 9 12Z"
+                    fill=""
+                  />
+                </svg>
+              </div>
+              {isWide && <span className="menu-item-text">저축 플랜</span>}
+            </Link>
+
+            <Link
+              href="/assets"
+              className={cn(
+                "menu-item",
+                pathname.includes("assets")
+                  ? "menu-item-active"
+                  : "menu-item-inactive"
+              )}
+            >
+              <div className={cn(
+                pathname.includes("assets")
+                  ? "menu-item-icon-active"
+                  : "menu-item-icon-inactive"
+              )}>
+                <svg
+                  className="fill-current"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M15.75 4.5H2.25C1.63125 4.5 1.125 5.00625 1.125 5.625V13.5C1.125 14.1187 1.63125 14.625 2.25 14.625H15.75C16.3688 14.625 16.875 14.1187 16.875 13.5V5.625C16.875 5.00625 16.3688 4.5 15.75 4.5ZM15.75 13.5H2.25V6.75H15.75V13.5ZM15.75 5.625H2.25V5.625H15.75V5.625Z"
+                    fill=""
+                  />
+                  <path
+                    d="M15.75 3.375H2.25C1.8375 3.375 1.5 3.7125 1.5 4.125H16.5C16.5 3.7125 16.1625 3.375 15.75 3.375Z"
+                    fill=""
+                  />
+                  <path d="M12 9.375H14.25V10.5H12V9.375Z" fill="" />
+                </svg>
+              </div>
+              {isWide && <span className="menu-item-text">자산 관리</span>}
+            </Link>
+
+            <Link
               href="/settings"
               className={cn(
                 "menu-item",
