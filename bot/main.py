@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from bot.expense_parser import ExpenseParser
-# from bot.db import create_pool, insert_transaction # DB 연동 시 사용
+from bot.db import create_pool, insert_transaction
 
 load_dotenv()
 
@@ -34,13 +34,16 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 expense_parser = None
+db_pool = None
 
 @client.event
 async def on_ready():
-    global expense_parser
+    global expense_parser, db_pool
     # .env 등에 저장된 API 키를 가져오거나 기본 설정 사용
     expense_parser = ExpenseParser()
+    db_pool = await create_pool()
     print(f"Bot logged in as {client.user}")
+    print(f"DB pool created")
 
 @client.event
 async def on_message(message):
@@ -56,6 +59,10 @@ async def on_message(message):
                 try:
                     image_bytes = await attachment.read()
                     result = expense_parser.analyze(image_bytes)
+
+                    # Skip DB insert if Gemini parsing failed
+                    if 'error' not in result:
+                        await insert_transaction(db_pool, result)
 
                     embed = discord.Embed(
                         title=f"{result.get('title', '지출 내역 확인')}",
