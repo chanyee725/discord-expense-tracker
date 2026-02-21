@@ -5,7 +5,7 @@ Uses asyncpg for PostgreSQL connectivity with raw SQL.
 """
 
 import os
-from typing import Optional
+from typing import Any
 import asyncpg
 
 
@@ -26,33 +26,36 @@ async def create_pool() -> asyncpg.Pool:
     return await asyncpg.create_pool(dsn)
 
 
-async def insert_transaction(pool: asyncpg.Pool, data: dict) -> None:
+async def insert_transaction(pool: asyncpg.Pool, data: dict[str, Any]) -> None:
     """
     Insert transaction record into database.
     
     Args:
         pool: asyncpg connection pool
-        data: Transaction data dict with keys:
-              - amount (int, required)
-              - merchant (str, optional)
-              - category (str, optional)
-              - raw_ocr_text (str, optional)
-              - transacted_at (datetime, optional)
+        data: Transaction data dict from Gemini JSON with keys:
+              - title (str, optional): Transaction title
+              - amount (int or str, required): Transaction amount (coerced to int)
+              - category (str, optional): Transaction category
+              - deposit_destination (str, optional): Deposit destination account
+              - withdrawal_source (str, optional): Withdrawal source account
+              - transaction_date (str, optional): Transaction date as Korean string
+              - raw_ocr_text (str, optional): Raw OCR text for debugging
               
     Note:
-        - direction defaults to 'EXPENSE' (schema default)
-        - source defaults to NULL (schema allows NULL)
-        - created_at auto-set by database
+        - amount coerced to int to handle Gemini string/int variation
+        - created_at auto-set by database with now()
+        - All fields use .get() with defaults to handle missing keys gracefully
     """
     await pool.execute(
         """
-        INSERT INTO transactions (amount, merchant, category, direction, raw_ocr_text, transacted_at)
-        VALUES ($1, $2, $3, $4, $5, $6)
+        INSERT INTO transactions (title, amount, category, deposit_destination, withdrawal_source, transaction_date, raw_ocr_text)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
         """,
-        data.get('amount'),
-        data.get('merchant'),
+        data.get('title'),
+        int(data.get('amount', 0)),
         data.get('category'),
-        'EXPENSE',
-        data.get('raw_ocr_text'),
-        data.get('transacted_at')
+        data.get('deposit_destination'),
+        data.get('withdrawal_source'),
+        data.get('transaction_date'),
+        data.get('raw_ocr_text')
     )
