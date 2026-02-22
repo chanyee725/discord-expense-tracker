@@ -13,32 +13,15 @@ interface CalendarTransaction extends Omit<Transaction, "created_at"> {
 interface CalendarViewProps {
   transactions: CalendarTransaction[];
   currentDate: string;
+  categories: string[];
   totalIncome: number;
   totalExpense: number;
 }
 
-const CATEGORIES = [
-  "식비",
-  "쇼핑",
-  "장보기",
-  "공과금",
-  "문화생활",
-  "의료",
-  "교통",
-  "구독료",
-  "생활용품",
-  "선물",
-  "여행",
-  "주거",
-  "통신",
-  "보험",
-  "교육",
-  "기타",
-];
-
 export default function CalendarView({
   transactions,
   currentDate,
+  categories,
   totalIncome,
   totalExpense,
 }: CalendarViewProps) {
@@ -357,12 +340,12 @@ export default function CalendarView({
                   className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
                 >
                   <option value="">선택하기</option>
-                  {CATEGORIES.map((cat) => (
+                  {categories.map((cat) => (
                     <option key={cat} value={cat}>
                       {cat}
                     </option>
                   ))}
-                  {editFormData.category && !CATEGORIES.includes(editFormData.category) && (
+                  {editFormData.category && !categories.includes(editFormData.category) && (
                     <option key={editFormData.category} value={editFormData.category}>
                       {editFormData.category}
                     </option>

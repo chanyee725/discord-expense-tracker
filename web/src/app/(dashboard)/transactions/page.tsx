@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { getTransactionsByMonth, getMonthlyTransactionStats } from "@/lib/queries";
+import { getTransactionsByMonth, getMonthlyTransactionStats, getCategories } from "@/lib/queries";
 import CalendarView from "@/components/Calendar/CalendarView";
 import dayjs from "dayjs";
 
@@ -28,6 +28,13 @@ export default async function TransactionsPage({
   const transactions = await getTransactionsByMonth(yearParam, monthParam);
   
   const monthlyStats = await getMonthlyTransactionStats(yearParam, monthParam);
+  
+  const categories = await getCategories('expense');
+  const categoryNames = categories.map(c => c.name);
+  
+  const totalIncome = transactions
+    .filter(t => t.deposit_destination)
+    .reduce((sum, t) => sum + t.amount, 0);
 
   const serializedTransactions = transactions.map((t) => ({
     ...t,
@@ -46,7 +53,8 @@ export default async function TransactionsPage({
         <CalendarView 
           transactions={serializedTransactions} 
           currentDate={currentDate} 
-          totalIncome={0}
+          categories={categoryNames}
+          totalIncome={totalIncome}
           totalExpense={monthlyStats.total_expense}
         />
       </div>
