@@ -71,7 +71,7 @@ export default function AssetsPage() {
         const seriesData = Array(12).fill(0);
         data.forEach((item) => {
           if (item.month >= 1 && item.month <= 12) {
-            seriesData[item.month - 1] = Math.round(item.total_balance / 10000);
+            seriesData[item.month - 1] = item.total_balance / 10000;
           }
         });
         setChartData(seriesData);
