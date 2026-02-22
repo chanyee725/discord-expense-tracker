@@ -39,6 +39,7 @@ export async function getTransactions(
       deposit_destination,
       withdrawal_source,
       transaction_date,
+      raw_ocr_text,
       created_at
     FROM transactions
     ORDER BY created_at DESC
@@ -173,6 +174,7 @@ export async function getRecentTransactions(
       deposit_destination,
       withdrawal_source,
       transaction_date,
+      raw_ocr_text,
       created_at
     FROM transactions
     ORDER BY created_at DESC
@@ -197,6 +199,7 @@ export async function getTransactionsByMonth(
       deposit_destination,
       withdrawal_source,
       transaction_date,
+      raw_ocr_text,
       created_at
     FROM transactions
     WHERE
@@ -308,3 +311,56 @@ export async function getMonthlyAssetGrowth(
 
   return fullYear;
 }
+
+/**
+ * Update a transaction with partial data
+ * Only updates the provided fields; missing fields are left unchanged
+ * Returns the updated transaction record
+ */
+export async function updateTransaction(
+  id: string,
+  data: Partial<Pick<Transaction, 'title' | 'amount' | 'category' | 'transaction_date' | 'raw_ocr_text'>>
+): Promise<Transaction | null> {
+  const { title, amount, category, transaction_date, raw_ocr_text } = data;
+
+  const result = await sql<[Transaction | undefined]>`
+    UPDATE transactions
+    SET
+      title = ${title ?? sql`title`},
+      amount = ${amount ?? sql`amount`},
+      category = ${category ?? sql`category`},
+      transaction_date = ${transaction_date ?? sql`transaction_date`},
+      raw_ocr_text = ${raw_ocr_text ?? sql`raw_ocr_text`}
+    WHERE id = ${id}
+    RETURNING
+      id, title, amount, category, deposit_destination, withdrawal_source, transaction_date, raw_ocr_text, created_at
+  `;
+
+  return result[0] ?? null;
+}
+
+/**
+ * Delete a transaction by ID
+ * Returns the deleted transaction record
+ */
+export async function deleteTransaction(
+  id: string
+): Promise<Transaction | null> {
+  const result = await sql<[Transaction | undefined]>`
+    DELETE FROM transactions
+    WHERE id = ${id}
+    RETURNING
+      id,
+      title,
+      amount,
+      category,
+      deposit_destination,
+      withdrawal_source,
+      transaction_date,
+      raw_ocr_text,
+      created_at
+  `;
+
+  return result[0] ?? null;
+}
+
