@@ -33,7 +33,7 @@ export default async function TransactionsPage({
   const categoryNames = categories.map(c => c.name);
   
   const totalIncome = transactions
-    .filter(t => t.deposit_destination)
+    .filter(t => t.type === "수입")
     .reduce((sum, t) => sum + t.amount, 0);
 
   const serializedTransactions = transactions.map((t) => ({
