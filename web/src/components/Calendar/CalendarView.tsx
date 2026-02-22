@@ -4,6 +4,7 @@ import { useState } from "react";
 import dayjs from "dayjs";
 import { Transaction } from "@/types/transaction";
 import { useRouter } from "next/navigation";
+import { updateTransactionAction, deleteTransactionAction } from "@/app/(dashboard)/transactions/actions";
 
 interface CalendarTransaction extends Omit<Transaction, "created_at"> {
   created_at: string;
@@ -14,7 +15,24 @@ interface CalendarViewProps {
   currentDate: string;
 }
 
-const CATEGORIES = ["주거", "구독", "통신", "보험", "교통", "교육", "기타"];
+const CATEGORIES = [
+  "식비",
+  "쇼핑",
+  "장보기",
+  "공과금",
+  "문화생활",
+  "의료",
+  "교통",
+  "구독료",
+  "생활용품",
+  "선물",
+  "여행",
+  "주거",
+  "통신",
+  "보험",
+  "교육",
+  "기타",
+];
 
 export default function CalendarView({
   transactions,
@@ -63,19 +81,38 @@ export default function CalendarView({
     setIsEditPanelOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!editingTransaction) return;
-    alert("저장되었습니다 (DB 연동 예정)");
-    setIsEditPanelOpen(false);
-    setEditingTransaction(null);
-  };
-
-  const handleDelete = () => {
-    if (!editingTransaction) return;
-    if (confirm("정말 삭제하시겠습니까?")) {
-      alert("삭제되었습니다 (DB 연동 예정)");
+    
+    const result = await updateTransactionAction(editingTransaction.id, {
+      title: editFormData.title,
+      amount: editFormData.amount,
+      category: editFormData.category,
+      transaction_date: editFormData.transaction_date,
+      raw_ocr_text: editFormData.raw_ocr_text,
+    });
+    
+    if (result.success) {
       setIsEditPanelOpen(false);
       setEditingTransaction(null);
+      router.refresh();
+    } else {
+      alert("저장에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!editingTransaction) return;
+    if (!confirm("정말 삭제하시겠습니까?")) return;
+    
+    const result = await deleteTransactionAction(editingTransaction.id);
+    
+    if (result.success) {
+      setIsEditPanelOpen(false);
+      setEditingTransaction(null);
+      router.refresh();
+    } else {
+      alert("삭제에 실패했습니다.");
     }
   };
 
@@ -244,22 +281,17 @@ export default function CalendarView({
 
             {/* Panel Content - Form */}
             <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-              {/* Date Field */}
+              {/* Date Field - Read-only */}
               <div>
                 <label className="mb-2 block text-sm font-medium text-black">
                   날짜
                 </label>
-                <input
-                  type="date"
-                  value={editFormData.transaction_date}
-                  onChange={(e) =>
-                    setEditFormData({
-                      ...editFormData,
-                      transaction_date: e.target.value,
-                    })
-                  }
-                  className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
-                />
+                <div className="text-black">
+                  {editFormData.transaction_date}
+                </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  (실제 기록일: {dayjs(editingTransaction.created_at).format("YYYY.MM.DD")})
+                </div>
               </div>
 
               {/* Name Field */}
@@ -319,24 +351,24 @@ export default function CalendarView({
                       {cat}
                     </option>
                   ))}
+                  {editFormData.category && !CATEGORIES.includes(editFormData.category) && (
+                    <option key={editFormData.category} value={editFormData.category}>
+                      {editFormData.category}
+                    </option>
+                  )}
                 </select>
               </div>
 
-              {/* Memo Field */}
+              {/* Memo Field - Read-only */}
               <div>
                 <label className="mb-2 block text-sm font-medium text-black">
-                  메모
+                  원본 OCR 텍스트
                 </label>
                 <textarea
                   value={editFormData.raw_ocr_text}
-                  onChange={(e) =>
-                    setEditFormData({
-                      ...editFormData,
-                      raw_ocr_text: e.target.value,
-                    })
-                  }
+                  readOnly
                   rows={4}
-                  className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
+                  className="w-full rounded border border-stroke bg-gray-50 py-2 px-3 text-black outline-none"
                 />
               </div>
             </div>
