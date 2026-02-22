@@ -322,13 +322,22 @@ export default function AssetsPage() {
       </div>
 
       <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-default md:p-6">
-        <div className="mb-4 justify-between gap-4 sm:flex">
-          <div>
-            <h4 className="text-xl font-semibold text-gray-800">
-              월별 자산 증가 추이
-            </h4>
-          </div>
-        </div>
+         <div className="mb-4 justify-between gap-4 sm:flex">
+           <div>
+             <h4 className="text-xl font-semibold text-gray-800">
+               월별 자산 증가 추이
+             </h4>
+           </div>
+           
+           <div className="mt-3 sm:mt-0">
+             <button
+               onClick={() => { setEditingAccount(null); setIsPanelOpen(true); }}
+               className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors shadow-sm"
+             >
+               자산 관리
+             </button>
+           </div>
+         </div>
 
         <div>
           <div id="assetChart" className="-ml-5">
@@ -347,176 +356,191 @@ export default function AssetsPage() {
               <div className="flex h-[350px] items-center justify-center text-gray-500">
                 아직 기록된 자산 데이터가 없습니다
               </div>
-            )}
-          </div>
-        </div>
-      </div>
+             )}
+           </div>
+         </div>
+       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden mt-6">
-        <div className="border-b border-gray-200 px-6 py-4 flex justify-between items-center bg-gray-50/50">
-          <h3 className="font-semibold text-gray-800">계좌 목록</h3>
-          <button
-            onClick={handleAddAccount}
-            className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors shadow-sm"
-          >
-            <span>+</span>
-            <span>계좌 추가</span>
-          </button>
-        </div>
+       {isPanelOpen && (
+         <div
+           className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-40 transition-opacity duration-300"
+           onClick={handleClosePanelWithDelay}
+         />
+       )}
 
-        <div className="divide-y divide-gray-100">
-          {bankAccounts.length === 0 ? (
-            <div className="p-12 text-center">
-              <div className="text-4xl mb-3">🏦</div>
-              <div className="text-gray-500">등록된 계좌가 없습니다.</div>
-              <div className="text-sm text-gray-400 mt-1">새로운 계좌를 추가해보세요.</div>
-            </div>
-          ) : (
-            bankAccounts.map((account) => (
-              <div
-                key={account.id}
-                onClick={() => handleEditAccount(account)}
-                className="group flex items-center justify-between p-5 hover:bg-gray-50 cursor-pointer transition-all duration-200"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-xl shadow-sm border border-gray-100">
-                    {BANK_ICONS[account.bankName] || "🏦"}
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-900 mb-0.5">{account.accountName}</div>
-                    <div className="text-xs font-medium text-gray-500">{account.bankName}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-5">
-                  <div className="font-bold text-lg text-blue-600">
-                    {formatNumber(account.balance)}원
-                  </div>
-                  <div className="text-gray-300 group-hover:text-gray-600 transition-colors transform group-hover:translate-x-1 duration-200">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+       <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none ${isPanelOpen ? "pointer-events-auto" : ""}`}>
+         <div
+           className={`bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden transform transition-all duration-300 ${
+             isPanelOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
+           }`}
+         >
+         {editingAccount ? (
+           <div className="flex flex-col h-full bg-white">
+             <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-white z-10">
+               <div>
+                 <h3 className="text-xl font-bold text-gray-900">계좌 편집</h3>
+                 <p className="text-xs text-gray-500 mt-0.5">계좌 정보를 입력합니다</p>
+               </div>
+               <button
+                 onClick={handleClosePanelWithDelay}
+                 className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+               >
+                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                 </svg>
+               </button>
+             </div>
 
-        {bankAccounts.length > 0 && (
-          <div className="px-6 py-4 bg-gray-50/50 border-t border-gray-200">
-            <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold text-gray-600">총 자산</div>
-              <div className="text-2xl font-bold text-gray-900">{calculateTotalAssets()}원</div>
-            </div>
-          </div>
-        )}
-      </div>
+             <div className="flex-1 overflow-y-auto p-6 space-y-8">
+               <div className="space-y-3">
+                 <label className="text-sm font-semibold text-gray-700 block">은행</label>
+                 <div className="relative">
+                   <select
+                     value={editingAccount.bankName}
+                     onChange={(e) => updateAccountField("bankName", e.target.value)}
+                     className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none appearance-none bg-gray-50/50 focus:bg-white"
+                   >
+                     {BANK_OPTIONS.map((bank) => (
+                       <option key={bank} value={bank}>
+                         {bank}
+                       </option>
+                     ))}
+                   </select>
+                   <div className="absolute right-4 top-4 text-gray-400 pointer-events-none">
+                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                     </svg>
+                   </div>
+                 </div>
+               </div>
 
-      {isPanelOpen && (
-        <div
-          className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-40 transition-opacity duration-300"
-          onClick={handleClosePanelWithDelay}
-        />
-      )}
+               <div className="space-y-3">
+                 <label className="text-sm font-semibold text-gray-700 block">계좌 이름</label>
+                 <input
+                   type="text"
+                   value={editingAccount.accountName}
+                   onChange={(e) => updateAccountField("accountName", e.target.value)}
+                   placeholder="예: 급여계좌"
+                   className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
+                 />
+               </div>
 
-      <div
-        className={`fixed top-0 right-0 h-full w-full sm:w-[420px] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out border-l border-gray-100 ${
-          isPanelOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        {editingAccount && (
-          <div className="flex flex-col h-full bg-white">
-            <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-white z-10">
-              <div>
-                <h3 className="text-xl font-bold text-gray-900">계좌 편집</h3>
-                <p className="text-xs text-gray-500 mt-0.5">계좌 정보를 입력합니다</p>
-              </div>
-              <button
-                onClick={handleClosePanelWithDelay}
-                className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
+               <div className="space-y-3">
+                 <label className="text-sm font-semibold text-gray-700 block">잔액</label>
+                 <div className="relative">
+                   <input
+                     type="number"
+                     value={editingAccount.balance}
+                     onChange={(e) => updateAccountField("balance", e.target.value)}
+                     placeholder="0"
+                     className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
+                   />
+                   <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">원</div>
+                 </div>
+                 {editingAccount.balance && parseInt(editingAccount.balance) > 0 && (
+                   <div className="flex justify-end mt-2">
+                     <span className="text-sm font-bold text-brand-600 bg-brand-50 px-3 py-1 rounded-lg">
+                       {formatNumber(editingAccount.balance)}원
+                     </span>
+                   </div>
+                 )}
+               </div>
+             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-8">
-              <div className="space-y-3">
-                <label className="text-sm font-semibold text-gray-700 block">은행</label>
-                <div className="relative">
-                  <select
-                    value={editingAccount.bankName}
-                    onChange={(e) => updateAccountField("bankName", e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none appearance-none bg-gray-50/50 focus:bg-white"
-                  >
-                    {BANK_OPTIONS.map((bank) => (
-                      <option key={bank} value={bank}>
-                        {bank}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="absolute right-4 top-4 text-gray-400 pointer-events-none">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
+             <div className="p-6 border-t border-gray-100 bg-white z-10 pb-8">
+               <div className="flex flex-col gap-3">
+                 <button
+                   onClick={handleSaveAccount}
+                   className="w-full rounded-xl bg-gray-900 py-4 text-sm font-bold text-white shadow-lg shadow-gray-900/10 hover:bg-gray-800 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
+                 >
+                   저장하기
+                 </button>
 
-              <div className="space-y-3">
-                <label className="text-sm font-semibold text-gray-700 block">계좌 이름</label>
-                <input
-                  type="text"
-                  value={editingAccount.accountName}
-                  onChange={(e) => updateAccountField("accountName", e.target.value)}
-                  placeholder="예: 급여계좌"
-                  className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
-                />
-              </div>
+                 <button
+                   onClick={handleDeleteAccount}
+                   className="w-full rounded-xl py-3 text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                 >
+                   삭제하기
+                 </button>
+               </div>
+             </div>
+           </div>
+         ) : (
+           <div className="flex flex-col h-full bg-white">
+             <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-white z-10">
+               <div>
+                 <h3 className="text-xl font-bold text-gray-900">계좌 관리</h3>
+                 <p className="text-xs text-gray-500 mt-0.5">계좌를 관리합니다</p>
+               </div>
+               <button
+                 onClick={handleClosePanelWithDelay}
+                 className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+               >
+                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                 </svg>
+               </button>
+             </div>
 
-              <div className="space-y-3">
-                <label className="text-sm font-semibold text-gray-700 block">잔액</label>
-                <div className="relative">
-                  <input
-                    type="number"
-                    value={editingAccount.balance}
-                    onChange={(e) => updateAccountField("balance", e.target.value)}
-                    placeholder="0"
-                    className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
-                  />
-                  <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">원</div>
-                </div>
-                {editingAccount.balance && parseInt(editingAccount.balance) > 0 && (
-                  <div className="flex justify-end mt-2">
-                    <span className="text-sm font-bold text-brand-600 bg-brand-50 px-3 py-1 rounded-lg">
-                      {formatNumber(editingAccount.balance)}원
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
+             <div className="flex-1 overflow-y-auto p-6">
+               {bankAccounts.length === 0 ? (
+                 <div className="p-12 text-center">
+                   <div className="text-4xl mb-3">🏦</div>
+                   <div className="text-gray-500">등록된 계좌가 없습니다.</div>
+                   <div className="text-sm text-gray-400 mt-1">새로운 계좌를 추가해보세요.</div>
+                 </div>
+               ) : (
+                 <div className="space-y-3">
+                   {bankAccounts.map((account) => (
+                     <div
+                       key={account.id}
+                       onClick={() => handleEditAccount(account)}
+                       className="group flex items-center justify-between p-5 rounded-xl hover:bg-gray-50 cursor-pointer transition-all duration-200 border border-gray-100"
+                     >
+                       <div className="flex items-center gap-4">
+                         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-xl shadow-sm border border-gray-100">
+                           {BANK_ICONS[account.bankName] || "🏦"}
+                         </div>
+                         <div>
+                           <div className="font-semibold text-gray-900 mb-0.5">{account.accountName}</div>
+                           <div className="text-xs font-medium text-gray-500">{account.bankName}</div>
+                         </div>
+                       </div>
+                       <div className="flex items-center gap-5">
+                         <div className="font-bold text-lg text-blue-600">{formatNumber(account.balance)}원</div>
+                         <div className="text-gray-300 group-hover:text-gray-600 transition-colors">
+                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                           </svg>
+                         </div>
+                       </div>
+                     </div>
+                   ))}
+                 </div>
+               )}
 
-            <div className="p-6 border-t border-gray-100 bg-white z-10 pb-8">
-              <div className="flex flex-col gap-3">
-                <button
-                  onClick={handleSaveAccount}
-                  className="w-full rounded-xl bg-gray-900 py-4 text-sm font-bold text-white shadow-lg shadow-gray-900/10 hover:bg-gray-800 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
-                >
-                  저장하기
-                </button>
+               {bankAccounts.length > 0 && (
+                 <div className="mt-6 p-5 rounded-xl bg-gray-50 border border-gray-200">
+                   <div className="flex items-center justify-between">
+                     <div className="text-sm font-semibold text-gray-600">총 자산</div>
+                     <div className="text-2xl font-bold text-gray-900">{calculateTotalAssets()}원</div>
+                   </div>
+                 </div>
+               )}
+             </div>
 
-                <button
-                  onClick={handleDeleteAccount}
-                  className="w-full rounded-xl py-3 text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors"
-                >
-                  삭제하기
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+             <div className="p-6 border-t border-gray-100 bg-white z-10 pb-8">
+               <button
+                 onClick={handleAddAccount}
+                 className="w-full rounded-xl bg-gray-900 py-4 text-sm font-bold text-white shadow-lg shadow-gray-900/10 hover:bg-gray-800 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
+               >
+                 계좌 추가
+               </button>
+             </div>
+           </div>
+         )}
+       </div>
+     </div>
     </div>
   );
 }

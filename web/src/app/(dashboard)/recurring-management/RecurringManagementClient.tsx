@@ -327,11 +327,12 @@ export default function RecurringManagementClient({
         />
       )}
 
-      <div 
-        className={`fixed top-0 right-0 h-full w-full sm:w-[420px] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out border-l border-gray-100 ${
-          isPanelOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
+      <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none ${isPanelOpen ? "pointer-events-auto" : ""}`}>
+        <div 
+          className={`bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden transform transition-all duration-300 ${
+            isPanelOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
+          }`}
+        >
         {editingItem && (
           <div className="flex flex-col h-full bg-white">
             <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-white z-10">
@@ -466,6 +467,7 @@ export default function RecurringManagementClient({
           </div>
         )}
       </div>
+     </div>
     </div>
   );
 }
