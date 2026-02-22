@@ -364,3 +364,26 @@ export async function deleteTransaction(
   return result[0] ?? null;
 }
 
+/**
+ * Get transactions for a specific category and month
+ * Uses created_at for reliable date filtering
+ */
+export async function getTransactionsByCategory(
+  year: number,
+  month: number,
+  category: string
+): Promise<Transaction[]> {
+  return sql<Transaction[]>`
+    SELECT
+      id, title, amount, category, deposit_destination, withdrawal_source,
+      transaction_date, raw_ocr_text, created_at
+    FROM transactions
+    WHERE
+      EXTRACT(YEAR FROM created_at) = ${year}
+      AND EXTRACT(MONTH FROM created_at) = ${month}
+      AND category = ${category}
+    ORDER BY created_at DESC
+  `;
+}
+
+

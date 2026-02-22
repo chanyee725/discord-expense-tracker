@@ -14,11 +14,13 @@ interface DailyExpenseChartProps {
     data: number[];
   }[];
   categories: string[];
+  title?: string;
 }
 
 const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
   series,
   categories,
+  title,
 }) => {
   const options: ApexOptions = {
     legend: {
@@ -141,7 +143,7 @@ const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
       <div className="mb-3 justify-between gap-4 sm:flex">
         <div>
           <h4 className="text-lg font-semibold text-gray-800">
-            일별 지출 패턴 (이번 달)
+            {title || "일별 지출 패턴 (이번 달)"}
           </h4>
         </div>
       </div>

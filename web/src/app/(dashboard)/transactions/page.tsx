@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { getTransactionsByMonth } from "@/lib/queries";
+import { getTransactionsByMonth, getMonthlyTransactionStats } from "@/lib/queries";
 import CalendarView from "@/components/Calendar/CalendarView";
 import dayjs from "dayjs";
 
@@ -26,6 +26,8 @@ export default async function TransactionsPage({
 
   // Fetch transactions for the specified month
   const transactions = await getTransactionsByMonth(yearParam, monthParam);
+  
+  const monthlyStats = await getMonthlyTransactionStats(yearParam, monthParam);
 
   const serializedTransactions = transactions.map((t) => ({
     ...t,
@@ -41,7 +43,12 @@ export default async function TransactionsPage({
       </div>
 
       <div className="flex flex-col gap-5">
-        <CalendarView transactions={serializedTransactions} currentDate={currentDate} />
+        <CalendarView 
+          transactions={serializedTransactions} 
+          currentDate={currentDate} 
+          totalIncome={0}
+          totalExpense={monthlyStats.total_expense}
+        />
       </div>
     </div>
   );

@@ -13,6 +13,8 @@ interface CalendarTransaction extends Omit<Transaction, "created_at"> {
 interface CalendarViewProps {
   transactions: CalendarTransaction[];
   currentDate: string;
+  totalIncome: number;
+  totalExpense: number;
 }
 
 const CATEGORIES = [
@@ -37,6 +39,8 @@ const CATEGORIES = [
 export default function CalendarView({
   transactions,
   currentDate,
+  totalIncome,
+  totalExpense,
 }: CalendarViewProps) {
   const router = useRouter();
   const current = dayjs(currentDate);
@@ -129,7 +133,11 @@ export default function CalendarView({
         <h3 className="font-medium text-black">
           {monthName}
         </h3>
-        <div className="flex space-x-2">
+        <div className="flex items-center gap-4">
+          <div className="text-sm text-gray-600">
+            수입 {totalIncome.toLocaleString('ko-KR')}원 | 지출 {totalExpense.toLocaleString('ko-KR')}원
+          </div>
+          <div className="flex space-x-2">
           <button
             onClick={handlePrevMonth}
             className="flex h-8 w-8 items-center justify-center rounded hover:bg-gray-100"
@@ -143,6 +151,7 @@ export default function CalendarView({
             →
           </button>
         </div>
+      </div>
       </div>
 
       <div className="p-4">

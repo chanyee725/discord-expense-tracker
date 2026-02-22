@@ -11,11 +11,13 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 interface CategoryDonutChartProps {
   series: number[];
   labels: string[];
+  centerLabel?: string;
 }
 
 const CategoryDonutChart: React.FC<CategoryDonutChartProps> = ({
   series,
   labels,
+  centerLabel,
 }) => {
   const options: ApexOptions = {
     chart: {
@@ -66,7 +68,7 @@ const CategoryDonutChart: React.FC<CategoryDonutChartProps> = ({
             },
             total: {
               show: true,
-              label: "총 지출",
+              label: centerLabel || "총 지출",
               color: "#667085",
               fontFamily: "Outfit, sans-serif",
               formatter: function (w) {

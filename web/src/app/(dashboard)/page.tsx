@@ -10,15 +10,30 @@ import MonthlyExpenseChart from "@/components/Charts/MonthlyExpenseChart";
 import CategoryDonutChart from "@/components/Charts/CategoryDonutChart";
 import DailyExpenseChart from "@/components/Charts/DailyExpenseChart";
 import MonthlyExpenseCard from "@/components/Dashboard/MonthlyExpenseCard";
+import MonthSelector from "@/components/Dashboard/MonthSelector";
 import dayjs from "dayjs";
 
 export const dynamic = "force-dynamic";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ selectedYear?: string; selectedMonth?: string }>;
+}) {
+  const params = await searchParams;
   const now = dayjs();
   const currentYear = now.year();
   const currentMonth = now.month() + 1;
-  const daysInMonth = now.daysInMonth();
+
+  const selectedYear = params.selectedYear
+    ? Number(params.selectedYear)
+    : currentYear;
+  const selectedMonth = params.selectedMonth
+    ? Number(params.selectedMonth)
+    : currentMonth;
+
+  const selectedDate = dayjs(`${selectedYear}-${selectedMonth}-01`);
+  const daysInSelectedMonth = selectedDate.daysInMonth();
 
   const [
     monthlyStats,
@@ -29,11 +44,11 @@ export default async function DashboardPage() {
     prevYearMonthlyExpenses,
     prevYearMonthlyIncome,
   ] = await Promise.all([
-    getMonthlyTransactionStats(currentYear, currentMonth),
+    getMonthlyTransactionStats(selectedYear, selectedMonth),
     getMonthlyExpenses(currentYear),
     getMonthlyIncome(currentYear),
-    getCategoryBreakdown(currentYear, currentMonth),
-    getDailyExpenses(currentYear, currentMonth),
+    getCategoryBreakdown(selectedYear, selectedMonth),
+    getDailyExpenses(selectedYear, selectedMonth),
     currentMonth < 6
       ? getMonthlyExpenses(currentYear - 1)
       : Promise.resolve([]),
@@ -89,10 +104,10 @@ export default async function DashboardPage() {
   const categoryLabels = topCategories.map((c) => c.category || "미분류");
 
   const dailyChartCategories = Array.from(
-    { length: daysInMonth },
+    { length: daysInSelectedMonth },
     (_, i) => `${i + 1}일`
   );
-  const dailyChartData = Array.from({ length: daysInMonth }, (_, i) => {
+  const dailyChartData = Array.from({ length: daysInSelectedMonth }, (_, i) => {
     const day = i + 1;
     const found = dailyExpenses.find((d) => d.day === day);
     return found ? found.total : 0;
@@ -100,8 +115,10 @@ export default async function DashboardPage() {
 
   const totalExpense = monthlyStats.total_expense;
   const transactionCount = monthlyStats.transaction_count;
-  const dailyAverage =
-    now.date() > 0 ? Math.round(totalExpense / now.date()) : 0;
+  const isCurrentMonth =
+    selectedYear === currentYear && selectedMonth === currentMonth;
+  const divider = isCurrentMonth ? now.date() : daysInSelectedMonth;
+  const dailyAverage = divider > 0 ? Math.round(totalExpense / divider) : 0;
   const topCategoryName =
     categoryBreakdown.length > 0
       ? categoryBreakdown[0].category || "미분류"
@@ -111,7 +128,8 @@ export default async function DashboardPage() {
 
   return (
     <div className="grid grid-cols-12 gap-4 md:gap-6">
-      <div className="col-span-12 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 md:gap-6">
+      <div className="col-span-12 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5 md:gap-6">
+        <MonthSelector />
         <MonthlyExpenseCard totalExpense={totalExpense} />
         <Card
           title="이번 달 거래 건수"
@@ -184,6 +202,7 @@ export default async function DashboardPage() {
             <DailyExpenseChart
               series={[{ name: "지출", data: dailyChartData }]}
               categories={dailyChartCategories}
+              title={`일별 지출 (${selectedYear}년 ${selectedMonth}월)`}
             />
           </div>
           <div className="col-span-12 xl:col-span-5">
