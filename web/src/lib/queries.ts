@@ -22,6 +22,45 @@ export interface AccountBalanceHistory {
 }
 
 /**
+ * Bank account record from bank_accounts table
+ */
+export interface BankAccountRow {
+  id: string;
+  bank_name: string;
+  account_name: string;
+  balance: number;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Category record from categories table
+ */
+export interface CategoryRow {
+  id: string;
+  name: string;
+  type: string;  // 'expense' | 'income' | 'both'
+  sort_order: number;
+  created_at: string;
+}
+
+/**
+ * Recurring transaction template from recurring_transactions table
+ */
+export interface RecurringTransactionRow {
+  id: string;
+  type: string;  // 'expense' | 'income'
+  day_of_month: number;
+  name: string;
+  amount: number;
+  category: string | null;
+  bank_account: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
  * Get paginated list of transactions ordered by creation date (newest first)
  */
 export async function getTransactions(
@@ -59,13 +98,14 @@ export async function getMonthlyTransactionStats(
   const result = await sql<
     [{ total_expense: number | null; transaction_count: number }]
   >`
-    SELECT
-      SUM(amount)::int as total_expense,
-      COUNT(*)::int as transaction_count
-    FROM transactions
-    WHERE
-      EXTRACT(YEAR FROM created_at) = ${year}
-      AND EXTRACT(MONTH FROM created_at) = ${month}
+     SELECT
+       SUM(amount)::int as total_expense,
+       COUNT(*)::int as transaction_count
+     FROM transactions
+     WHERE
+       EXTRACT(YEAR FROM created_at) = ${year}
+       AND EXTRACT(MONTH FROM created_at) = ${month}
+       AND deposit_destination IS NULL
   `;
 
   return {
@@ -98,6 +138,7 @@ export async function getMonthlyExpenses(
       SUM(amount)::int as total
     FROM transactions
     WHERE EXTRACT(YEAR FROM created_at) = ${year}
+      AND deposit_destination IS NULL
     GROUP BY month
     ORDER BY month ASC
   `;
@@ -111,9 +152,16 @@ export async function getMonthlyExpenses(
 export async function getMonthlyIncome(
   year: number
 ): Promise<Array<{ month: number; total: number }>> {
-  // Placeholder for future income tracking
-  // When income transactions are supported, query here for positive amounts or specific category
-  return [];
+  return sql<Array<{ month: number; total: number }>>`
+    SELECT
+      EXTRACT(MONTH FROM created_at)::int as month,
+      SUM(amount)::int as total
+    FROM transactions
+    WHERE EXTRACT(YEAR FROM created_at) = ${year}
+      AND deposit_destination IS NOT NULL
+    GROUP BY month
+    ORDER BY month ASC
+  `;
 }
 
 /**
@@ -132,6 +180,7 @@ export async function getCategoryBreakdown(
     WHERE
       EXTRACT(YEAR FROM created_at) = ${year}
       AND EXTRACT(MONTH FROM created_at) = ${month}
+      AND deposit_destination IS NULL
     GROUP BY category
     ORDER BY total DESC
   `;
@@ -153,6 +202,7 @@ export async function getDailyExpenses(
     WHERE
       EXTRACT(YEAR FROM created_at) = ${year}
       AND EXTRACT(MONTH FROM created_at) = ${month}
+      AND deposit_destination IS NULL
     GROUP BY day
     ORDER BY day ASC
   `;
@@ -386,4 +436,193 @@ export async function getTransactionsByCategory(
   `;
 }
 
+// ============================================
+// App Settings
+// ============================================
 
+/**
+ * Get app setting value by key
+ * Returns null if key doesn't exist
+ */
+export async function getAppSetting(key: string): Promise<string | null> {
+  const result = await sql<[{ value: string } | undefined]>`
+    SELECT value
+    FROM app_settings
+    WHERE key = ${key}
+  `;
+  
+  return result[0]?.value ?? null;
+}
+
+/**
+ * Set or update an app setting value
+ * Uses upsert pattern (INSERT ... ON CONFLICT DO UPDATE)
+ */
+export async function setAppSetting(key: string, value: string): Promise<void> {
+  await sql`
+    INSERT INTO app_settings (key, value, updated_at)
+    VALUES (${key}, ${value}, now())
+    ON CONFLICT (key) DO UPDATE
+    SET value = EXCLUDED.value, updated_at = now()
+  `;
+}
+
+// ============================================
+// Bank Accounts
+// ============================================
+
+/**
+ * Get all bank accounts ordered by sort_order
+ */
+export async function getBankAccounts(): Promise<BankAccountRow[]> {
+  return sql<BankAccountRow[]>`
+    SELECT * FROM bank_accounts
+    ORDER BY sort_order ASC, created_at ASC
+  `;
+}
+
+/**
+ * Create a new bank account
+ */
+export async function createBankAccount(data: {
+  bank_name: string;
+  account_name: string;
+  balance: number;
+  sort_order?: number;
+}): Promise<BankAccountRow> {
+  const result = await sql<BankAccountRow[]>`
+    INSERT INTO bank_accounts (bank_name, account_name, balance, sort_order, updated_at)
+    VALUES (${data.bank_name}, ${data.account_name}, ${data.balance}, ${data.sort_order ?? 0}, now())
+    RETURNING *
+  `;
+  return result[0];
+}
+
+/**
+ * Update a bank account with partial data
+ */
+export async function updateBankAccount(
+  id: string,
+  data: Partial<{ bank_name: string; account_name: string; balance: number; sort_order: number }>
+): Promise<BankAccountRow | null> {
+  const updates = { ...data, updated_at: new Date().toISOString() };
+  const result = await sql<BankAccountRow[]>`
+    UPDATE bank_accounts
+    SET ${sql(updates)}
+    WHERE id = ${id}
+    RETURNING *
+  `;
+  return result[0] || null;
+}
+
+// ============================================
+// Categories
+// ============================================
+
+/**
+ * Get categories, optionally filtered by type
+ * If type is provided, returns categories where type matches OR type='both'
+ */
+export async function getCategories(type?: 'expense' | 'income'): Promise<CategoryRow[]> {
+  if (type) {
+    return sql<CategoryRow[]>`
+      SELECT * FROM categories
+      WHERE type = ${type} OR type = 'both'
+      ORDER BY sort_order ASC
+    `;
+  }
+  
+  return sql<CategoryRow[]>`
+    SELECT * FROM categories
+    ORDER BY sort_order ASC
+  `;
+}
+
+/**
+ * Get categories by type (convenience wrapper)
+ */
+export async function getCategoriesByType(type: 'expense' | 'income'): Promise<CategoryRow[]> {
+  return getCategories(type);
+}
+
+// ============================================
+// Recurring Transactions
+// ============================================
+
+/**
+ * Get recurring transactions, optionally filtered by type
+ */
+export async function getRecurringTransactions(type?: 'expense' | 'income'): Promise<RecurringTransactionRow[]> {
+  if (type) {
+    return sql<RecurringTransactionRow[]>`
+      SELECT * FROM recurring_transactions
+      WHERE type = ${type}
+      ORDER BY day_of_month ASC
+    `;
+  }
+  
+  return sql<RecurringTransactionRow[]>`
+    SELECT * FROM recurring_transactions
+    ORDER BY day_of_month ASC
+  `;
+}
+
+/**
+ * Create a new recurring transaction
+ */
+export async function createRecurringTransaction(data: {
+  type: 'expense' | 'income';
+  day_of_month: number;
+  name: string;
+  amount: number;
+  category?: string | null;
+  bank_account?: string | null;
+}): Promise<RecurringTransactionRow> {
+  const result = await sql<RecurringTransactionRow[]>`
+    INSERT INTO recurring_transactions (type, day_of_month, name, amount, category, bank_account, updated_at)
+    VALUES (${data.type}, ${data.day_of_month}, ${data.name}, ${data.amount}, ${data.category ?? null}, ${data.bank_account ?? null}, now())
+    RETURNING *
+  `;
+  return result[0];
+}
+
+/**
+ * Update a recurring transaction with partial data
+ */
+export async function updateRecurringTransaction(
+  id: string,
+  data: Partial<{ type: string; day_of_month: number; name: string; amount: number; category: string | null; bank_account: string | null }>
+): Promise<RecurringTransactionRow | null> {
+  const updates = { ...data, updated_at: new Date().toISOString() };
+  const result = await sql<RecurringTransactionRow[]>`
+    UPDATE recurring_transactions
+    SET ${sql(updates)}
+    WHERE id = ${id}
+    RETURNING *
+  `;
+  return result[0] || null;
+}
+
+/**
+ * Delete a recurring transaction
+ */
+export async function deleteRecurringTransaction(id: string): Promise<RecurringTransactionRow | null> {
+  const result = await sql<RecurringTransactionRow[]>`
+    DELETE FROM recurring_transactions
+    WHERE id = ${id}
+    RETURNING *
+  `;
+  return result[0] || null;
+}
+
+/**
+ * Delete a bank account
+ */
+export async function deleteBankAccount(id: string): Promise<BankAccountRow | null> {
+  const result = await sql<BankAccountRow[]>`
+    DELETE FROM bank_accounts
+    WHERE id = ${id}
+    RETURNING *
+  `;
+  return result[0] || null;
+}
