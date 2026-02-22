@@ -1,11 +1,85 @@
 import json
 import os
+import io
 
 from dotenv import load_dotenv
 load_dotenv()
 
 from google.cloud import vision
 from google import genai
+from PIL import Image
+import numpy as np
+
+
+def is_blue_text(image_bytes: bytes, bbox: list) -> bool:
+    """
+    Detect if text in the given bounding box region is blue.
+    
+    Korean bank apps use text color to indicate transaction type:
+    - Blue text = Income (money received)
+    - White/Black text = Expense (money sent)
+    
+    Args:
+        image_bytes: Raw image bytes from Discord attachment
+        bbox: List of (x, y) coordinates defining the bounding box polygon
+              Example: [(x1, y1), (x2, y2), (x3, y3), (x4, y4)]
+              
+    Returns:
+        True if the text region contains predominantly blue pixels (likely income),
+        False otherwise (likely expense)
+        
+    Note:
+        - Uses HSV color space for blue detection
+        - Samples pixels from the bounding box (excluding edges to avoid background)
+        - Blue detection range: Hue 190-260°, Saturation > 0.35, Value > 0.2
+        - Threshold: 8% of pixels must be blue to classify as blue text
+        - May need tuning per bank app theme (light mode, dark mode, etc.)
+    """
+    try:
+        # Load image from bytes
+        img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+        arr = np.array(img)
+        
+        # Extract bounding box coordinates
+        xs = [p[0] for p in bbox]
+        ys = [p[1] for p in bbox]
+        x1, x2 = max(min(xs), 0), min(max(xs), arr.shape[1] - 1)
+        y1, y2 = max(min(ys), 0), min(max(ys), arr.shape[0] - 1)
+        
+        # Crop to bounding box region
+        crop = arr[y1:y2+1, x1:x2+1]
+        
+        if crop.size == 0:
+            return False
+        
+        # Convert RGB to HSV
+        crop = crop.astype(np.float32) / 255.0
+        r, g, b = crop[..., 0], crop[..., 1], crop[..., 2]
+        mx = np.max(crop, axis=-1)
+        mn = np.min(crop, axis=-1)
+        diff = mx - mn + 1e-6
+        
+        # Calculate Hue
+        hue = np.zeros_like(mx)
+        mask = diff > 1e-3
+        hue[mask & (mx == r)] = (60 * ((g - b) / diff) % 360)[mask & (mx == r)]
+        hue[mask & (mx == g)] = (60 * ((b - r) / diff) + 120)[mask & (mx == g)]
+        hue[mask & (mx == b)] = (60 * ((r - g) / diff) + 240)[mask & (mx == b)]
+        
+        # Calculate Saturation and Value
+        sat = diff / (mx + 1e-6)
+        val = mx
+        
+        # Blue detection: Hue 190-260°, Saturation > 0.35, Value > 0.2
+        blue_mask = (hue > 190) & (hue < 260) & (sat > 0.35) & (val > 0.2)
+        blue_ratio = blue_mask.mean()
+        
+        # Return True if more than 8% of pixels are blue
+        return blue_ratio > 0.08
+        
+    except Exception as e:
+        print(f"Error in is_blue_text: {e}")
+        return False
 
 
 class ExpenseParser:
@@ -91,10 +165,15 @@ class ExpenseParser:
         
         return result
 
-# --- 사용 예시 ---
+
 if __name__ == "__main__":
     parser = ExpenseParser()
 
-    final_data = parser.analyze("/home/byungchan/Desktop/poor-guy/KakaoTalk_20260221_000504660.png")
-    
+    image_path = "/home/byungchan/Desktop/poor-guy/IMG_7474.png"
+
+    with open(image_path, "rb") as f:
+        image_bytes = f.read()
+
+    final_data = parser.analyze(image_bytes)
+
     print(json.dumps(final_data, indent=4, ensure_ascii=False))
