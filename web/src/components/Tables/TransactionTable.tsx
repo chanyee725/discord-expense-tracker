@@ -50,7 +50,9 @@ const TransactionTable = ({ transactions }: TransactionTableProps) => {
                   </p>
                 </td>
                 <td className="border-b border-gray-100 py-5 px-4">
-                  <p className="text-gray-700">
+                  <p className={`${
+                    transaction.deposit_destination ? "text-blue-600" : "text-red-600"
+                  }`}>
                     {transaction.amount.toLocaleString("ko-KR")}원
                   </p>
                 </td>

@@ -1,9 +1,8 @@
 import React from "react";
 import { getCategoryBreakdown, getMonthlyTransactionStats } from "@/lib/queries";
-import CategoryDonutChart from "@/components/Charts/CategoryDonutChart";
-import CategoryDetailList from "@/components/Dashboard/CategoryDetailList";
 import MonthSelector from "@/components/Dashboard/MonthSelector";
 import dayjs from "dayjs";
+import CategoryExpensesClient from "./CategoryExpensesClient";
 
 export const dynamic = "force-dynamic";
 
@@ -48,28 +47,15 @@ export default async function CategoryExpensesPage({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div>
-          <CategoryDonutChart
-            series={categorySeries}
-            labels={categoryLabels}
-            centerLabel={`${selectedYear}년 ${selectedMonth}월`}
-          />
-        </div>
-
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h3 className="mb-6 text-xl font-semibold text-gray-800">
-            카테고리별 상세
-          </h3>
-          
-          <CategoryDetailList 
-            categoryBreakdown={categoryBreakdown}
-            totalExpense={totalExpense}
-            year={selectedYear}
-            month={selectedMonth}
-          />
-        </div>
-      </div>
+      <CategoryExpensesClient
+        categorySeries={categorySeries}
+        categoryLabels={categoryLabels}
+        centerLabel={`${selectedYear}년 ${selectedMonth}월`}
+        categoryBreakdown={categoryBreakdown}
+        totalExpense={totalExpense}
+        selectedYear={selectedYear}
+        selectedMonth={selectedMonth}
+      />
     </div>
   );
 }

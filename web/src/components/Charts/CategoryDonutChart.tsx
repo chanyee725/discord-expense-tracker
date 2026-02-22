@@ -12,17 +12,27 @@ interface CategoryDonutChartProps {
   series: number[];
   labels: string[];
   centerLabel?: string;
+  onCategoryClick?: (categoryLabel: string, categoryIndex: number) => void;
 }
 
 const CategoryDonutChart: React.FC<CategoryDonutChartProps> = ({
   series,
   labels,
   centerLabel,
+  onCategoryClick,
 }) => {
   const options: ApexOptions = {
     chart: {
       type: "donut",
       fontFamily: "Outfit, sans-serif",
+      events: {
+        dataPointSelection: (event, chartContext, config) => {
+          const categoryLabel = config.w.config.labels[config.dataPointIndex];
+          if (onCategoryClick) {
+            onCategoryClick(categoryLabel, config.dataPointIndex);
+          }
+        },
+      },
     },
     colors: [
       "#10B981",

@@ -234,7 +234,9 @@ export default function CalendarView({
                         className="flex justify-between text-xs cursor-pointer hover:bg-gray-100 p-0.5 rounded transition-colors"
                       >
                         <span className="truncate text-gray-500">{t.title}</span>
-                        <span className="whitespace-nowrap font-medium text-red-600">
+                        <span className={`whitespace-nowrap font-medium ${
+                          t.deposit_destination ? "text-blue-600" : "text-red-600"
+                        }`}>
                           {Number(t.amount).toLocaleString()}
                         </span>
                       </div>
