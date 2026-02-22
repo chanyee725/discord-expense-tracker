@@ -10,6 +10,7 @@ export interface Transaction {
   category: string | null;
   deposit_destination: string | null;
   withdrawal_source: string | null;
+  type: string; // "수입" (income) or "지출" (expense)
   transaction_date: string | null; // TEXT - Korean freeform date (unreliable for parsing)
   raw_ocr_text: string | null;
   created_at: Date; // TIMESTAMP - reliable for date-based queries

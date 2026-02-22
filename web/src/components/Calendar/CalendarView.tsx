@@ -168,10 +168,10 @@ export default function CalendarView({
               dayjs(t.created_at).isSame(currentDayDate, "day")
             );
 
-            const totalAmount = dayTransactions.reduce(
-              (sum, t) => sum + Number(t.amount),
-              0
-            );
+             const totalAmount = dayTransactions.reduce((sum, t) => {
+              const amount = Number(t.amount);
+              return sum + (t.type === "지출" ? -amount : amount);
+            }, 0);
 
             return (
               <div
@@ -196,9 +196,11 @@ export default function CalendarView({
                     >
                       {day}
                     </span>
-                    {totalAmount > 0 && (
-                       <span className="text-xs font-medium text-red-600">
-                         -{totalAmount.toLocaleString()}
+                    {totalAmount !== 0 && (
+                       <span className={`text-xs font-medium ${
+                         totalAmount > 0 ? "text-blue-600" : "text-red-600"
+                       }`}>
+                         {totalAmount > 0 ? "+" : ""}{totalAmount.toLocaleString()}
                        </span>
                     )}
                   </div>
@@ -214,11 +216,11 @@ export default function CalendarView({
                         className="flex justify-between text-xs cursor-pointer hover:bg-gray-100 p-0.5 rounded transition-colors"
                       >
                         <span className="truncate text-gray-500">{t.title}</span>
-                        <span className={`whitespace-nowrap font-medium ${
-                          t.deposit_destination ? "text-blue-600" : "text-red-600"
-                        }`}>
-                          {Number(t.amount).toLocaleString()}
-                        </span>
+                         <span className={`whitespace-nowrap font-medium ${
+                           t.type === "수입" ? "text-blue-600" : "text-red-600"
+                         }`}>
+                           {Number(t.amount).toLocaleString()}
+                         </span>
                       </div>
                     ))}
                     {dayTransactions.length > 3 && (
