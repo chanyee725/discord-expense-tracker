@@ -35,6 +35,7 @@ async def insert_transaction(pool: asyncpg.Pool, data: dict[str, Any]) -> None:
         data: Transaction data dict from Gemini JSON with keys:
               - title (str, optional): Transaction title
               - amount (int or str, required): Transaction amount (coerced to int)
+              - type (str, required): Transaction type ("지출" or "수입")
               - category (str, optional): Transaction category
               - deposit_destination (str, optional): Deposit destination account
               - withdrawal_source (str, optional): Withdrawal source account
@@ -48,11 +49,12 @@ async def insert_transaction(pool: asyncpg.Pool, data: dict[str, Any]) -> None:
     """
     await pool.execute(
         """
-        INSERT INTO transactions (title, amount, category, deposit_destination, withdrawal_source, transaction_date, raw_ocr_text)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        INSERT INTO transactions (title, amount, type, category, deposit_destination, withdrawal_source, transaction_date, raw_ocr_text)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         """,
         data.get('title'),
         int(data.get('amount', 0)),
+        data.get('type'),
         data.get('category'),
         data.get('deposit_destination'),
         data.get('withdrawal_source'),

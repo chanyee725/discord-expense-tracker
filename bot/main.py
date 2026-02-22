@@ -70,7 +70,11 @@ async def on_message(message):
                         color=0x5865F2 
                     )
                     
-                    embed.add_field(name="금액", value=f"{result.get('amount', 0):,}원", inline=True)
+                    transaction_type = result.get('type', '미분류')
+                    type_emoji = "💸" if transaction_type == "지출" else "💰"
+                    
+                    embed.add_field(name="금액", value=f"{type_emoji} {result.get('amount', 0):,}원", inline=True)
+                    embed.add_field(name="유형", value=transaction_type, inline=True)
                     embed.add_field(name="카테고리", value=result.get('category') or "미분류", inline=True)
                     embed.add_field(name="일시", value=result.get('transaction_date') or "정보 없음", inline=False)
                     embed.add_field(name="출금처", value=result.get('withdrawal_source') or "정보 없음", inline=True)
