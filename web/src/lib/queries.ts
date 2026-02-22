@@ -52,10 +52,11 @@ export interface RecurringTransactionRow {
   id: string;
   type: string;  // 'expense' | 'income'
   day_of_month: number;
-  name: string;
+  title: string;
   amount: number;
-  category: string | null;
-  bank_account: string | null;
+  category: string;
+  bank_account: string;
+  is_active: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -573,14 +574,14 @@ export async function getRecurringTransactions(type?: 'expense' | 'income'): Pro
 export async function createRecurringTransaction(data: {
   type: 'expense' | 'income';
   day_of_month: number;
-  name: string;
+  title: string;
   amount: number;
   category?: string | null;
   bank_account?: string | null;
 }): Promise<RecurringTransactionRow> {
   const result = await sql<RecurringTransactionRow[]>`
-    INSERT INTO recurring_transactions (type, day_of_month, name, amount, category, bank_account, updated_at)
-    VALUES (${data.type}, ${data.day_of_month}, ${data.name}, ${data.amount}, ${data.category ?? null}, ${data.bank_account ?? null}, now())
+    INSERT INTO recurring_transactions (type, day_of_month, title, amount, category, bank_account, is_active, created_at, updated_at)
+    VALUES (${data.type}, ${data.day_of_month}, ${data.title}, ${data.amount}, ${data.category ?? ''}, ${data.bank_account ?? ''}, true, now(), now())
     RETURNING *
   `;
   return result[0];
@@ -591,7 +592,7 @@ export async function createRecurringTransaction(data: {
  */
 export async function updateRecurringTransaction(
   id: string,
-  data: Partial<{ type: string; day_of_month: number; name: string; amount: number; category: string | null; bank_account: string | null }>
+  data: Partial<{ type: string; day_of_month: number; title: string; amount: number; category: string | null; bank_account: string | null }>
 ): Promise<RecurringTransactionRow | null> {
   const updates = { ...data, updated_at: new Date().toISOString() };
   const result = await sql<RecurringTransactionRow[]>`
