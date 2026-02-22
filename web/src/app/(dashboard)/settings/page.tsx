@@ -1,6 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import {
+  getMonthlyBudgetAction,
+  saveMonthlyBudgetAction,
+  getBankAccountsAction,
+  saveBankAccountAction,
+  deleteBankAccountAction,
+} from "./actions";
 
 interface BankAccount {
   id: string;
@@ -39,20 +46,36 @@ export default function SettingsPage() {
   const [isEditingBudget, setIsEditingBudget] = useState(false);
   const [budgetInput, setBudgetInput] = useState("2000000");
 
-  const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([
-    { id: "1", bankName: "국민은행", accountName: "급여계좌", balance: "5000000" },
-    { id: "2", bankName: "신한은행", accountName: "저축계좌", balance: "3000000" },
-  ]);
+  const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
 
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<BankAccount | null>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem('monthlyBudgetGoal');
-    if (saved) {
-      setMonthlyBudget(saved);
-      setBudgetInput(saved);
-    }
+    const loadBudget = async () => {
+      const result = await getMonthlyBudgetAction();
+      if (result.success && result.data) {
+        setMonthlyBudget(result.data);
+        setBudgetInput(result.data);
+      }
+    };
+    loadBudget();
+  }, []);
+
+  useEffect(() => {
+    const loadAccounts = async () => {
+      const result = await getBankAccountsAction();
+      if (result.success && result.data) {
+        const mappedAccounts: BankAccount[] = result.data.map((acc: any) => ({
+          id: acc.id,
+          bankName: acc.bank_name,
+          accountName: acc.name,
+          balance: String(acc.balance),
+        }));
+        setBankAccounts(mappedAccounts);
+      }
+    };
+    loadAccounts();
   }, []);
 
   const formatNumber = (value: string): string => {
@@ -72,10 +95,10 @@ export default function SettingsPage() {
     setBudgetInput(monthlyBudget);
   };
 
-  const handleBudgetSave = () => {
+  const handleBudgetSave = async () => {
     if (budgetInput && parseInt(budgetInput) > 0) {
+      await saveMonthlyBudgetAction(budgetInput);
       setMonthlyBudget(budgetInput);
-      localStorage.setItem('monthlyBudgetGoal', budgetInput);
       setIsEditingBudget(false);
     }
   };
@@ -86,7 +109,7 @@ export default function SettingsPage() {
 
   const handleAddAccount = () => {
     setEditingAccount({
-      id: Date.now().toString(),
+      id: "",
       bankName: "국민은행",
       accountName: "",
       balance: "",
@@ -106,26 +129,49 @@ export default function SettingsPage() {
     }, 300);
   };
 
-  const handleSaveAccount = () => {
+  const handleSaveAccount = async () => {
     if (!editingAccount || !editingAccount.accountName) return;
 
-    setBankAccounts(prev => {
-      const index = prev.findIndex(acc => acc.id === editingAccount.id);
-      if (index >= 0) {
-        const newList = [...prev];
-        newList[index] = editingAccount;
-        return newList;
-      } else {
-        return [...prev, editingAccount];
-      }
-    });
-    handleClosePanelWithDelay();
+    const accountData = {
+      id: editingAccount.id || undefined,
+      bank_name: editingAccount.bankName,
+      account_name: editingAccount.accountName,
+      balance: parseInt(editingAccount.balance) || 0,
+    };
+
+    const result = await saveBankAccountAction(accountData);
+
+    if (result.success && result.data) {
+      const savedAccount: BankAccount = {
+        id: result.data.id,
+        bankName: result.data.bank_name,
+        accountName: result.data.name,
+        balance: String(result.data.balance),
+      };
+
+      setBankAccounts((prev) => {
+        const index = prev.findIndex((acc) => acc.id === savedAccount.id);
+        if (index >= 0) {
+          const newList = [...prev];
+          newList[index] = savedAccount;
+          return newList;
+        } else {
+          return [...prev, savedAccount];
+        }
+      });
+      handleClosePanelWithDelay();
+    }
   };
 
-  const handleDeleteAccount = () => {
-    if (!editingAccount) return;
-    setBankAccounts(prev => prev.filter(acc => acc.id !== editingAccount.id));
-    handleClosePanelWithDelay();
+  const handleDeleteAccount = async () => {
+    if (!editingAccount || !editingAccount.id) return;
+
+    const result = await deleteBankAccountAction(editingAccount.id);
+
+    if (result.success) {
+      setBankAccounts((prev) => prev.filter((acc) => acc.id !== editingAccount.id));
+      handleClosePanelWithDelay();
+    }
   };
 
   const updateAccountField = (field: keyof BankAccount, value: string) => {
@@ -287,13 +333,13 @@ export default function SettingsPage() {
       )}
 
       {isPanelOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-40 transition-opacity duration-300"
           onClick={handleClosePanelWithDelay}
         />
       )}
 
-      <div 
+      <div
         className={`fixed top-0 right-0 h-full w-full sm:w-[420px] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out border-l border-gray-100 ${
           isPanelOpen ? "translate-x-0" : "translate-x-full"
         }`}
@@ -305,7 +351,7 @@ export default function SettingsPage() {
                 <h3 className="text-xl font-bold text-gray-900">계좌 편집</h3>
                 <p className="text-xs text-gray-500 mt-0.5">계좌 정보를 입력합니다</p>
               </div>
-              <button 
+              <button
                 onClick={handleClosePanelWithDelay}
                 className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
               >
@@ -325,7 +371,9 @@ export default function SettingsPage() {
                     className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none appearance-none bg-gray-50/50 focus:bg-white"
                   >
                     {BANK_OPTIONS.map((bank) => (
-                      <option key={bank} value={bank}>{bank}</option>
+                      <option key={bank} value={bank}>
+                        {bank}
+                      </option>
                     ))}
                   </select>
                   <div className="absolute right-4 top-4 text-gray-400 pointer-events-none">
@@ -377,7 +425,7 @@ export default function SettingsPage() {
                 >
                   저장하기
                 </button>
-                
+
                 <button
                   onClick={handleDeleteAccount}
                   className="w-full rounded-xl py-3 text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors"
