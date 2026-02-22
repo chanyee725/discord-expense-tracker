@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from bot.expense_parser import ExpenseParser
-from bot.db import create_pool, insert_transaction
+from bot.db import create_pool, insert_transaction, check_duplicate_transaction
 
 load_dotenv()
 
@@ -62,6 +62,28 @@ async def on_message(message):
 
                     # Skip DB insert if Gemini parsing failed
                     if 'error' not in result:
+                        # Check for duplicate transaction
+                        is_duplicate = await check_duplicate_transaction(db_pool, result)
+                        
+                        if is_duplicate:
+                            # Show duplicate warning embed
+                            duplicate_embed = discord.Embed(
+                                title="⚠️ 이미 업로드된 항목입니다",
+                                description="동일한 날짜에 같은 거래 내역이 이미 존재합니다.",
+                                color=0xffa500  # Orange color
+                            )
+                            
+                            transaction_type = result.get('type', '미분류')
+                            type_emoji = "💸" if transaction_type == "지출" else "💰"
+                            
+                            duplicate_embed.add_field(name="금액", value=f"{type_emoji} {result.get('amount', 0):,}원", inline=True)
+                            duplicate_embed.add_field(name="카테고리", value=result.get('category') or "미분류", inline=True)
+                            duplicate_embed.add_field(name="일시", value=result.get('transaction_date') or "정보 없음", inline=False)
+                            
+                            await message.reply(embed=duplicate_embed)
+                            continue
+
+                        # No duplicate found - proceed with insert
                         await insert_transaction(db_pool, result)
 
                     embed = discord.Embed(

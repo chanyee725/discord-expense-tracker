@@ -26,6 +26,48 @@ async def create_pool() -> asyncpg.Pool:
     return await asyncpg.create_pool(dsn)
 
 
+async def check_duplicate_transaction(
+    pool: asyncpg.Pool, 
+    data: dict[str, Any]
+) -> bool:
+    """
+    Check if a duplicate transaction exists for the same date.
+    
+    Duplicate criteria:
+    - Same transaction_date (exact match)
+    - Same amount
+    - Same category
+    - Same deposit_destination OR withdrawal_source (either one matches)
+    
+    Args:
+        pool: asyncpg connection pool
+        data: Transaction data dict from Gemini JSON
+        
+    Returns:
+        True if duplicate found, False otherwise
+    """
+    result = await pool.fetchrow(
+        """
+        SELECT id FROM transactions
+        WHERE transaction_date = $1
+          AND amount = $2
+          AND category = $3
+          AND (
+              deposit_destination = $4 
+              OR withdrawal_source = $5
+          )
+        LIMIT 1
+        """,
+        data.get('transaction_date'),
+        int(data.get('amount', 0)),
+        data.get('category'),
+        data.get('deposit_destination'),
+        data.get('withdrawal_source')
+    )
+    
+    return result is not None
+
+
 async def insert_transaction(pool: asyncpg.Pool, data: dict[str, Any]) -> None:
     """
     Insert transaction record into database.

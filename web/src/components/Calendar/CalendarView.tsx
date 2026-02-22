@@ -35,7 +35,6 @@ export default function CalendarView({
     amount: 0,
     category: "",
     transaction_date: "",
-    raw_ocr_text: "",
   });
 
   const daysInMonth = current.daysInMonth();
@@ -63,7 +62,6 @@ export default function CalendarView({
       amount: transaction.amount,
       category: transaction.category || "",
       transaction_date: transaction.transaction_date || "",
-      raw_ocr_text: transaction.raw_ocr_text || "",
     });
     setIsEditPanelOpen(true);
   };
@@ -76,7 +74,6 @@ export default function CalendarView({
       amount: editFormData.amount,
       category: editFormData.category,
       transaction_date: editFormData.transaction_date,
-      raw_ocr_text: editFormData.raw_ocr_text,
     });
     
     if (result.success) {
@@ -324,48 +321,35 @@ export default function CalendarView({
                 />
               </div>
 
-              {/* Category Field */}
-              <div>
-                <label className="mb-2 block text-sm font-medium text-black">
-                  카테고리
-                </label>
-                <select
-                  value={editFormData.category}
-                  onChange={(e) =>
-                    setEditFormData({
-                      ...editFormData,
-                      category: e.target.value,
-                    })
-                  }
-                  className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
-                >
-                  <option value="">선택하기</option>
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                  {editFormData.category && !categories.includes(editFormData.category) && (
-                    <option key={editFormData.category} value={editFormData.category}>
-                      {editFormData.category}
-                    </option>
-                  )}
-                </select>
-              </div>
-
-              {/* Memo Field - Read-only */}
-              <div>
-                <label className="mb-2 block text-sm font-medium text-black">
-                  원본 OCR 텍스트
-                </label>
-                <textarea
-                  value={editFormData.raw_ocr_text}
-                  readOnly
-                  rows={4}
-                  className="w-full rounded border border-stroke bg-gray-50 py-2 px-3 text-black outline-none"
-                />
-              </div>
-            </div>
+               {/* Category Field */}
+               <div>
+                 <label className="mb-2 block text-sm font-medium text-black">
+                   카테고리
+                 </label>
+                 <select
+                   value={editFormData.category}
+                   onChange={(e) =>
+                     setEditFormData({
+                       ...editFormData,
+                       category: e.target.value,
+                     })
+                   }
+                   className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
+                 >
+                   <option value="">선택하기</option>
+                   {categories.map((cat) => (
+                     <option key={cat} value={cat}>
+                       {cat}
+                     </option>
+                   ))}
+                   {editFormData.category && !categories.includes(editFormData.category) && (
+                     <option key={editFormData.category} value={editFormData.category}>
+                       {editFormData.category}
+                     </option>
+                   )}
+                 </select>
+               </div>
+             </div>
 
             {/* Panel Footer - Buttons */}
             <div className="border-t border-stroke px-6 py-4 space-y-2">
