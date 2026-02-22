@@ -337,6 +337,12 @@ export async function getAccountBalanceHistory(
 export async function getMonthlyAssetGrowth(
   year: number
 ): Promise<Array<{ month: number; total_balance: number }>> {
+  // Get current year and month
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1; // JavaScript months are 0-indexed
+
+  // Query historical data from account_balance_history
   const result = await sql<
     Array<{ month: number; total_balance: number }>
   >`
@@ -351,8 +357,20 @@ export async function getMonthlyAssetGrowth(
 
   // Fill in missing months with 0
   const monthMap = new Map(result.map((row) => [row.month, row.total_balance]));
-  const fullYear: Array<{ month: number; total_balance: number }> = [];
 
+  // If querying current year, get real-time balance for current month
+  if (year === currentYear) {
+    const currentBalanceResult = await sql<Array<{ total: number }>>`
+      SELECT COALESCE(SUM(balance), 0)::int as total
+      FROM bank_accounts
+    `;
+    
+    const currentTotal = currentBalanceResult[0]?.total ?? 0;
+    monthMap.set(currentMonth, currentTotal);
+  }
+
+  // Build full year array
+  const fullYear: Array<{ month: number; total_balance: number }> = [];
   for (let month = 1; month <= 12; month++) {
     fullYear.push({
       month,

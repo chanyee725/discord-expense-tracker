@@ -5,6 +5,7 @@ import {
   getCategoryBreakdown,
   getDailyExpenses,
   getMonthlyTransactionStats,
+  getAppSetting,
 } from "@/lib/queries";
 import MonthlyExpenseChart from "@/components/Charts/MonthlyExpenseChart";
 import CategoryDonutChart from "@/components/Charts/CategoryDonutChart";
@@ -56,6 +57,9 @@ export default async function DashboardPage({
       ? getMonthlyIncome(currentYear - 1)
       : Promise.resolve([]),
   ]);
+
+  const monthlyBudgetStr = await getAppSetting('monthly_budget');
+  const monthlyBudget = monthlyBudgetStr ? parseInt(monthlyBudgetStr) : null;
 
   let combinedMonthly: { month: number; total: number; year: number }[] = [];
   let combinedMonthlyIncome: { month: number; total: number; year: number }[] = [];
@@ -130,7 +134,7 @@ export default async function DashboardPage({
     <div className="grid grid-cols-12 gap-4 md:gap-6">
       <div className="col-span-12 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5 md:gap-6">
         <MonthSelector />
-        <MonthlyExpenseCard totalExpense={totalExpense} />
+        <MonthlyExpenseCard totalExpense={totalExpense} budgetGoal={monthlyBudget} />
         <Card
           title="이번 달 거래 건수"
           value={`${transactionCount}건`}

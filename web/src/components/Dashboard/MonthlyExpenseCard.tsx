@@ -1,20 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React from "react";
+
+interface MonthlyExpenseCardProps {
+  totalExpense: number;
+  budgetGoal?: number | null;
+}
 
 export default function MonthlyExpenseCard({
   totalExpense,
-}: {
-  totalExpense: number;
-}) {
-  const [budgetGoal, setBudgetGoal] = useState<number | null>(null);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("monthlyBudgetGoal");
-    if (saved) {
-      setBudgetGoal(parseInt(saved));
-    }
-  }, []);
+  budgetGoal,
+}: MonthlyExpenseCardProps) {
 
   const difference = budgetGoal ? totalExpense - budgetGoal : null;
   const isOverBudget = difference && difference > 0;

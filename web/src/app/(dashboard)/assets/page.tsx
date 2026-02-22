@@ -71,7 +71,7 @@ export default function AssetsPage() {
         const seriesData = Array(12).fill(0);
         data.forEach((item) => {
           if (item.month >= 1 && item.month <= 12) {
-            seriesData[item.month - 1] = item.total_balance;
+            seriesData[item.month - 1] = Math.round(item.total_balance / 10000);
           }
         });
         setChartData(seriesData);
@@ -252,7 +252,7 @@ export default function AssetsPage() {
           fontSize: "12px",
         },
         formatter: (val) => {
-          return val.toLocaleString("ko-KR");
+          return val.toLocaleString("ko-KR") + "만";
         },
       },
     },
@@ -260,7 +260,7 @@ export default function AssetsPage() {
       theme: "light",
       y: {
         formatter: (val) => {
-          return val.toLocaleString("ko-KR") + " 원";
+          return (val * 10000).toLocaleString("ko-KR") + " 원";
         },
       },
     },
