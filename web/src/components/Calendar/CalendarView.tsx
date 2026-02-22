@@ -168,10 +168,13 @@ export default function CalendarView({
               dayjs(t.created_at).isSame(currentDayDate, "day")
             );
 
-             const totalAmount = dayTransactions.reduce((sum, t) => {
-              const amount = Number(t.amount);
-              return sum + (t.type === "지출" ? -amount : amount);
-            }, 0);
+             const expenseTotal = dayTransactions
+              .filter(t => t.type === "지출")
+              .reduce((sum, t) => sum + Number(t.amount), 0);
+
+            const incomeTotal = dayTransactions
+              .filter(t => t.type === "수입")
+              .reduce((sum, t) => sum + Number(t.amount), 0);
 
             return (
               <div
@@ -196,11 +199,14 @@ export default function CalendarView({
                     >
                       {day}
                     </span>
-                    {totalAmount !== 0 && (
-                       <span className={`text-xs font-medium ${
-                         totalAmount > 0 ? "text-blue-600" : "text-red-600"
-                       }`}>
-                         {totalAmount > 0 ? "+" : ""}{totalAmount.toLocaleString()}
+                    {expenseTotal > 0 && (
+                       <span className="text-xs font-medium text-red-600">
+                         -{expenseTotal.toLocaleString()}
+                       </span>
+                    )}
+                    {incomeTotal > 0 && expenseTotal === 0 && (
+                       <span className="text-xs font-medium text-blue-600">
+                         +{incomeTotal.toLocaleString()}
                        </span>
                     )}
                   </div>
