@@ -4,7 +4,7 @@ import { useState } from "react";
 import dayjs from "dayjs";
 import { Transaction } from "@/types/transaction";
 import { useRouter } from "next/navigation";
-import { updateTransactionAction, deleteTransactionAction } from "@/app/(dashboard)/transactions/actions";
+import { updateTransactionAction, deleteTransactionAction, createTransactionAction } from "@/app/(dashboard)/transactions/actions";
 
 interface CalendarTransaction extends Omit<Transaction, "created_at"> {
   created_at: string;
@@ -33,11 +33,13 @@ export default function CalendarView({
   const [dayModalTransactions, setDayModalTransactions] = useState<CalendarTransaction[]>([]);
   const [dayModalDate, setDayModalDate] = useState<string>("");
   const [editingTransaction, setEditingTransaction] = useState<CalendarTransaction | null>(null);
+  const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [editFormData, setEditFormData] = useState({
     title: "",
     amount: 0,
     category: "",
     transaction_date: "",
+    type: "지출" as "수입" | "지출",
   });
 
   const daysInMonth = current.daysInMonth();
@@ -60,18 +62,35 @@ export default function CalendarView({
 
   const handleTransactionClick = (transaction: CalendarTransaction) => {
     setEditingTransaction(transaction);
+    setIsCreatingNew(false);
     setEditFormData({
       title: transaction.title || "",
       amount: transaction.amount,
       category: transaction.category || "",
       transaction_date: transaction.transaction_date || "",
+      type: transaction.type as "수입" | "지출",
+    });
+    setIsDayModalOpen(false);
+    setIsEditPanelOpen(true);
+  };
+
+  const handleAddTransaction = () => {
+    if (!selectedDate) return;
+    setEditingTransaction(null);
+    setIsCreatingNew(true);
+    setEditFormData({
+      title: "",
+      amount: 0,
+      category: "",
+      transaction_date: selectedDate,
+      type: "지출",
     });
     setIsDayModalOpen(false);
     setIsEditPanelOpen(true);
   };
 
   const handleDayClick = (date: dayjs.Dayjs, dayTransactions: CalendarTransaction[]) => {
-    if (dayTransactions.length === 0) return;
+    setSelectedDate(date.format("YYYY-MM-DD"));
     setDayModalDate(date.format("YYYY년 M월 D일"));
     setDayModalTransactions(dayTransactions);
     setIsDayModalOpen(true);
@@ -84,21 +103,37 @@ export default function CalendarView({
   };
 
   const handleSave = async () => {
-    if (!editingTransaction) return;
-    
-    const result = await updateTransactionAction(editingTransaction.id, {
-      title: editFormData.title,
-      amount: editFormData.amount,
-      category: editFormData.category,
-      transaction_date: editFormData.transaction_date,
-    });
-    
-    if (result.success) {
-      setIsEditPanelOpen(false);
-      setEditingTransaction(null);
-      router.refresh();
-    } else {
-      alert("저장에 실패했습니다. 다시 시도해주세요.");
+    if (isCreatingNew) {
+      const result = await createTransactionAction({
+        title: editFormData.title,
+        amount: editFormData.amount,
+        type: editFormData.type,
+        category: editFormData.category,
+        transaction_date: editFormData.transaction_date,
+      });
+      
+      if (result.success) {
+        setIsEditPanelOpen(false);
+        setIsCreatingNew(false);
+        router.refresh();
+      } else {
+        alert("저장에 실패했습니다. 다시 시도해주세요.");
+      }
+    } else if (editingTransaction) {
+      const result = await updateTransactionAction(editingTransaction.id, {
+        title: editFormData.title,
+        amount: editFormData.amount,
+        category: editFormData.category,
+        transaction_date: editFormData.transaction_date,
+      });
+      
+      if (result.success) {
+        setIsEditPanelOpen(false);
+        setEditingTransaction(null);
+        router.refresh();
+      } else {
+        alert("저장에 실패했습니다. 다시 시도해주세요.");
+      }
     }
   };
 
@@ -120,6 +155,7 @@ export default function CalendarView({
   const handleClosePanel = () => {
     setIsEditPanelOpen(false);
     setEditingTransaction(null);
+    setIsCreatingNew(false);
   };
 
   const weekDays = ["일", "월", "화", "수", "목", "금", "토"];
@@ -204,7 +240,7 @@ export default function CalendarView({
                     <span
                       className={`font-medium text-sm flex items-center justify-center ${
                         isToday 
-                          ? "w-7 h-7 rounded-full bg-blue-500 text-white" 
+                          ? "w-7 h-7 rounded-full border-2 border-blue-500 text-blue-500" 
                           : dayOfWeek === 0
                           ? "text-red-600"
                           : dayOfWeek === 6
@@ -278,12 +314,12 @@ export default function CalendarView({
             isEditPanelOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
           }`}
         >
-        {editingTransaction && (
+        {(editingTransaction || isCreatingNew) && (
           <div className="flex flex-col h-full">
             {/* Panel Header */}
             <div className="flex items-center justify-between border-b border-stroke px-6 py-4">
         <h3 className="font-medium text-black">
-                거래 편집
+                {isCreatingNew ? "거래 추가" : "거래 편집"}
               </h3>
               <button
                 onClick={handleClosePanel}
@@ -295,17 +331,35 @@ export default function CalendarView({
 
             {/* Panel Content - Form */}
             <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-              {/* Date Field - Read-only */}
+              {/* Date Field */}
               <div>
                 <label className="mb-2 block text-sm font-medium text-black">
                   날짜
                 </label>
-                <div className="text-black">
-                  {editFormData.transaction_date}
-                </div>
-                <div className="text-xs text-gray-500 mt-1">
-                  (실제 기록일: {dayjs(editingTransaction.created_at).format("YYYY.MM.DD")})
-                </div>
+                {isCreatingNew ? (
+                  <input
+                    type="date"
+                    value={editFormData.transaction_date}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        transaction_date: e.target.value,
+                      })
+                    }
+                    className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
+                  />
+                ) : (
+                  <>
+                    <div className="text-black">
+                      {editFormData.transaction_date}
+                    </div>
+                    {editingTransaction && (
+                      <div className="text-xs text-gray-500 mt-1">
+                        (실제 기록일: {dayjs(editingTransaction.created_at).format("YYYY.MM.DD")})
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
 
               {/* Name Field */}
@@ -343,6 +397,28 @@ export default function CalendarView({
                   className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
                 />
               </div>
+
+              {/* Type Field */}
+              {isCreatingNew && (
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-black">
+                    유형
+                  </label>
+                  <select
+                    value={editFormData.type}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        type: e.target.value as "수입" | "지출",
+                      })
+                    }
+                    className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
+                  >
+                    <option value="지출">지출</option>
+                    <option value="수입">수입</option>
+                  </select>
+                </div>
+              )}
 
                {/* Category Field */}
                <div>
@@ -382,12 +458,14 @@ export default function CalendarView({
               >
                 저장
               </button>
-              <button
-                onClick={handleDelete}
-                className="w-full rounded border border-red-500 py-2 px-4 font-medium text-red-500 hover:bg-red-50 transition-colors"
-              >
-                삭제
-              </button>
+              {!isCreatingNew && (
+                <button
+                  onClick={handleDelete}
+                  className="w-full rounded border border-red-500 py-2 px-4 font-medium text-red-500 hover:bg-red-50 transition-colors"
+                >
+                  삭제
+                </button>
+              )}
               <button
                 onClick={handleClosePanel}
                 className="w-full rounded border border-stroke py-2 px-4 font-medium text-black hover:bg-gray-50 transition-colors"
@@ -463,7 +541,13 @@ export default function CalendarView({
                 )}
               </div>
 
-              <div className="border-t border-stroke px-6 py-4">
+              <div className="border-t border-stroke px-6 py-4 space-y-3">
+                <button
+                  onClick={handleAddTransaction}
+                  className="w-full rounded bg-blue-600 py-2 px-4 font-medium text-white hover:bg-blue-700 transition-colors"
+                >
+                  추가하기
+                </button>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-600">총 {dayModalTransactions.length}건</span>
                   <div className="flex gap-4">

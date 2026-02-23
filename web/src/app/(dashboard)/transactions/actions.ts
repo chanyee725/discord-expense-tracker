@@ -1,8 +1,28 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { updateTransaction, deleteTransaction } from "@/lib/queries";
+import { updateTransaction, deleteTransaction, createTransaction } from "@/lib/queries";
 import { Transaction } from "@/types/transaction";
+
+export async function createTransactionAction(data: {
+  title: string;
+  amount: number;
+  type: "수입" | "지출";
+  category?: string;
+  transaction_date: string;
+}) {
+  try {
+    const result = await createTransaction(data);
+    if (!result) {
+      return { success: false, error: "Failed to create transaction" };
+    }
+    revalidatePath("/transactions");
+    return { success: true };
+  } catch (error) {
+    console.error("Error creating transaction:", error);
+    return { success: false, error: "Failed to create transaction" };
+  }
+}
 
 export async function updateTransactionAction(
   id: string,

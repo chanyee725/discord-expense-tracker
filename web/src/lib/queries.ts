@@ -839,3 +839,27 @@ export async function generateRecurringTransactions(
   
   return { generated, skipped };
 }
+
+export async function createTransaction(data: {
+  title: string;
+  amount: number;
+  type: "수입" | "지출";
+  category?: string;
+  transaction_date: string;
+}) {
+  const result = await sql`
+    INSERT INTO transactions (
+      title, amount, type, category, 
+      deposit_destination, withdrawal_source, 
+      transaction_date, raw_ocr_text, created_at
+    )
+    VALUES (
+      ${data.title}, ${data.amount}, ${data.type}, ${data.category || null},
+      ${null}, ${null},
+      ${data.transaction_date}, ${null}, now()
+    )
+    RETURNING *
+  `;
+  
+  return result[0] as Transaction;
+}
