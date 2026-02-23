@@ -252,8 +252,8 @@ export default function CalendarView({
                     </span>
                   </div>
                   
-                   <div className="flex flex-col gap-0.5 overflow-y-auto flex-1 pb-1">
-                     {dayTransactions.slice(0, 3).map((t) => (
+                   <div className="flex flex-col gap-0.5 flex-1 pb-1">
+                     {dayTransactions.slice(0, 2).map((t) => (
                        <div
                          key={t.id}
                          onClick={(e) => {
@@ -272,9 +272,9 @@ export default function CalendarView({
                      ))}
                    </div>
                   
-                   {dayTransactions.length > 3 && (
+                   {dayTransactions.length > 2 && (
                      <div className="text-xs text-gray-400 text-left mt-auto pt-0.5">
-                       +{dayTransactions.length - 3} more
+                       +{dayTransactions.length - 2} more
                      </div>
                    )}
                 </div>
