@@ -7,7 +7,8 @@ import {
   updateRecurringTransaction, 
   deleteRecurringTransaction,
   getCategoriesByType,
-  getBankAccounts
+  getBankAccounts,
+  generateRecurringTransactions
 } from "@/lib/queries";
 
 export async function getRecurringTransactionsAction(type: 'expense' | 'income') {
@@ -78,5 +79,18 @@ export async function getBankAccountsForDropdownAction() {
   } catch (error) {
     console.error("Error fetching bank accounts:", error);
     return { success: false, error: "Failed to fetch bank accounts" };
+  }
+}
+
+export async function checkAndGenerateRecurringAction(year: number, month: number) {
+  try {
+    const result = await generateRecurringTransactions(year, month);
+    if (result.generated > 0) {
+      revalidatePath('/');
+    }
+    return { success: true, ...result };
+  } catch (error) {
+    console.error("Error generating recurring transactions:", error);
+    return { success: false, generated: 0, skipped: 0, error: String(error) };
   }
 }
