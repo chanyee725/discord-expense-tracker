@@ -75,7 +75,7 @@ export default function SettingsPage() {
                 <div className="flex gap-3 pt-4">
                   <button
                     onClick={handleBudgetSave}
-                    className="flex-1 rounded-xl bg-gray-900 py-3 text-sm font-bold text-white hover:bg-gray-800 transition-colors"
+                    className="flex-1 rounded-xl bg-brand-500 py-3 text-sm font-bold text-white hover:bg-brand-600 transition-colors"
                   >
                     저장
                   </button>
@@ -94,7 +94,7 @@ export default function SettingsPage() {
                 </div>
                 <button
                   onClick={handleBudgetEdit}
-                  className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+                  className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 transition-colors"
                 >
                   수정
                 </button>

@@ -332,7 +332,7 @@ export default function AssetsPage() {
            <div className="mt-3 sm:mt-0">
              <button
                onClick={() => { setEditingAccount(null); setIsPanelOpen(true); }}
-               className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors shadow-sm"
+               className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-3 py-2 text-sm font-medium text-white hover:bg-brand-600 transition-colors shadow-sm"
              >
                자산 관리
              </button>
@@ -448,13 +448,13 @@ export default function AssetsPage() {
              </div>
 
              <div className="p-6 border-t border-gray-100 bg-white z-10 pb-8">
-               <div className="flex flex-col gap-3">
-                 <button
-                   onClick={handleSaveAccount}
-                   className="w-full rounded-xl bg-gray-900 py-4 text-sm font-bold text-white shadow-lg shadow-gray-900/10 hover:bg-gray-800 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
-                 >
-                   저장하기
-                 </button>
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={handleSaveAccount}
+                    className="w-full rounded-xl bg-brand-500 py-4 text-sm font-bold text-white shadow-lg shadow-brand-500/10 hover:bg-brand-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
+                  >
+                    저장하기
+                  </button>
 
                  <button
                    onClick={handleDeleteAccount}
@@ -497,10 +497,10 @@ export default function AssetsPage() {
                        onClick={() => handleEditAccount(account)}
                        className="group flex items-center justify-between p-5 rounded-xl hover:bg-gray-50 cursor-pointer transition-all duration-200 border border-gray-100"
                      >
-                       <div className="flex items-center gap-4">
-                         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-xl shadow-sm border border-gray-100">
-                           {BANK_ICONS[account.bankName] || "🏦"}
-                         </div>
+                        <div className="flex items-center gap-4">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-xl shadow-sm border border-gray-100">
+                            {BANK_ICONS[account.bankName] || "🏦"}
+                          </div>
                          <div>
                            <div className="font-semibold text-gray-900 mb-0.5">{account.accountName}</div>
                            <div className="text-xs font-medium text-gray-500">{account.bankName}</div>
@@ -529,14 +529,14 @@ export default function AssetsPage() {
                )}
              </div>
 
-             <div className="p-6 border-t border-gray-100 bg-white z-10 pb-8">
-               <button
-                 onClick={handleAddAccount}
-                 className="w-full rounded-xl bg-gray-900 py-4 text-sm font-bold text-white shadow-lg shadow-gray-900/10 hover:bg-gray-800 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
-               >
-                 계좌 추가
-               </button>
-             </div>
+              <div className="p-6 border-t border-gray-100 bg-white z-10 pb-8">
+                <button
+                  onClick={handleAddAccount}
+                  className="w-full rounded-xl bg-brand-500 py-4 text-sm font-bold text-white shadow-lg shadow-brand-500/10 hover:bg-brand-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
+                >
+                  계좌 추가
+                </button>
+              </div>
            </div>
          )}
        </div>

@@ -260,7 +260,7 @@ export default function RecurringManagementClient({
           </h3>
           <button
             onClick={handleAddNew}
-            className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors shadow-sm"
+            className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 transition-colors shadow-sm"
           >
             <span>+</span>
             <span>추가하기</span>
@@ -285,7 +285,7 @@ export default function RecurringManagementClient({
                   <div className={`flex h-12 w-12 items-center justify-center rounded-xl shadow-sm border border-gray-100 ${
                     activeTab === "expenses" 
                       ? "bg-red-50 text-red-600" 
-                      : "bg-blue-50 text-blue-600"
+                      : "bg-brand-50 text-brand-600"
                   }`}>
                     <span className="text-xl">
                       {activeTab === "expenses" ? "💸" : "💰"}
@@ -449,7 +449,7 @@ export default function RecurringManagementClient({
               <div className="flex flex-col gap-3">
                 <button
                   onClick={handleSave}
-                  className="w-full rounded-xl bg-gray-900 py-4 text-sm font-bold text-white shadow-lg shadow-gray-900/10 hover:bg-gray-800 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
+                  className="w-full rounded-xl bg-brand-500 py-4 text-sm font-bold text-white shadow-lg shadow-brand-500/10 hover:bg-brand-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
                 >
                   저장하기
                 </button>

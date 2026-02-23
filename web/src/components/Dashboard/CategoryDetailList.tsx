@@ -79,7 +79,7 @@ export default function CategoryDetailList({
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-4">
         <h4 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+          <div className="w-3 h-3 rounded-full bg-brand-500"></div>
           {selectedCategory}
         </h4>
         <button
@@ -95,7 +95,7 @@ export default function CategoryDetailList({
 
       {isLoading ? (
         <div className="flex justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-blue-500"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500"></div>
         </div>
       ) : transactions.length > 0 ? (
         <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">

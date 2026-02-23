@@ -207,7 +207,7 @@ export default function CalendarView({
           {Array.from({ length: firstDayOfMonth }).map((_, i) => (
             <div
               key={`empty-${i}`}
-              className="flex h-[110px] flex-col border-r border-stroke bg-white p-1"
+              className="flex h-[117px] flex-col border-r border-stroke bg-white p-1"
             />
           ))}
 
@@ -232,15 +232,15 @@ export default function CalendarView({
             return (
               <div
                 key={day}
-                className={`group relative flex h-[110px] cursor-pointer flex-col border-r border-b border-stroke p-1 transition hover:bg-gray-50 bg-white`}
+                className={`group relative flex h-[117px] cursor-pointer flex-col border-r border-b border-stroke p-2 transition hover:bg-gray-50 bg-white`}
                 onClick={() => handleDayClick(currentDayDate, dayTransactions)}
               >
                 <div className="flex flex-col h-full">
-                  <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-start justify-end mb-1">
                     <span
                       className={`font-medium text-sm flex items-center justify-center ${
                         isToday 
-                          ? "w-7 h-7 rounded-full border-2 border-blue-500 text-blue-500" 
+                          ? "w-7 h-7 rounded-full border-2 border-brand-500 text-brand-500" 
                           : dayOfWeek === 0
                           ? "text-red-600"
                           : dayOfWeek === 6
@@ -250,19 +250,9 @@ export default function CalendarView({
                     >
                       {day}
                     </span>
-                    {expenseTotal > 0 && (
-                       <span className="text-xs font-medium text-red-600">
-                         -{expenseTotal.toLocaleString()}
-                       </span>
-                    )}
-                    {incomeTotal > 0 && expenseTotal === 0 && (
-                       <span className="text-xs font-medium text-blue-600">
-                         +{incomeTotal.toLocaleString()}
-                       </span>
-                    )}
                   </div>
                   
-                  <div className="flex flex-col gap-1 overflow-hidden">
+                  <div className="flex flex-col gap-0.5 overflow-hidden flex-1">
                     {dayTransactions.slice(0, 3).map((t) => (
                       <div
                         key={t.id}
@@ -270,22 +260,23 @@ export default function CalendarView({
                           e.stopPropagation();
                           handleTransactionClick(t);
                         }}
-                        className="flex justify-between text-xs cursor-pointer hover:bg-gray-100 p-0.5 rounded transition-colors"
+                        className="flex justify-between items-center text-xs cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded transition-colors"
                       >
-                        <span className="truncate text-gray-500">{t.title}</span>
-                         <span className={`whitespace-nowrap font-medium ${
+                        <span className="truncate text-gray-600 flex-1 mr-1">{t.title}</span>
+                         <span className={`whitespace-nowrap font-semibold ${
                            t.type === "수입" ? "text-blue-600" : "text-red-600"
                          }`}>
                            {Number(t.amount).toLocaleString()}
                          </span>
                       </div>
                     ))}
-                    {dayTransactions.length > 3 && (
-                      <div className="text-xs text-gray-400 text-right">
-                        +{dayTransactions.length - 3} more
-                      </div>
-                    )}
                   </div>
+                  
+                  {dayTransactions.length > 3 && (
+                    <div className="text-xs text-gray-400 text-left mt-auto pt-1">
+                      +{dayTransactions.length - 3} more
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -294,7 +285,7 @@ export default function CalendarView({
           {Array.from({ length: (7 - ((daysInMonth + firstDayOfMonth) % 7)) % 7 }).map((_, i) => (
              <div
               key={`empty-end-${i}`}
-              className="flex h-[110px] flex-col border-r border-stroke bg-white p-1"
+              className="flex h-[117px] flex-col border-r border-stroke bg-white p-1"
             />
           ))}
         </div>
@@ -454,7 +445,7 @@ export default function CalendarView({
             <div className="border-t border-stroke px-6 py-4 space-y-2">
               <button
                 onClick={handleSave}
-                className="w-full rounded bg-gray-900 py-2 px-4 font-medium text-white hover:bg-gray-800 transition-colors"
+                className="w-full rounded bg-brand-500 py-2 px-4 font-medium text-white hover:bg-brand-600 transition-colors"
               >
                 저장
               </button>
@@ -544,7 +535,7 @@ export default function CalendarView({
               <div className="border-t border-stroke px-6 py-4 space-y-3">
                 <button
                   onClick={handleAddTransaction}
-                  className="w-full rounded bg-blue-600 py-2 px-4 font-medium text-white hover:bg-blue-700 transition-colors"
+                  className="w-full rounded bg-brand-500 py-2 px-4 font-medium text-white hover:bg-brand-600 transition-colors"
                 >
                   추가하기
                 </button>
