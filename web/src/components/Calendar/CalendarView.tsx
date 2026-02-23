@@ -252,31 +252,31 @@ export default function CalendarView({
                     </span>
                   </div>
                   
-                  <div className="flex flex-col gap-0.5 overflow-hidden flex-1">
-                    {dayTransactions.slice(0, 3).map((t) => (
-                      <div
-                        key={t.id}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleTransactionClick(t);
-                        }}
-                        className="flex justify-between items-center text-xs cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded transition-colors"
-                      >
-                        <span className="truncate text-gray-600 flex-1 mr-1">{t.title}</span>
-                         <span className={`whitespace-nowrap font-semibold ${
-                           t.type === "수입" ? "text-blue-600" : "text-red-600"
-                         }`}>
-                           {Number(t.amount).toLocaleString()}
-                         </span>
-                      </div>
-                    ))}
-                  </div>
+                   <div className="flex flex-col gap-0.5 overflow-y-auto flex-1 pb-1">
+                     {dayTransactions.slice(0, 3).map((t) => (
+                       <div
+                         key={t.id}
+                         onClick={(e) => {
+                           e.stopPropagation();
+                           handleTransactionClick(t);
+                         }}
+                         className="flex justify-between items-center text-xs cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded transition-colors whitespace-normal"
+                       >
+                         <span className="truncate text-gray-600 flex-1 mr-1">{t.title}</span>
+                          <span className={`whitespace-nowrap font-semibold ${
+                            t.type === "수입" ? "text-blue-600" : "text-red-600"
+                          }`}>
+                            {Number(t.amount).toLocaleString()}
+                          </span>
+                       </div>
+                     ))}
+                   </div>
                   
-                  {dayTransactions.length > 3 && (
-                    <div className="text-xs text-gray-400 text-left mt-auto pt-1">
-                      +{dayTransactions.length - 3} more
-                    </div>
-                  )}
+                   {dayTransactions.length > 3 && (
+                     <div className="text-xs text-gray-400 text-left mt-auto pt-0.5">
+                       +{dayTransactions.length - 3} more
+                     </div>
+                   )}
                 </div>
               </div>
             );
@@ -371,23 +371,27 @@ export default function CalendarView({
                 />
               </div>
 
-              {/* Amount Field */}
-              <div>
-                <label className="mb-2 block text-sm font-medium text-black">
-                  금액
-                </label>
-                <input
-                  type="number"
-                  value={editFormData.amount}
-                  onChange={(e) =>
-                    setEditFormData({
-                      ...editFormData,
-                      amount: Number(e.target.value),
-                    })
-                  }
-                  className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
-                />
-              </div>
+               {/* Amount Field */}
+               <div>
+                 <label className="mb-2 block text-sm font-medium text-black">
+                   금액
+                 </label>
+                 <input
+                   type="text"
+                   value={editFormData.amount === 0 ? '' : editFormData.amount.toLocaleString('ko-KR')}
+                   onChange={(e) => {
+                     const value = e.target.value.replace(/,/g, '');
+                     if (value === '' || !isNaN(Number(value))) {
+                       setEditFormData({
+                         ...editFormData,
+                         amount: value === '' ? 0 : Number(value),
+                       });
+                     }
+                   }}
+                   placeholder="0"
+                   className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
+                 />
+               </div>
 
               {/* Type Field */}
               {isCreatingNew && (
