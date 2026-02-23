@@ -979,6 +979,8 @@ export async function createTransaction(data: {
   type: "수입" | "지출";
   category?: string;
   transaction_date: string;
+  withdrawal_source?: string;
+  deposit_destination?: string;
 }) {
   const result = await sql`
     INSERT INTO transactions (
@@ -988,7 +990,7 @@ export async function createTransaction(data: {
     )
     VALUES (
       ${data.title}, ${data.amount}, ${data.type}, ${data.category || null},
-      ${null}, ${null},
+      ${data.deposit_destination || null}, ${data.withdrawal_source || null},
       ${data.transaction_date}, ${null}, now()
     )
     RETURNING *

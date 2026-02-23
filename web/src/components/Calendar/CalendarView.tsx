@@ -40,6 +40,18 @@ const parseAccountName = (ocrText: string | null, bankAccounts: BankAccountRow[]
   return ocrText;
 };
 
+const findMatchingAccountId = (ocrText: string | null, bankAccounts: BankAccountRow[]): string => {
+  if (!ocrText) return "";
+  
+  for (const account of bankAccounts) {
+    if (account.account_number && ocrText.includes(account.account_number)) {
+      return account.id;
+    }
+  }
+  
+  return "";
+};
+
 export default function CalendarView({
   transactions,
   currentDate,
@@ -65,6 +77,7 @@ export default function CalendarView({
     type: "지출" as "수입" | "지출",
     withdrawal_source: "",
     deposit_destination: "",
+    selectedAccountId: "",
   });
 
   const daysInMonth = current.daysInMonth();
@@ -88,6 +101,11 @@ export default function CalendarView({
   const handleTransactionClick = (transaction: CalendarTransaction) => {
     setEditingTransaction(transaction);
     setIsCreatingNew(false);
+    
+    const matchedAccountId = transaction.type === "지출"
+      ? findMatchingAccountId(transaction.withdrawal_source, bankAccounts)
+      : findMatchingAccountId(transaction.deposit_destination, bankAccounts);
+    
     setEditFormData({
       title: transaction.title || "",
       amount: transaction.amount,
@@ -96,6 +114,7 @@ export default function CalendarView({
       type: transaction.type as "수입" | "지출",
       withdrawal_source: transaction.withdrawal_source || "",
       deposit_destination: transaction.deposit_destination || "",
+      selectedAccountId: matchedAccountId,
     });
     setIsDayModalOpen(false);
     setIsEditPanelOpen(true);
@@ -113,6 +132,7 @@ export default function CalendarView({
       type: "지출",
       withdrawal_source: "",
       deposit_destination: "",
+      selectedAccountId: bankAccounts.length > 0 ? bankAccounts[0].id : "",
     });
     setIsDayModalOpen(false);
     setIsEditPanelOpen(true);
@@ -132,6 +152,9 @@ export default function CalendarView({
   };
 
   const handleSave = async () => {
+    const selectedAccount = bankAccounts.find(acc => acc.id === editFormData.selectedAccountId);
+    const accountName = selectedAccount ? selectedAccount.name : "";
+    
     if (isCreatingNew) {
       const result = await createTransactionAction({
         title: editFormData.title,
@@ -139,6 +162,8 @@ export default function CalendarView({
         type: editFormData.type,
         category: editFormData.category,
         transaction_date: editFormData.transaction_date,
+        withdrawal_source: editFormData.type === "지출" ? accountName : "",
+        deposit_destination: editFormData.type === "수입" ? accountName : "",
       });
       
       if (result.success) {
@@ -154,6 +179,8 @@ export default function CalendarView({
         amount: editFormData.amount,
         category: editFormData.category,
         transaction_date: editFormData.transaction_date,
+        withdrawal_source: editFormData.type === "지출" ? accountName : editFormData.deposit_destination,
+        deposit_destination: editFormData.type === "수입" ? accountName : editFormData.withdrawal_source,
       });
       
       if (result.success) {
@@ -434,29 +461,30 @@ export default function CalendarView({
                  />
                </div>
 
-               {!isCreatingNew && editFormData.withdrawal_source && (
-                 <div>
-                   <label className="mb-2 block text-sm font-medium text-black">
-                     출금 계좌
-                   </label>
-                   <div className="w-full rounded border border-stroke bg-gray-50 py-2 px-3 text-gray-600">
-                     {editFormData.withdrawal_source}
-                   </div>
-                 </div>
-               )}
-               {!isCreatingNew && editFormData.deposit_destination && (
-                 <div>
-                   <label className="mb-2 block text-sm font-medium text-black">
-                     입금 계좌
-                   </label>
-                   <div className="w-full rounded border border-stroke bg-gray-50 py-2 px-3 text-gray-600">
-                     {editFormData.deposit_destination}
-                   </div>
-                 </div>
-               )}
+               <div>
+                 <label className="mb-2 block text-sm font-medium text-black">
+                   {editFormData.type === "지출" ? "출금 계좌" : "입금 계좌"}
+                 </label>
+                 <select
+                   value={editFormData.selectedAccountId}
+                   onChange={(e) =>
+                     setEditFormData({
+                       ...editFormData,
+                       selectedAccountId: e.target.value,
+                     })
+                   }
+                   className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
+                 >
+                   <option value="">선택하기</option>
+                   {bankAccounts.map((account) => (
+                     <option key={account.id} value={account.id}>
+                       {account.name}
+                     </option>
+                   ))}
+                 </select>
+               </div>
 
-              {/* Type Field */}
-              {isCreatingNew && (
+               {isCreatingNew && (
                 <div>
                   <label className="mb-2 block text-sm font-medium text-black">
                     유형

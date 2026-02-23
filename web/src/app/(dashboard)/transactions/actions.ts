@@ -10,6 +10,8 @@ export async function createTransactionAction(data: {
   type: "수입" | "지출";
   category?: string;
   transaction_date: string;
+  withdrawal_source?: string;
+  deposit_destination?: string;
 }) {
   try {
     const result = await createTransaction(data);
@@ -26,7 +28,7 @@ export async function createTransactionAction(data: {
 
 export async function updateTransactionAction(
   id: string,
-  data: Partial<Pick<Transaction, 'title' | 'amount' | 'category' | 'transaction_date' | 'raw_ocr_text'>>
+  data: Partial<Pick<Transaction, 'title' | 'amount' | 'category' | 'transaction_date' | 'raw_ocr_text' | 'withdrawal_source' | 'deposit_destination'>>
 ) {
   try {
     const result = await updateTransaction(id, data);
