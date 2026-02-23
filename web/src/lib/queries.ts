@@ -140,7 +140,7 @@ export async function getMonthlyExpenses(
       SUM(amount)::int as total
     FROM transactions
     WHERE EXTRACT(YEAR FROM created_at) = ${year}
-      AND deposit_destination IS NULL
+      AND type = '지출'
     GROUP BY month
     ORDER BY month ASC
   `;
@@ -160,7 +160,7 @@ export async function getMonthlyIncome(
       SUM(amount)::int as total
     FROM transactions
     WHERE EXTRACT(YEAR FROM created_at) = ${year}
-      AND deposit_destination IS NOT NULL
+      AND type = '수입'
     GROUP BY month
     ORDER BY month ASC
   `;
@@ -182,7 +182,7 @@ export async function getCategoryBreakdown(
     WHERE
       EXTRACT(YEAR FROM created_at) = ${year}
       AND EXTRACT(MONTH FROM created_at) = ${month}
-      AND deposit_destination IS NULL
+      AND type = '지출'
     GROUP BY category
     ORDER BY total DESC
   `;
@@ -204,7 +204,7 @@ export async function getDailyExpenses(
     WHERE
       EXTRACT(YEAR FROM created_at) = ${year}
       AND EXTRACT(MONTH FROM created_at) = ${month}
-      AND deposit_destination IS NULL
+      AND type = '지출'
     GROUP BY day
     ORDER BY day ASC
   `;
