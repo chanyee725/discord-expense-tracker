@@ -88,18 +88,44 @@ async def insert_transaction(pool: asyncpg.Pool, data: dict[str, Any]) -> None:
         - amount coerced to int to handle Gemini string/int variation
         - created_at auto-set by database with now()
         - All fields use .get() with defaults to handle missing keys gracefully
+        - Automatically updates bank_accounts.balance for linked accounts
     """
+    amount = int(data.get('amount', 0))
+    trans_type = data.get('type')
+    withdrawal_source = data.get('withdrawal_source')
+    deposit_destination = data.get('deposit_destination')
+    
     await pool.execute(
         """
         INSERT INTO transactions (title, amount, type, category, deposit_destination, withdrawal_source, transaction_date, raw_ocr_text)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         """,
         data.get('title'),
-        int(data.get('amount', 0)),
-        data.get('type'),
+        amount,
+        trans_type,
         data.get('category'),
-        data.get('deposit_destination'),
-        data.get('withdrawal_source'),
+        deposit_destination,
+        withdrawal_source,
         data.get('transaction_date'),
         data.get('raw_ocr_text')
     )
+    
+    if trans_type == '지출' and withdrawal_source:
+        await pool.execute(
+            """
+            UPDATE bank_accounts
+            SET balance = balance - $1, updated_at = now()
+            WHERE name = $2
+            """,
+            amount, withdrawal_source
+        )
+    
+    if trans_type == '수입' and deposit_destination:
+        await pool.execute(
+            """
+            UPDATE bank_accounts
+            SET balance = balance + $1, updated_at = now()
+            WHERE name = $2
+            """,
+            amount, deposit_destination
+        )

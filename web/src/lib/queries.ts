@@ -388,12 +388,19 @@ export async function getMonthlyAssetGrowth(
  * Update a transaction with partial data
  * Only updates the provided fields; missing fields are left unchanged
  * Returns the updated transaction record
+ * Automatically updates bank_accounts.balance if amount changes
  */
 export async function updateTransaction(
   id: string,
   data: Partial<Pick<Transaction, 'title' | 'amount' | 'category' | 'transaction_date' | 'raw_ocr_text'>>
 ): Promise<Transaction | null> {
   const { title, amount, category, transaction_date, raw_ocr_text } = data;
+
+  const oldTx = await sql<[Transaction | undefined]>`
+    SELECT * FROM transactions WHERE id = ${id}
+  `.then(rows => rows[0]);
+  
+  if (!oldTx) return null;
 
   const result = await sql<[Transaction | undefined]>`
     UPDATE transactions
@@ -405,15 +412,39 @@ export async function updateTransaction(
       raw_ocr_text = ${raw_ocr_text ?? sql`raw_ocr_text`}
     WHERE id = ${id}
     RETURNING
-      id, title, amount, category, deposit_destination, withdrawal_source, transaction_date, raw_ocr_text, created_at
+      id, title, amount, type, category, deposit_destination, withdrawal_source, transaction_date, raw_ocr_text, created_at
   `;
 
-  return result[0] ?? null;
+  const updated = result[0];
+  if (!updated) return null;
+
+  if (amount !== undefined && amount !== oldTx.amount) {
+    const amountDiff = amount - oldTx.amount;
+    
+    if (updated.type === '지출' && updated.withdrawal_source) {
+      await sql`
+        UPDATE bank_accounts 
+        SET balance = balance - ${amountDiff}, updated_at = now() 
+        WHERE name = ${updated.withdrawal_source}
+      `;
+    }
+    
+    if (updated.type === '수입' && updated.deposit_destination) {
+      await sql`
+        UPDATE bank_accounts 
+        SET balance = balance + ${amountDiff}, updated_at = now() 
+        WHERE name = ${updated.deposit_destination}
+      `;
+    }
+  }
+
+  return updated;
 }
 
 /**
  * Delete a transaction by ID
  * Returns the deleted transaction record
+ * Automatically reverses bank_accounts.balance changes
  */
 export async function deleteTransaction(
   id: string
@@ -425,6 +456,7 @@ export async function deleteTransaction(
       id,
       title,
       amount,
+      type,
       category,
       deposit_destination,
       withdrawal_source,
@@ -433,7 +465,26 @@ export async function deleteTransaction(
       created_at
   `;
 
-  return result[0] ?? null;
+  const deleted = result[0];
+  if (!deleted) return null;
+
+  if (deleted.type === '지출' && deleted.withdrawal_source) {
+    await sql`
+      UPDATE bank_accounts 
+      SET balance = balance + ${deleted.amount}, updated_at = now() 
+      WHERE name = ${deleted.withdrawal_source}
+    `;
+  }
+  
+  if (deleted.type === '수입' && deleted.deposit_destination) {
+    await sql`
+      UPDATE bank_accounts 
+      SET balance = balance - ${deleted.amount}, updated_at = now() 
+      WHERE name = ${deleted.deposit_destination}
+    `;
+  }
+
+  return deleted;
 }
 
 /**
