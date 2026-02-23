@@ -5,6 +5,8 @@ Uses asyncpg for PostgreSQL connectivity with raw SQL.
 """
 
 import os
+import re
+from datetime import datetime
 from typing import Any
 import asyncpg
 
@@ -24,6 +26,51 @@ async def create_pool() -> asyncpg.Pool:
         raise ValueError("DATABASE_URL environment variable not set")
     
     return await asyncpg.create_pool(dsn)
+
+
+def parse_korean_date(date_str: str) -> datetime | None:
+    """
+    Parse Korean date format to datetime.
+    
+    Formats supported:
+    - "2026년 2월 22일" (with year)
+    - "2월 22일" (no year, uses current year)
+    - "02월 22일" (with leading zeros)
+    
+    Args:
+        date_str: Korean date string from Gemini
+        
+    Returns:
+        datetime object at midnight of the date, or None if parsing fails
+        
+    Examples:
+        >>> parse_korean_date("2월 22일")
+        datetime(2026, 2, 22, 0, 0)
+        >>> parse_korean_date("2026년 2월 22일")
+        datetime(2026, 2, 22, 0, 0)
+        >>> parse_korean_date(None)
+        None
+    """
+    if not date_str:
+        return None
+    
+    try:
+        # Pattern 1: "2026년 2월 22일" (with year)
+        match = re.search(r'(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일', date_str)
+        if match:
+            year, month, day = match.groups()
+            return datetime(int(year), int(month), int(day))
+        
+        # Pattern 2: "2월 22일" (no year, use current year)
+        match = re.search(r'(\d{1,2})월\s*(\d{1,2})일', date_str)
+        if match:
+            month, day = match.groups()
+            current_year = datetime.now().year
+            return datetime(current_year, int(month), int(day))
+        
+        return None
+    except (ValueError, AttributeError):
+        return None
 
 
 async def check_duplicate_transaction(
@@ -95,10 +142,14 @@ async def insert_transaction(pool: asyncpg.Pool, data: dict[str, Any]) -> None:
     withdrawal_source = data.get('withdrawal_source')
     deposit_destination = data.get('deposit_destination')
     
+    parsed_date = parse_korean_date(data.get('transaction_date') or '')
+    if not parsed_date:
+        parsed_date = datetime.now()
+    
     await pool.execute(
         """
-        INSERT INTO transactions (title, amount, type, category, deposit_destination, withdrawal_source, transaction_date, raw_ocr_text)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO transactions (title, amount, type, category, deposit_destination, withdrawal_source, transaction_date, raw_ocr_text, created_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         """,
         data.get('title'),
         amount,
@@ -107,7 +158,8 @@ async def insert_transaction(pool: asyncpg.Pool, data: dict[str, Any]) -> None:
         deposit_destination,
         withdrawal_source,
         data.get('transaction_date'),
-        data.get('raw_ocr_text')
+        data.get('raw_ocr_text'),
+        parsed_date
     )
     
     if trans_type == '지출' and withdrawal_source:
