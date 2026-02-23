@@ -168,7 +168,7 @@ export default function CalendarView({
               dayjs(t.created_at).isSame(currentDayDate, "day")
             );
 
-             const expenseTotal = dayTransactions
+            const expenseTotal = dayTransactions
               .filter(t => t.type === "지출")
               .reduce((sum, t) => sum + Number(t.amount), 0);
 

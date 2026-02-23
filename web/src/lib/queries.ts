@@ -75,6 +75,7 @@ export async function getTransactions(
       id,
       title,
       amount,
+      type,
       category,
       deposit_destination,
       withdrawal_source,
@@ -103,10 +104,10 @@ export async function getMonthlyTransactionStats(
        SUM(amount)::int as total_expense,
        COUNT(*)::int as transaction_count
      FROM transactions
-     WHERE
-       EXTRACT(YEAR FROM created_at) = ${year}
-       AND EXTRACT(MONTH FROM created_at) = ${month}
-       AND deposit_destination IS NULL
+      WHERE
+        EXTRACT(YEAR FROM created_at) = ${year}
+        AND EXTRACT(MONTH FROM created_at) = ${month}
+        AND type = '지출'
   `;
 
   return {
@@ -221,6 +222,7 @@ export async function getRecentTransactions(
       id,
       title,
       amount,
+      type,
       category,
       deposit_destination,
       withdrawal_source,
@@ -246,6 +248,7 @@ export async function getTransactionsByMonth(
       id,
       title,
       amount,
+      type,
       category,
       deposit_destination,
       withdrawal_source,
