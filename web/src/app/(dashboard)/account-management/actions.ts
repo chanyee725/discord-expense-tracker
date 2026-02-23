@@ -18,6 +18,7 @@ export async function saveBankAccountAction(data: {
   id?: string; 
   bank_name: string; 
   account_name: string; 
+  account_number?: string | null;
   balance: number;
   sort_order?: number;
 }) {
@@ -26,6 +27,7 @@ export async function saveBankAccountAction(data: {
       const result = await updateBankAccount(data.id, { 
         bank_name: data.bank_name, 
         name: data.account_name, 
+        account_number: data.account_number,
         balance: data.balance,
         sort_order: data.sort_order ?? 0
       });
@@ -35,6 +37,7 @@ export async function saveBankAccountAction(data: {
       const result = await createBankAccount({ 
         bank_name: data.bank_name, 
         name: data.account_name, 
+        account_number: data.account_number,
         balance: data.balance,
         sort_order: data.sort_order
       });

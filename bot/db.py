@@ -73,6 +73,35 @@ def parse_korean_date(date_str: str) -> datetime | None:
         return None
 
 
+async def get_registered_account_numbers(pool: asyncpg.Pool) -> list[str]:
+    """
+    Get all registered account numbers from bank_accounts table.
+    
+    Used to identify if a transaction is income (deposit to user's account)
+    or expense (withdrawal from user's account) based on account number matching.
+    
+    Args:
+        pool: asyncpg connection pool
+        
+    Returns:
+        List of account numbers (empty strings filtered out)
+        
+    Example:
+        >>> await get_registered_account_numbers(pool)
+        ['50420476319', '1002-123-456789']
+    """
+    rows = await pool.fetch(
+        """
+        SELECT account_number 
+        FROM bank_accounts 
+        WHERE account_number IS NOT NULL 
+          AND account_number != ''
+        """
+    )
+    
+    return [row['account_number'] for row in rows]
+
+
 async def check_duplicate_transaction(
     pool: asyncpg.Pool, 
     data: dict[str, Any]

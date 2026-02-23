@@ -29,6 +29,9 @@ const TransactionTable = ({ transactions }: TransactionTableProps) => {
                 제목
               </th>
               <th className="min-w-[120px] py-4 px-4 font-medium text-sm text-gray-700">
+                계좌
+              </th>
+              <th className="min-w-[120px] py-4 px-4 font-medium text-sm text-gray-700">
                 금액
               </th>
               <th className="min-w-[120px] py-4 px-4 font-medium text-sm text-gray-700">
@@ -47,6 +50,11 @@ const TransactionTable = ({ transactions }: TransactionTableProps) => {
                 <td className="border-b border-gray-100 py-5 px-4">
                   <p className="text-gray-700">
                     {transaction.title || "제목 없음"}
+                  </p>
+                </td>
+                <td className="border-b border-gray-100 py-5 px-4">
+                  <p className="text-sm text-gray-600">
+                    {transaction.withdrawal_source || transaction.deposit_destination || "-"}
                   </p>
                 </td>
                 <td className="border-b border-gray-100 py-5 px-4">

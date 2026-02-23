@@ -28,6 +28,7 @@ export interface BankAccountRow {
   id: string;
   bank_name: string;
   name: string;
+  account_number: string | null;
   balance: number;
   sort_order: number;
   created_at: string;
@@ -652,12 +653,13 @@ export async function getBankAccounts(): Promise<BankAccountRow[]> {
 export async function createBankAccount(data: {
   bank_name: string;
   name: string;
+  account_number?: string | null;
   balance: number;
   sort_order?: number;
 }): Promise<BankAccountRow> {
   const result = await sql<BankAccountRow[]>`
-    INSERT INTO bank_accounts (bank_name, name, balance, sort_order, updated_at)
-    VALUES (${data.bank_name}, ${data.name}, ${data.balance}, ${data.sort_order ?? 0}, now())
+    INSERT INTO bank_accounts (bank_name, name, account_number, balance, sort_order, updated_at)
+    VALUES (${data.bank_name}, ${data.name}, ${data.account_number ?? null}, ${data.balance}, ${data.sort_order ?? 0}, now())
     RETURNING *
   `;
   return result[0];
@@ -668,7 +670,7 @@ export async function createBankAccount(data: {
  */
 export async function updateBankAccount(
   id: string,
-  data: Partial<{ bank_name: string; name: string; balance: number; sort_order: number }>
+  data: Partial<{ bank_name: string; name: string; account_number: string | null; balance: number; sort_order: number }>
 ): Promise<BankAccountRow | null> {
   const updates = { ...data, updated_at: new Date().toISOString() };
   const result = await sql<BankAccountRow[]>`

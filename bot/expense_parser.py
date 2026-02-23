@@ -83,11 +83,12 @@ def is_blue_text(image_bytes: bytes, bbox: list) -> bool:
 
 
 class ExpenseParser:
-    def __init__(self):
+    def __init__(self, db_pool=None):
         self.api_key = os.getenv("GOOGLE_API_KEY")
         self.vision_client = vision.ImageAnnotatorClient()
         self.genai_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-        self.model_name = "gemini-2.5-flash" 
+        self.model_name = "gemini-2.5-flash"
+        self.db_pool = db_pool 
 
     def _extract_text_from_image(self, image_bytes: bytes) -> str:
         try:
@@ -106,9 +107,24 @@ class ExpenseParser:
         except Exception as e:
             raise Exception(f"OCR 추출 실패: {str(e)}")
 
-    def _parse_text_to_json(self, raw_text: str) -> dict:
+    async def _parse_text_to_json(self, raw_text: str) -> dict:
         if not raw_text:
             return {}
+
+        registered_accounts = []
+        if self.db_pool:
+            from bot.db import get_registered_account_numbers
+            try:
+                registered_accounts = await get_registered_account_numbers(self.db_pool)
+            except Exception as e:
+                print(f"계좌번호 조회 실패: {e}")
+
+        accounts_info = ""
+        if registered_accounts:
+            accounts_info = f"""
+            [등록된 내 계좌번호]
+            {', '.join(registered_accounts)}
+            """
 
         # TODO :: 아래 김병찬이라는 이름은 웹에서 설정 값으로 받을 수 있도록 수정하기
         prompt = f"""
@@ -119,16 +135,21 @@ class ExpenseParser:
             1. **카테고리 (최우선)**: 반드시 '카테고리 설정' 글자 옆이나 '>' 기호 바로 앞에 있는 단어(예: 쇼핑, 이체, 식비 등)를 있는 그대로 추출하세요. 절대 임의로 수정하지 마세요.
             2. 금액 및 거래 유형:
                - OCR 텍스트에서 금액을 찾으세요.
+               - **중요**: 입금처(deposit_destination)에 등록된 내 계좌번호가 포함되어 있으면 무조건 수입으로 분류하세요.
                - 카테고리가 급여/캐시백/결산이자 일 경우 수입, 그 외에는 지출로 분류하세요.
                - amount 필드에는 절댓값(양수)만 저장하세요 (쉼표 제거).
                - 예: "-15,000원" → type: "지출", amount: 15000
                - 예: "15,000원" 또는 "+15,000원" → type: "수입", amount: 15000
             3. 입금/출금처: 돈의 흐름을 파악하여 정확히 구분하세요. (예: 쿠팡페이는 출금처, 쿠팡은 입금처)
+               - 출금처는 은행명과 계좌번호를 함께 추출하세요. (예: "SC제일은행 50420476319")
+               - 입금처도 가능한 경우 은행명과 계좌번호를 함께 추출하세요.
             4. **제목 생성 규칙**:
             - **1순위**: '메모' 항목에 적힌 내용이 있다면 그것을 제목으로 사용하세요. (예: "노트북 구매")
             - **2순위**: 메모가 없거나 기본 문구라면, 사용자("김병찬") 외의 타인 이름이 있을 시 "{{이름}}에게 이체"로 생성하세요.
             - **3순위**: 둘 다 없다면 입금처를 바탕으로 생성하세요.
             5. 반드시 아래 구조의 순수 JSON으로만 응답하세요.
+            
+            {accounts_info}
             
             [JSON 구조]
             {{
@@ -158,10 +179,10 @@ class ExpenseParser:
             print(f"LLM 파싱 에러: {e}")
             return {"raw_text": raw_text, "error": "parsing_failed"}
 
-    def analyze(self, image_bytes: bytes) -> dict:
+    async def analyze(self, image_bytes: bytes) -> dict:
         raw_text = self._extract_text_from_image(image_bytes)
         
-        result = self._parse_text_to_json(raw_text)
+        result = await self._parse_text_to_json(raw_text)
         
         return result
 

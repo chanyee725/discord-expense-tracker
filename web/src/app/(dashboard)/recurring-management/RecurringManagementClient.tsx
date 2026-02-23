@@ -384,21 +384,21 @@ export default function RecurringManagementClient({
                 <label className="text-sm font-semibold text-gray-700 block">금액</label>
                 <div className="relative">
                   <input
-                    type="number"
-                    value={editingItem.amount}
-                    onChange={(e) => updateField("amount", e.target.value)}
+                    type="text"
+                    value={editingItem.amount === '' || editingItem.amount === '0'
+                      ? ''
+                      : parseInt(editingItem.amount).toLocaleString('ko-KR')}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/,/g, '');
+                      if (value === '' || !isNaN(Number(value))) {
+                        updateField("amount", value);
+                      }
+                    }}
                     placeholder="0"
                     className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
                   />
                   <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">원</div>
                 </div>
-                {editingItem.amount && (
-                  <div className="flex justify-end mt-2">
-                    <span className="text-sm font-bold text-brand-600 bg-brand-50 px-3 py-1 rounded-lg">
-                      {formatNumber(editingItem.amount)}원
-                    </span>
-                  </div>
-                )}
               </div>
 
               <div className="grid grid-cols-1 gap-6 pt-2">

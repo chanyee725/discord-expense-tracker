@@ -39,9 +39,8 @@ db_pool = None
 @client.event
 async def on_ready():
     global expense_parser, db_pool
-    # .env 등에 저장된 API 키를 가져오거나 기본 설정 사용
-    expense_parser = ExpenseParser()
     db_pool = await create_pool()
+    expense_parser = ExpenseParser(db_pool=db_pool)
     print(f"Bot logged in as {client.user}")
     print(f"DB pool created")
 
@@ -58,7 +57,7 @@ async def on_message(message):
             async with message.channel.typing():
                 try:
                     image_bytes = await attachment.read()
-                    result = expense_parser.analyze(image_bytes)
+                    result = await expense_parser.analyze(image_bytes)
 
                     # Skip DB insert if Gemini parsing failed
                     if 'error' not in result:

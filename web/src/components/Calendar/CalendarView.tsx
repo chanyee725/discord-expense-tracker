@@ -48,6 +48,8 @@ export default function CalendarView({
     category: "",
     transaction_date: "",
     type: "지출" as "수입" | "지출",
+    withdrawal_source: "",
+    deposit_destination: "",
   });
 
   const daysInMonth = current.daysInMonth();
@@ -77,6 +79,8 @@ export default function CalendarView({
       category: transaction.category || "",
       transaction_date: transaction.transaction_date || "",
       type: transaction.type as "수입" | "지출",
+      withdrawal_source: transaction.withdrawal_source || "",
+      deposit_destination: transaction.deposit_destination || "",
     });
     setIsDayModalOpen(false);
     setIsEditPanelOpen(true);
@@ -92,6 +96,8 @@ export default function CalendarView({
       category: "",
       transaction_date: selectedDate,
       type: "지출",
+      withdrawal_source: "",
+      deposit_destination: "",
     });
     setIsDayModalOpen(false);
     setIsEditPanelOpen(true);
@@ -274,14 +280,17 @@ export default function CalendarView({
                            e.stopPropagation();
                            handleTransactionClick(t);
                          }}
-                         className="flex justify-between items-center text-xs cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded transition-colors whitespace-normal"
+                         className="mb-1 rounded bg-gray-50 px-2 py-1 text-xs truncate cursor-pointer hover:bg-gray-100 transition-colors"
                        >
-                         <span className="truncate text-gray-600 flex-1 mr-1">{t.title}</span>
-                          <span className={`whitespace-nowrap font-semibold ${
-                            t.type === "수입" ? "text-blue-600" : "text-red-600"
-                          }`}>
-                            {Number(t.amount).toLocaleString()}
-                          </span>
+                         <div className="font-medium text-gray-800 truncate">{t.title}</div>
+                         <div className="flex items-center justify-between mt-0.5">
+                           <span className="text-[10px] text-gray-500 truncate mr-1 max-w-[50%]">
+                             {t.withdrawal_source || t.deposit_destination || "계좌 미지정"}
+                           </span>
+                           <span className={`font-medium whitespace-nowrap ${t.type === "수입" ? "text-blue-600" : "text-red-600"}`}>
+                             {Number(t.amount).toLocaleString()}원
+                           </span>
+                         </div>
                        </div>
                      ))}
                    </div>
@@ -407,6 +416,27 @@ export default function CalendarView({
                  />
                </div>
 
+               {!isCreatingNew && editFormData.withdrawal_source && (
+                 <div>
+                   <label className="mb-2 block text-sm font-medium text-black">
+                     출금 계좌
+                   </label>
+                   <div className="w-full rounded border border-stroke bg-gray-50 py-2 px-3 text-gray-600">
+                     {editFormData.withdrawal_source}
+                   </div>
+                 </div>
+               )}
+               {!isCreatingNew && editFormData.deposit_destination && (
+                 <div>
+                   <label className="mb-2 block text-sm font-medium text-black">
+                     입금 계좌
+                   </label>
+                   <div className="w-full rounded border border-stroke bg-gray-50 py-2 px-3 text-gray-600">
+                     {editFormData.deposit_destination}
+                   </div>
+                 </div>
+               )}
+
               {/* Type Field */}
               {isCreatingNew && (
                 <div>
@@ -527,23 +557,22 @@ export default function CalendarView({
                       <div
                         key={txn.id}
                         onClick={() => handleTransactionClick(txn)}
-                        className="flex items-center justify-between rounded-lg border border-gray-100 bg-white p-4 hover:shadow-md hover:border-blue-200 transition-all cursor-pointer"
+                        className="cursor-pointer rounded-lg border border-gray-200 p-4 hover:bg-gray-50 transition-colors"
                       >
-                        <div className="flex flex-col gap-1 overflow-hidden flex-1">
-                          <span className="truncate font-medium text-gray-900 text-base">
-                            {txn.title}
-                          </span>
-                          <div className="flex items-center gap-2 text-xs text-gray-500">
-                            <span>{txn.category || "미분류"}</span>
-                            <span>•</span>
-                            <span>{dayjs(txn.created_at).format("HH:mm")}</span>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-gray-900">{txn.title}</h4>
+                            <p className="text-sm text-gray-500 mt-1">
+                              {txn.withdrawal_source || txn.deposit_destination || "계좌 미지정"}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className={`font-semibold ${txn.type === "수입" ? "text-blue-600" : "text-red-600"}`}>
+                              {Number(txn.amount).toLocaleString("ko-KR")}원
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">{txn.category || "미분류"}</p>
                           </div>
                         </div>
-                        <span className={`whitespace-nowrap font-bold text-base ml-4 ${
-                          txn.type === "수입" ? "text-blue-600" : "text-red-600"
-                        }`}>
-                          {txn.type === "수입" ? "+" : "-"}{txn.amount.toLocaleString("ko-KR")}원
-                        </span>
                       </div>
                     ))}
                   </div>

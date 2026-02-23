@@ -119,15 +119,19 @@ export default function MonthlyExpenseCard({
               </label>
               <input
                 id="budget"
-                type="number"
-                value={budgetInput}
-                onChange={(e) => setBudgetInput(e.target.value)}
+                type="text"
+                value={budgetInput === '' || budgetInput === '0'
+                  ? ''
+                  : parseInt(budgetInput).toLocaleString('ko-KR')}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/,/g, '');
+                  if (value === '' || !isNaN(Number(value))) {
+                    setBudgetInput(value);
+                  }
+                }}
                 className="w-full rounded-xl border border-gray-200 py-4 px-4 text-gray-900 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none"
-                placeholder="예: 2000000"
+                placeholder="0"
               />
-              <p className="mt-2 text-sm text-gray-500 text-right">
-                {formatNumber(budgetInput)}원
-              </p>
             </div>
 
             <div className="flex gap-3">
