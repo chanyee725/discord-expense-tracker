@@ -12,6 +12,7 @@ import CategoryDonutChart from "@/components/Charts/CategoryDonutChart";
 import DailyExpenseChart from "@/components/Charts/DailyExpenseChart";
 import MonthlyExpenseCard from "@/components/Dashboard/MonthlyExpenseCard";
 import MonthSelector from "@/components/Dashboard/MonthSelector";
+import RecurringCheckTrigger from "@/components/RecurringCheckTrigger";
 import dayjs from "dayjs";
 
 export const dynamic = "force-dynamic";
@@ -132,6 +133,7 @@ export default async function DashboardPage({
 
   return (
     <div className="grid grid-cols-12 gap-4 md:gap-6">
+      <RecurringCheckTrigger />
       <div className="col-span-12 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5 md:gap-6">
         <MonthSelector />
         <MonthlyExpenseCard totalExpense={totalExpense} budgetGoal={monthlyBudget} />

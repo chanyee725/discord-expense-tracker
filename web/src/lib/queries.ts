@@ -62,6 +62,18 @@ export interface RecurringTransactionRow {
 }
 
 /**
+ * Recurring transaction generation log from recurring_transaction_log table
+ */
+export interface RecurringTransactionLog {
+  id: string;
+  recurring_transaction_id: string;
+  year: number;
+  month: number;
+  transaction_id: string | null;
+  generated_at: string;
+}
+
+/**
  * Get paginated list of transactions ordered by creation date (newest first)
  */
 export async function getTransactions(
@@ -698,4 +710,120 @@ export async function deleteBankAccount(id: string): Promise<BankAccountRow | nu
     RETURNING *
   `;
   return result[0] || null;
+}
+
+export function getNextBusinessDay(year: number, month: number, day: number): Date {
+  const lastDay = new Date(year, month, 0).getDate();
+  const clampedDay = Math.min(day, lastDay);
+  
+  const date = new Date(year, month - 1, clampedDay);
+  
+  const dayOfWeek = date.getDay();
+  
+  if (dayOfWeek === 6) {
+    date.setDate(date.getDate() + 2);
+  } else if (dayOfWeek === 0) {
+    date.setDate(date.getDate() + 1);
+  }
+  
+  return date;
+}
+
+export async function generateRecurringTransactions(
+  year: number, 
+  month: number,
+  day?: number // Optional: if provided, only generate for this specific day
+): Promise<{ generated: number; skipped: number }> {
+  
+  const recurring = await sql<RecurringTransactionRow[]>`
+    SELECT * FROM recurring_transactions 
+    WHERE is_active = true
+  `;
+  
+  const existingLogs = await sql<RecurringTransactionLog[]>`
+    SELECT * FROM recurring_transaction_log
+    WHERE year = ${year} AND month = ${month}
+  `;
+  
+  const existingIds = new Set(existingLogs.map(log => log.recurring_transaction_id));
+  
+  // Filter by day if provided (for daily cron), otherwise generate all for the month (for catch-up)
+  let toGenerate = recurring.filter(r => !existingIds.has(r.id));
+  
+  if (day !== undefined) {
+    // Only generate templates whose day_of_month matches today's date
+    toGenerate = toGenerate.filter(r => r.day_of_month === day);
+  }
+  
+  let generated = 0;
+  let skipped = 0;
+  
+  for (const template of toGenerate) {
+    try {
+      const businessDay = getNextBusinessDay(year, month, template.day_of_month);
+      
+      const transactionType = template.type === 'expense' ? '지출' : '수입';
+      
+      const withdrawalSource = template.type === 'expense' ? template.bank_account : null;
+      const depositDestination = template.type === 'income' ? template.bank_account : null;
+      
+      const koreanMonth = businessDay.getMonth() + 1;
+      const koreanDay = businessDay.getDate();
+      const transactionDate = `${koreanMonth}월 ${koreanDay}일`;
+      
+      await sql.begin(async (tx: any) => {
+        const insertedRows = await tx`
+          INSERT INTO transactions (
+            title, amount, type, category, 
+            deposit_destination, withdrawal_source, 
+            transaction_date, raw_ocr_text, created_at
+          )
+          VALUES (
+            ${template.title}, ${template.amount}, ${transactionType}, ${template.category},
+            ${depositDestination}, ${withdrawalSource},
+            ${transactionDate}, ${null}, ${businessDay}
+          )
+          RETURNING *
+        `;
+        const inserted = insertedRows[0] as Transaction;
+        
+        if (transactionType === '지출' && withdrawalSource) {
+          await tx`
+            UPDATE bank_accounts 
+            SET balance = balance - ${template.amount}, updated_at = now()
+            WHERE name = ${withdrawalSource}
+          `;
+        }
+        
+        if (transactionType === '수입' && depositDestination) {
+          await tx`
+            UPDATE bank_accounts 
+            SET balance = balance + ${template.amount}, updated_at = now()
+            WHERE name = ${depositDestination}
+          `;
+        }
+        
+        await tx`
+          INSERT INTO recurring_transaction_log (
+            recurring_transaction_id, year, month, transaction_id, generated_at
+          )
+          VALUES (
+            ${template.id}, ${year}, ${month}, ${inserted.id}, now()
+          )
+        `;
+      });
+      
+      generated++;
+      
+    } catch (error: any) {
+      if (error?.code === '23505') {
+        skipped++;
+      } else {
+        console.error(`Failed to generate recurring transaction ${template.id}:`, error);
+        throw error;
+      }
+    }
+  }
+  
+  return { generated, skipped };
 }

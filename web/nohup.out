@@ -1,0 +1,232 @@
+
+> web@0.1.0 dev
+> next dev -p 3002
+
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /home/byungchan/package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * /home/byungchan/Desktop/poor-guy/web/package-lock.json
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3002
+- Network:       http://172.20.10.12:3002
+- Environments: .env
+
+✓ Starting...
+✓ Ready in 1408ms
+ GET / 200 in 1114ms (compile: 381ms, render: 733ms)
+Persisting failed: Unable to write SST file 00000075.sst
+
+Caused by:
+    No such file or directory (os error 2)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+
+thread 'tokio-runtime-worker' (536721) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for emit_evaluate_pool_assets_operation (TaskId 47302))
+
+Caused by:
+    0: Looking up data for TaskId 47302 from database failed
+    1: DecompressionFailed
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'tokio-runtime-worker' (536721) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:387:51:
+range start index 8238998 out of range for slice of length 8238350
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+
+thread 'tokio-runtime-worker' (536723) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for get_typescript_transform_options (TaskId 584))
+
+Caused by:
+    0: Looking up data for TaskId 584 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536723) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for ModuleOptions::new (TaskId 6447))
+
+Caused by:
+    0: Looking up data for TaskId 6447 from database failed
+    1: DecompressionFailed
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+
+thread 'tokio-runtime-worker' (536726) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for resolve (TaskId 50197))
+
+Caused by:
+    0: Looking up data for TaskId 50197 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536726) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for analyze_ecmascript_module (TaskId 51004))
+
+Caused by:
+    0: Looking up data for TaskId 51004 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536716) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for analyze_ecmascript_module (TaskId 18659))
+
+Caused by:
+    0: Looking up data for TaskId 18659 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536722) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <ModuleAssetContext as AssetContext>::process (TaskId 57800))
+
+Caused by:
+    0: Looking up data for TaskId 57800 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536722) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:387:51:
+range start index 18446744073709551571 out of range for slice of length 79
+
+thread 'tokio-runtime-worker' (536716) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for EcmascriptClientReferenceModule::proxy_module (TaskId 50489))
+
+Caused by:
+    0: Looking up data for TaskId 50489 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536722) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <ModuleAssetContext as AssetContext>::process (TaskId 12175))
+
+Caused by:
+    0: Looking up data for TaskId 12175 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536716) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for AssetIdent::path (TaskId 10081))
+
+Caused by:
+    0: Looking up data for TaskId 10081 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536722) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for SingleModuleGraph::new_with_entries_visited_intern (TaskId 49737))
+
+Caused by:
+    0: Looking up data for TaskId 49737 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536726) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for AppProject::edge_ssr_transition (TaskId 507))
+
+Caused by:
+    0: Looking up data for TaskId 507 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536723) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for Project::execution_context (TaskId 526))
+
+Caused by:
+    0: Looking up data for TaskId 526 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536730) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for get_app_page_entry (TaskId 49324))
+
+Caused by:
+    0: Looking up data for TaskId 49324 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536717) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for Project::execution_context (TaskId 526))
+
+Caused by:
+    0: Looking up data for TaskId 526 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536730) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <ModuleAssetContext as AssetContext>::process (TaskId 1336))
+
+Caused by:
+    0: Looking up data for TaskId 1336 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536910) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for Project::execution_context (TaskId 526))
+
+Caused by:
+    0: Looking up data for TaskId 526 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536728) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for get_edge_compile_time_info (TaskId 544))
+
+Caused by:
+    0: Looking up data for TaskId 544 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (537421) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for get_server_compile_time_info (TaskId 545))
+
+Caused by:
+    0: Looking up data for TaskId 545 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536918) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for get_server_compile_time_info (TaskId 545))
+
+Caused by:
+    0: Looking up data for TaskId 545 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536718) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for Project::execution_context (TaskId 526))
+
+Caused by:
+    0: Looking up data for TaskId 526 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536721) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for Project::execution_context (TaskId 526))
+
+Caused by:
+    0: Looking up data for TaskId 526 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536736) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for Project::execution_context (TaskId 526))
+
+Caused by:
+    0: Looking up data for TaskId 526 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536719) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for get_edge_compile_time_info (TaskId 544))
+
+Caused by:
+    0: Looking up data for TaskId 544 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (536720) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for NextConfig::client_source_maps (TaskId 767))
+
+Caused by:
+    0: Looking up data for TaskId 767 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (537419) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <ModuleAssetContext as AssetContext>::process (TaskId 41715))
+
+Caused by:
+    0: Looking up data for TaskId 41715 from database failed
+    1: DecompressionFailed
+
+thread 'tokio-runtime-worker' (537419) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <EcmascriptModuleAsset as Module>::side_effects (TaskId 50374))
+
+Caused by:
+    0: Looking up data for TaskId 50374 from database failed
+    1: DecompressionFailed
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+  Reload env: .env

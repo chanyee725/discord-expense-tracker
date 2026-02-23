@@ -117,7 +117,7 @@ export default function CategoryDetailList({
                 </span>
               </div>
               <span className={`whitespace-nowrap font-bold text-base ${
-                txn.deposit_destination ? "text-blue-600" : "text-red-600"
+                txn.deposit_destination ? "text-blue-600" : "text-gray-900"
               }`}>
                 {txn.amount.toLocaleString("ko-KR")}원
               </span>
