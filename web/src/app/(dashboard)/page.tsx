@@ -6,12 +6,14 @@ import {
   getDailyExpenses,
   getMonthlyTransactionStats,
   getAppSetting,
+  getRecurringDueInRange,
 } from "@/lib/queries";
 import MonthlyExpenseChart from "@/components/Charts/MonthlyExpenseChart";
 import CategoryDonutChart from "@/components/Charts/CategoryDonutChart";
 import DailyExpenseChart from "@/components/Charts/DailyExpenseChart";
 import MonthlyExpenseCard from "@/components/Dashboard/MonthlyExpenseCard";
 import MonthSelector from "@/components/Dashboard/MonthSelector";
+import UpcomingPaymentsCard from "@/components/Dashboard/UpcomingPaymentsCard";
 import RecurringCheckTrigger from "@/components/RecurringCheckTrigger";
 import dayjs from "dayjs";
 
@@ -45,6 +47,7 @@ export default async function DashboardPage({
     dailyExpenses,
     prevYearMonthlyExpenses,
     prevYearMonthlyIncome,
+    upcomingPayments,
   ] = await Promise.all([
     getMonthlyTransactionStats(selectedYear, selectedMonth),
     getMonthlyExpenses(currentYear),
@@ -57,6 +60,12 @@ export default async function DashboardPage({
     currentMonth < 6
       ? getMonthlyIncome(currentYear - 1)
       : Promise.resolve([]),
+    (async () => {
+      const today = new Date();
+      const nextWeek = new Date(today);
+      nextWeek.setDate(today.getDate() + 7);
+      return getRecurringDueInRange(today, nextWeek);
+    })(),
   ]);
 
   const monthlyBudgetStr = await getAppSetting('monthly_budget');
@@ -123,19 +132,13 @@ export default async function DashboardPage({
   const isCurrentMonth =
     selectedYear === currentYear && selectedMonth === currentMonth;
   const divider = isCurrentMonth ? now.date() : daysInSelectedMonth;
-  const dailyAverage = divider > 0 ? Math.round(totalExpense / divider) : 0;
-  const topCategoryName =
-    categoryBreakdown.length > 0
-      ? categoryBreakdown[0].category || "미분류"
-      : "-";
 
   const hasData = transactionCount > 0 || monthlyExpenses.length > 0;
 
   return (
     <div className="grid grid-cols-12 gap-4 md:gap-6">
       <RecurringCheckTrigger />
-      <div className="col-span-12 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5 md:gap-6">
-        <MonthSelector />
+      <div className="col-span-12 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 md:gap-6">
         <MonthlyExpenseCard totalExpense={totalExpense} budgetGoal={monthlyBudget} />
         <Card
           title="이번 달 거래 건수"
@@ -156,41 +159,8 @@ export default async function DashboardPage({
             </svg>
           }
         />
-        <Card
-          title="일평균 지출"
-          value={`${dailyAverage.toLocaleString("ko-KR")}원`}
-          icon={
-            <svg
-              className="fill-current"
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
-                fill=""
-              />
-            </svg>
-          }
-        />
-        <Card
-          title="가장 많은 카테고리"
-          value={topCategoryName}
-          icon={
-            <svg
-              className="fill-current"
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="" />
-            </svg>
-          }
-        />
+        <UpcomingPaymentsCard payments={upcomingPayments} />
+        <MonthSelector />
       </div>
 
       {!hasData ? (

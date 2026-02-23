@@ -729,6 +729,57 @@ export function getNextBusinessDay(year: number, month: number, day: number): Da
   return date;
 }
 
+/**
+ * Get recurring transactions due within a date range
+ * Returns active recurring transaction templates with their calculated due dates
+ * Handles month boundaries and applies weekend adjustments via getNextBusinessDay
+ */
+export async function getRecurringDueInRange(
+  startDate: Date,
+  endDate: Date
+): Promise<Array<{ template: RecurringTransactionRow; dueDate: Date }>> {
+  // Normalize dates to midnight/end-of-day for accurate range checking
+  const start = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 0, 0, 0, 0);
+  const end = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59, 999);
+
+  // Load all active recurring transaction templates
+  const templates = await sql<RecurringTransactionRow[]>`
+    SELECT * FROM recurring_transactions WHERE is_active = true
+  `;
+
+  // Build list of months that intersect with the date range
+  const months: Array<{ year: number; month: number }> = [];
+  let cursor = new Date(start.getFullYear(), start.getMonth(), 1);
+  const lastMonth = new Date(end.getFullYear(), end.getMonth(), 1);
+  
+  while (
+    cursor.getFullYear() < lastMonth.getFullYear() ||
+    (cursor.getFullYear() === lastMonth.getFullYear() && cursor.getMonth() <= lastMonth.getMonth())
+  ) {
+    months.push({ year: cursor.getFullYear(), month: cursor.getMonth() + 1 });
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+
+  // Calculate due dates and filter by range
+  const results: Array<{ template: RecurringTransactionRow; dueDate: Date }> = [];
+  
+  for (const template of templates) {
+    for (const { year, month } of months) {
+      const dueDate = getNextBusinessDay(year, month, template.day_of_month);
+      
+      // Check if due date falls within the range
+      if (dueDate >= start && dueDate <= end) {
+        results.push({ template, dueDate });
+      }
+    }
+  }
+
+  // Sort by dueDate in ascending order
+  results.sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
+  
+  return results;
+}
+
 export async function generateRecurringTransactions(
   year: number, 
   month: number,

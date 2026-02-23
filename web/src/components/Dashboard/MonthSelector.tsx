@@ -59,9 +59,9 @@ export default function MonthSelector() {
         <h4 className="text-base font-semibold text-gray-800 tracking-tight">조회 기간</h4>
       </div>
       
-      <div className="space-y-4">
+      <div className="flex flex-row gap-3">
         {/* Year Selector */}
-        <div>
+        <div className="flex-1">
           <label htmlFor="year-select" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 ml-0.5">
             년도
           </label>
@@ -87,7 +87,7 @@ export default function MonthSelector() {
         </div>
         
         {/* Month Selector */}
-        <div>
+        <div className="flex-1">
           <label htmlFor="month-select" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 ml-0.5">
             월
           </label>

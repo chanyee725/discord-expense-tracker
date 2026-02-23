@@ -25,7 +25,8 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
     chart: {
       fontFamily: "Outfit, sans-serif",
       type: "bar",
-      height: 335,
+      height: 350,
+      width: 800,
       stacked: true,
       toolbar: {
         show: false,
@@ -34,19 +35,6 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
         enabled: false,
       },
     },
-    responsive: [
-      {
-        breakpoint: 1536,
-        options: {
-          plotOptions: {
-            bar: {
-              borderRadius: 0,
-              columnWidth: "25%",
-            },
-          },
-        },
-      },
-    ],
     plotOptions: {
       bar: {
         horizontal: false,
@@ -98,6 +86,8 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
     },
     tooltip: {
       theme: "light",
+      shared: true,
+      intersect: false,
       y: {
         formatter: function (val) {
           return val.toLocaleString("ko-KR") + " 원";
