@@ -38,8 +38,8 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
     plotOptions: {
       bar: {
         horizontal: false,
-        borderRadius: 0,
-        columnWidth: "25%",
+        borderRadius: 4,
+        columnWidth: "55%",
         borderRadiusApplication: "end",
         borderRadiusWhenStacked: "last",
       },

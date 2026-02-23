@@ -18,6 +18,14 @@ interface CalendarViewProps {
   totalExpense: number;
 }
 
+const parseTransactionDate = (dateStr: string, year: number, month: number): Date | null => {
+  const match = dateStr.match(/(\d+)월\s*(\d+)일/);
+  if (!match) return null;
+  const txMonth = parseInt(match[1], 10);
+  const txDay = parseInt(match[2], 10);
+  return new Date(year, txMonth - 1, txDay); // month is 0-indexed in Date constructor
+};
+
 export default function CalendarView({
   transactions,
   currentDate,
@@ -217,9 +225,15 @@ export default function CalendarView({
             const isToday = dayjs().isSame(currentDayDate, "day");
             const dayOfWeek = currentDayDate.day();
 
-            const dayTransactions = transactions.filter((t) =>
-              dayjs(t.created_at).isSame(currentDayDate, "day")
-            );
+            const currentYear = current.year();
+            const currentMonth = current.month() + 1;
+
+            const dayTransactions = transactions.filter((t) => {
+              if (!t.transaction_date) return false;
+              const txDate = parseTransactionDate(t.transaction_date, currentYear, currentMonth);
+              if (!txDate) return false;
+              return dayjs(txDate).isSame(currentDayDate, "day");
+            });
 
             const expenseTotal = dayTransactions
               .filter(t => t.type === "지출")

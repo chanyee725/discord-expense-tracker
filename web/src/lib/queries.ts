@@ -223,6 +223,28 @@ export async function getDailyExpenses(
 }
 
 /**
+ * Get daily income totals for a given month
+ * Uses created_at for reliable date filtering
+ */
+export async function getDailyIncome(
+  year: number,
+  month: number
+): Promise<Array<{ day: number; total: number }>> {
+  return sql<Array<{ day: number; total: number }>>`
+    SELECT
+      EXTRACT(DAY FROM created_at)::int as day,
+      SUM(amount)::int as total
+    FROM transactions
+    WHERE
+      EXTRACT(YEAR FROM created_at) = ${year}
+      AND EXTRACT(MONTH FROM created_at) = ${month}
+      AND type = '수입'
+    GROUP BY day
+    ORDER BY day ASC
+  `;
+}
+
+/**
  * Get most recent transactions
  * Uses created_at for reliable ordering
  */
@@ -378,6 +400,64 @@ export async function getMonthlyAssetGrowth(
     const currentBalanceResult = await sql<Array<{ total: number }>>`
       SELECT COALESCE(SUM(balance), 0)::int as total
       FROM bank_accounts
+    `;
+    
+    const currentTotal = currentBalanceResult[0]?.total ?? 0;
+    monthMap.set(currentMonth, currentTotal);
+  }
+
+  // Build full year array
+  const fullYear: Array<{ month: number; total_balance: number }> = [];
+  for (let month = 1; month <= 12; month++) {
+    fullYear.push({
+      month,
+      total_balance: monthMap.get(month) ?? 0,
+    });
+  }
+
+  return fullYear;
+}
+
+/**
+ * Get monthly asset growth for a specific account or all accounts
+ * If accountId is null, returns aggregated data (same as getMonthlyAssetGrowth)
+ */
+export async function getMonthlyAssetGrowthByAccount(
+  year: number,
+  accountId: string | null
+): Promise<Array<{ month: number; total_balance: number }>> {
+  if (!accountId) {
+    return getMonthlyAssetGrowth(year);
+  }
+
+  // Get current year and month
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
+
+  // Query historical data from account_balance_history filtered by account
+  const result = await sql<
+    Array<{ month: number; total_balance: number }>
+  >`
+    SELECT
+      EXTRACT(MONTH FROM snapshot_date)::int as month,
+      SUM(balance)::int as total_balance
+    FROM account_balance_history
+    WHERE EXTRACT(YEAR FROM snapshot_date) = ${year}
+      AND account_id = ${accountId}
+    GROUP BY month
+    ORDER BY month ASC
+  `;
+
+  // Fill in missing months with 0
+  const monthMap = new Map(result.map((row) => [row.month, row.total_balance]));
+
+  // If querying current year, get real-time balance for current month for specific account
+  if (year === currentYear) {
+    const currentBalanceResult = await sql<Array<{ total: number }>>`
+      SELECT COALESCE(balance, 0)::int as total
+      FROM bank_accounts
+      WHERE id = ${accountId}
     `;
     
     const currentTotal = currentBalanceResult[0]?.total ?? 0;

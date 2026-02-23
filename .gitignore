@@ -258,3 +258,8 @@ __marimo__/
 # Project-specific: GCP secrets (but keep .gitkeep to track directory)
 secrets/
 !secrets/.gitkeep
+
+# Screenshots (local testing artifacts)
+스크린샷*.png
+Screenshot*.png
+*.png.tmp

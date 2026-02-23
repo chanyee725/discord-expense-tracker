@@ -22,103 +22,82 @@ const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
   categories,
   title,
 }) => {
+  // State for chart filter: "expense", "income", or "all"
+  const [chartFilter, setChartFilter] = React.useState<"expense" | "income" | "all">("expense");
+
+  // Load filter preference from localStorage on mount
+  React.useEffect(() => {
+    const saved = localStorage.getItem("dailyChartFilter");
+    if (saved === "expense" || saved === "income" || saved === "all") {
+      setChartFilter(saved);
+    }
+  }, []);
+
+  // Save filter preference to localStorage when changed
+  const handleFilterChange = (filter: "expense" | "income" | "all") => {
+    setChartFilter(filter);
+    localStorage.setItem("dailyChartFilter", filter);
+  };
+
+  // Filter series data based on selection
+  const filteredSeries = React.useMemo(() => {
+    if (chartFilter === "expense") {
+      return series.filter((s) => s.name === "지출");
+    } else if (chartFilter === "income") {
+      return series.filter((s) => s.name === "수입");
+    } else {
+      return series; // Show all
+    }
+  }, [series, chartFilter]);
+
+  // Chart colors based on filter selection
+  const chartColors = React.useMemo(() => {
+    if (chartFilter === "expense") return ["#EF4444"]; // Red only
+    if (chartFilter === "income") return ["#3B82F6"]; // Blue only
+    return ["#EF4444", "#3B82F6"]; // Both
+  }, [chartFilter]);
+
   const options: ApexOptions = {
-    legend: {
-      show: false,
-      position: "top",
-      horizontalAlign: "left",
-    },
-    colors: ["#465FFF", "#9CB9FF"],
+    colors: chartColors,
     chart: {
       fontFamily: "Outfit, sans-serif",
+      type: "bar",
       height: 335,
-      type: "area",
-      dropShadow: {
-        enabled: true,
-        color: "#465FFF14",
-        top: 10,
-        blur: 4,
-        left: 0,
-        opacity: 0.1,
-      },
+      stacked: chartFilter === "all",
       toolbar: {
         show: false,
       },
+      zoom: {
+        enabled: false,
+      },
     },
-    responsive: [
-      {
-        breakpoint: 1024,
-        options: {
-          chart: {
-            height: 300,
-          },
-        },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        borderRadius: 4,
+        columnWidth: "55%",
+        borderRadiusApplication: "end",
+        borderRadiusWhenStacked: "last",
       },
-      {
-        breakpoint: 1366,
-        options: {
-          chart: {
-            height: 350,
-          },
-        },
-      },
-    ],
-    stroke: {
-      width: [2, 2],
-      curve: "smooth",
-    },
-    grid: {
-      xaxis: {
-        lines: {
-          show: true,
-        },
-      },
-      yaxis: {
-        lines: {
-          show: true,
-        },
-      },
-      borderColor: "#E4E7EC",
-      strokeDashArray: 5,
     },
     dataLabels: {
       enabled: false,
     },
-    markers: {
-      size: 4,
-      colors: "#fff",
-      strokeColors: ["#465FFF", "#9CB9FF"],
-      strokeWidth: 3,
-      strokeOpacity: 0.9,
-      strokeDashArray: 0,
-      fillOpacity: 1,
-      discrete: [],
-      hover: {
-        size: undefined,
-        sizeOffset: 5,
-      },
-    },
     xaxis: {
-      type: "category",
       categories: categories,
+      labels: {
+        style: {
+          colors: "#667085",
+        },
+      },
       axisBorder: {
         show: false,
       },
       axisTicks: {
         show: false,
       },
-      labels: {
-        style: {
-          colors: "#667085",
-        },
-      },
     },
     yaxis: {
-      title: {
-        style: {
-          fontSize: "0px",
-        },
-      },
       labels: {
         style: {
           colors: "#667085",
@@ -127,12 +106,43 @@ const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
           return val.toLocaleString("ko-KR") + "원";
         },
       },
+      min: 0,
+      forceNiceScale: true,
+    },
+    legend: {
+      position: "top",
+      horizontalAlign: "left",
+      fontFamily: "Outfit",
+      fontWeight: 500,
+      fontSize: "14px",
+      labels: {
+        colors: "#667085",
+      },
+    },
+    fill: {
+      opacity: 1,
     },
     tooltip: {
       theme: "light",
+      shared: true,
+      intersect: false,
       y: {
         formatter: function (val) {
           return val.toLocaleString("ko-KR") + " 원";
+        },
+      },
+    },
+    grid: {
+      borderColor: "#E4E7EC",
+      strokeDashArray: 5,
+      xaxis: {
+        lines: {
+          show: false,
+        },
+      },
+      yaxis: {
+        lines: {
+          show: true,
         },
       },
     },
@@ -143,8 +153,42 @@ const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
       <div className="mb-3 justify-between gap-4 sm:flex">
         <div>
           <h4 className="text-lg font-semibold text-gray-800">
-            {title || "일별 지출 패턴 (이번 달)"}
+            {title || "일별 수입/지출 (이번 달)"}
           </h4>
+        </div>
+
+        {/* Filter Toggle Buttons */}
+        <div className="flex gap-2 mt-3 sm:mt-0">
+          <button
+            onClick={() => handleFilterChange("expense")}
+            className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+              chartFilter === "expense"
+                ? "bg-brand-500 text-white"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            }`}
+          >
+            지출
+          </button>
+          <button
+            onClick={() => handleFilterChange("income")}
+            className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+              chartFilter === "income"
+                ? "bg-brand-500 text-white"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            }`}
+          >
+            수입
+          </button>
+          <button
+            onClick={() => handleFilterChange("all")}
+            className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+              chartFilter === "all"
+                ? "bg-brand-500 text-white"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            }`}
+          >
+            전체
+          </button>
         </div>
       </div>
 
@@ -153,8 +197,8 @@ const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
           <div className="min-w-[1000px] xl:min-w-full">
             <ReactApexChart
               options={options}
-              series={series}
-              type="area"
+              series={filteredSeries}
+              type="bar"
               height={350}
             />
           </div>

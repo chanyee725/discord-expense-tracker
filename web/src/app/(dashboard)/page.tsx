@@ -4,6 +4,7 @@ import {
   getMonthlyIncome,
   getCategoryBreakdown,
   getDailyExpenses,
+  getDailyIncome,
   getMonthlyTransactionStats,
   getAppSetting,
   getRecurringDueInRange,
@@ -45,6 +46,7 @@ export default async function DashboardPage({
     monthlyIncome,
     categoryBreakdown,
     dailyExpenses,
+    dailyIncome,
     prevYearMonthlyExpenses,
     prevYearMonthlyIncome,
     upcomingPayments,
@@ -54,6 +56,7 @@ export default async function DashboardPage({
     getMonthlyIncome(currentYear),
     getCategoryBreakdown(selectedYear, selectedMonth),
     getDailyExpenses(selectedYear, selectedMonth),
+    getDailyIncome(selectedYear, selectedMonth),
     currentMonth < 6
       ? getMonthlyExpenses(currentYear - 1)
       : Promise.resolve([]),
@@ -127,6 +130,12 @@ export default async function DashboardPage({
     return found ? found.total : 0;
   });
 
+  const dailyIncomeChartData = Array.from({ length: daysInSelectedMonth }, (_, i) => {
+    const day = i + 1;
+    const found = dailyIncome.find((d) => d.day === day);
+    return found ? found.total : 0;
+  });
+
   const totalExpense = monthlyStats.total_expense;
   const transactionCount = monthlyStats.transaction_count;
   const isCurrentMonth =
@@ -176,9 +185,12 @@ export default async function DashboardPage({
         <>
           <div className="col-span-12">
             <DailyExpenseChart
-              series={[{ name: "지출", data: dailyChartData }]}
+              series={[
+                { name: "지출", data: dailyChartData },
+                { name: "수입", data: dailyIncomeChartData },
+              ]}
               categories={dailyChartCategories}
-              title={`일별 지출 (${selectedYear}년 ${selectedMonth}월)`}
+              title={`일별 수입/지출 (${selectedYear}년 ${selectedMonth}월)`}
             />
           </div>
           <div className="col-span-12 xl:col-span-5">
