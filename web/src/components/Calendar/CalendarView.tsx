@@ -29,6 +29,9 @@ export default function CalendarView({
   const current = dayjs(currentDate);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [isEditPanelOpen, setIsEditPanelOpen] = useState(false);
+  const [isDayModalOpen, setIsDayModalOpen] = useState(false);
+  const [dayModalTransactions, setDayModalTransactions] = useState<CalendarTransaction[]>([]);
+  const [dayModalDate, setDayModalDate] = useState<string>("");
   const [editingTransaction, setEditingTransaction] = useState<CalendarTransaction | null>(null);
   const [editFormData, setEditFormData] = useState({
     title: "",
@@ -63,7 +66,21 @@ export default function CalendarView({
       category: transaction.category || "",
       transaction_date: transaction.transaction_date || "",
     });
+    setIsDayModalOpen(false);
     setIsEditPanelOpen(true);
+  };
+
+  const handleDayClick = (date: dayjs.Dayjs, dayTransactions: CalendarTransaction[]) => {
+    if (dayTransactions.length === 0) return;
+    setDayModalDate(date.format("YYYY년 M월 D일"));
+    setDayModalTransactions(dayTransactions);
+    setIsDayModalOpen(true);
+  };
+
+  const handleCloseDayModal = () => {
+    setIsDayModalOpen(false);
+    setDayModalTransactions([]);
+    setDayModalDate("");
   };
 
   const handleSave = async () => {
@@ -179,18 +196,16 @@ export default function CalendarView({
             return (
               <div
                 key={day}
-                className={`group relative flex h-[110px] cursor-pointer flex-col border-r border-b border-stroke p-1 transition hover:bg-gray ${
-                  isToday ? "bg-gray" : "bg-white"
-                }`}
-                onClick={() =>
-                  setSelectedDate(currentDayDate.format("YYYY-MM-DD"))
-                }
+                className={`group relative flex h-[110px] cursor-pointer flex-col border-r border-b border-stroke p-1 transition hover:bg-gray-50 bg-white`}
+                onClick={() => handleDayClick(currentDayDate, dayTransactions)}
               >
                 <div className="flex flex-col h-full">
                   <div className="flex items-center justify-between mb-1">
                     <span
-                      className={`font-medium text-sm ${
-                        dayOfWeek === 0
+                      className={`font-medium text-sm flex items-center justify-center ${
+                        isToday 
+                          ? "w-7 h-7 rounded-full bg-blue-500 text-white" 
+                          : dayOfWeek === 0
                           ? "text-red-600"
                           : dayOfWeek === 6
                           ? "text-blue-600"
@@ -383,7 +398,88 @@ export default function CalendarView({
           </div>
         )}
       </div>
-     </div>
+      </div>
+
+      {/* Day Modal Backdrop */}
+      {isDayModalOpen && (
+        <div
+          className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-40 transition-opacity"
+          onClick={handleCloseDayModal}
+        />
+      )}
+
+      {/* Day Transactions Modal */}
+      <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none ${isDayModalOpen ? "pointer-events-auto" : ""}`}>
+        <div
+          className={`bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden transform transition-all duration-300 ${
+            isDayModalOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
+          }`}
+        >
+          {isDayModalOpen && (
+            <div className="flex flex-col h-full">
+              <div className="flex items-center justify-between border-b border-stroke px-6 py-4">
+                <h3 className="font-medium text-black">
+                  {dayModalDate} 거래 내역
+                </h3>
+                <button
+                  onClick={handleCloseDayModal}
+                  className="flex h-8 w-8 items-center justify-center rounded hover:bg-gray-100 transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto px-6 py-4">
+                {dayModalTransactions.length === 0 ? (
+                  <div className="py-12 text-center text-gray-500">
+                    거래 내역이 없습니다.
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {dayModalTransactions.map((txn) => (
+                      <div
+                        key={txn.id}
+                        onClick={() => handleTransactionClick(txn)}
+                        className="flex items-center justify-between rounded-lg border border-gray-100 bg-white p-4 hover:shadow-md hover:border-blue-200 transition-all cursor-pointer"
+                      >
+                        <div className="flex flex-col gap-1 overflow-hidden flex-1">
+                          <span className="truncate font-medium text-gray-900 text-base">
+                            {txn.title}
+                          </span>
+                          <div className="flex items-center gap-2 text-xs text-gray-500">
+                            <span>{txn.category || "미분류"}</span>
+                            <span>•</span>
+                            <span>{dayjs(txn.created_at).format("HH:mm")}</span>
+                          </div>
+                        </div>
+                        <span className={`whitespace-nowrap font-bold text-base ml-4 ${
+                          txn.type === "수입" ? "text-blue-600" : "text-red-600"
+                        }`}>
+                          {txn.type === "수입" ? "+" : "-"}{txn.amount.toLocaleString("ko-KR")}원
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="border-t border-stroke px-6 py-4">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">총 {dayModalTransactions.length}건</span>
+                  <div className="flex gap-4">
+                    <span className="text-blue-600 font-medium">
+                      수입: +{dayModalTransactions.filter(t => t.type === "수입").reduce((sum, t) => sum + Number(t.amount), 0).toLocaleString("ko-KR")}원
+                    </span>
+                    <span className="text-red-600 font-medium">
+                      지출: -{dayModalTransactions.filter(t => t.type === "지출").reduce((sum, t) => sum + Number(t.amount), 0).toLocaleString("ko-KR")}원
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
