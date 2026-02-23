@@ -500,4 +500,142 @@ describe('generateRecurringTransactions', () => {
     expect(result.skipped).toBe(0);
     expect((sql as any).begin).toHaveBeenCalledTimes(2);
   });
+
+  it('prevents duplicate generation via log-first insertion', async () => {
+    (sql as any).mockImplementation((strings: TemplateStringsArray, ...values: any[]) => {
+      const query = strings.join('?');
+      if (query.includes('SELECT * FROM recurring_transactions')) {
+        return Promise.resolve([
+          {
+            id: 'recurring-1',
+            title: 'Test Recurring',
+            amount: 50000,
+            category: 'Test',
+            type: 'expense',
+            day_of_month: 15,
+            bank_account: 'Test Bank',
+            is_active: true,
+            created_at: '2026-01-01',
+            updated_at: '2026-01-01'
+          }
+        ]);
+      }
+      if (query.includes('SELECT * FROM recurring_transaction_log')) {
+        return Promise.resolve([]);
+      }
+      return Promise.resolve([]);
+    });
+
+    let logInsertAttempted = false;
+    let transactionInsertAttempted = false;
+
+    (sql as any).begin = vi.fn((callback: any) => {
+      const mockTx = vi.fn((strings: TemplateStringsArray, ...values: any[]) => {
+        const query = strings.join('?');
+        
+        if (query.includes('INSERT INTO recurring_transaction_log')) {
+          logInsertAttempted = true;
+          if (logInsertAttempted && transactionInsertAttempted) {
+            throw new Error('Transaction insert should not happen before log insert');
+          }
+          const error: any = new Error('duplicate key value violates unique constraint');
+          error.code = '23505';
+          return Promise.reject(error);
+        }
+        
+        if (query.includes('INSERT INTO transactions')) {
+          transactionInsertAttempted = true;
+          if (!logInsertAttempted) {
+            throw new Error('Log must be inserted before transaction');
+          }
+          return Promise.resolve([{ id: 'tx-1' }]);
+        }
+        
+        if (query.includes('UPDATE recurring_transaction_log')) {
+          return Promise.resolve([]);
+        }
+        
+        if (query.includes('UPDATE bank_accounts')) {
+          return Promise.resolve([]);
+        }
+        
+        return Promise.resolve([]);
+      });
+      return callback(mockTx);
+    });
+
+    const result = await generateRecurringTransactions(2026, 2, 15);
+    
+    expect(result.generated).toBe(0);
+    expect(result.skipped).toBe(1);
+    expect(logInsertAttempted).toBe(true);
+    expect(transactionInsertAttempted).toBe(false);
+  });
+
+  it('ensures log is inserted before transaction for correct ordering', async () => {
+    (sql as any).mockImplementation((strings: TemplateStringsArray, ...values: any[]) => {
+      const query = strings.join('?');
+      if (query.includes('SELECT * FROM recurring_transactions')) {
+        return Promise.resolve([
+          {
+            id: 'recurring-1',
+            title: 'Test Recurring',
+            amount: 50000,
+            category: 'Test',
+            type: 'expense',
+            day_of_month: 15,
+            bank_account: 'Test Bank',
+            is_active: true,
+            created_at: '2026-01-01',
+            updated_at: '2026-01-01'
+          }
+        ]);
+      }
+      if (query.includes('SELECT * FROM recurring_transaction_log')) {
+        return Promise.resolve([]);
+      }
+      return Promise.resolve([]);
+    });
+
+    const executionOrder: string[] = [];
+
+    (sql as any).begin = vi.fn((callback: any) => {
+      const mockTx = vi.fn((strings: TemplateStringsArray, ...values: any[]) => {
+        const query = strings.join('?');
+        
+        if (query.includes('INSERT INTO recurring_transaction_log')) {
+          executionOrder.push('log-insert');
+          return Promise.resolve([{ id: 'log-1' }]);
+        }
+        
+        if (query.includes('INSERT INTO transactions')) {
+          executionOrder.push('transaction-insert');
+          return Promise.resolve([{ id: 'tx-1' }]);
+        }
+        
+        if (query.includes('UPDATE recurring_transaction_log')) {
+          executionOrder.push('log-update');
+          return Promise.resolve([]);
+        }
+        
+        if (query.includes('UPDATE bank_accounts')) {
+          executionOrder.push('balance-update');
+          return Promise.resolve([]);
+        }
+        
+        return Promise.resolve([]);
+      });
+      return callback(mockTx);
+    });
+
+    const result = await generateRecurringTransactions(2026, 2, 15);
+    
+    expect(result.generated).toBe(1);
+    expect(executionOrder).toEqual([
+      'log-insert',
+      'transaction-insert',
+      'log-update',
+      'balance-update'
+    ]);
+  });
 });

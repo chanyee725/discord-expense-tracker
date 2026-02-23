@@ -772,6 +772,18 @@ export async function generateRecurringTransactions(
       const transactionDate = `${koreanMonth}월 ${koreanDay}일`;
       
       await sql.begin(async (tx: any) => {
+        // CRITICAL: Insert log FIRST to prevent race conditions
+        // If duplicate exists, UNIQUE constraint will fail and entire transaction rolls back
+        // This prevents creating duplicate transactions in the transactions table
+        await tx`
+          INSERT INTO recurring_transaction_log (
+            recurring_transaction_id, year, month, transaction_id, generated_at
+          )
+          VALUES (
+            ${template.id}, ${year}, ${month}, ${null}, now()
+          )
+        `;
+        
         const insertedRows = await tx`
           INSERT INTO transactions (
             title, amount, type, category, 
@@ -786,6 +798,15 @@ export async function generateRecurringTransactions(
           RETURNING *
         `;
         const inserted = insertedRows[0] as Transaction;
+        
+        // Update the log with the actual transaction_id
+        await tx`
+          UPDATE recurring_transaction_log
+          SET transaction_id = ${inserted.id}
+          WHERE recurring_transaction_id = ${template.id}
+            AND year = ${year}
+            AND month = ${month}
+        `;
         
         if (transactionType === '지출' && withdrawalSource) {
           await tx`
@@ -802,15 +823,6 @@ export async function generateRecurringTransactions(
             WHERE name = ${depositDestination}
           `;
         }
-        
-        await tx`
-          INSERT INTO recurring_transaction_log (
-            recurring_transaction_id, year, month, transaction_id, generated_at
-          )
-          VALUES (
-            ${template.id}, ${year}, ${month}, ${inserted.id}, now()
-          )
-        `;
       });
       
       generated++;
