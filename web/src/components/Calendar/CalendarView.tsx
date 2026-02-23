@@ -102,9 +102,15 @@ export default function CalendarView({
     setEditingTransaction(transaction);
     setIsCreatingNew(false);
     
-    const matchedAccountId = transaction.type === "지출"
-      ? findMatchingAccountId(transaction.withdrawal_source, bankAccounts)
-      : findMatchingAccountId(transaction.deposit_destination, bankAccounts);
+    const ocrText = transaction.type === "지출"
+      ? transaction.withdrawal_source
+      : transaction.deposit_destination;
+    
+    let matchedAccountId = findMatchingAccountId(ocrText, bankAccounts);
+    
+    if (!matchedAccountId && bankAccounts.length > 0) {
+      matchedAccountId = bankAccounts[0].id;
+    }
     
     setEditFormData({
       title: transaction.title || "",
@@ -461,28 +467,33 @@ export default function CalendarView({
                  />
                </div>
 
-               <div>
-                 <label className="mb-2 block text-sm font-medium text-black">
-                   {editFormData.type === "지출" ? "출금 계좌" : "입금 계좌"}
-                 </label>
-                 <select
-                   value={editFormData.selectedAccountId}
-                   onChange={(e) =>
-                     setEditFormData({
-                       ...editFormData,
-                       selectedAccountId: e.target.value,
-                     })
-                   }
-                   className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
-                 >
-                   <option value="">선택하기</option>
-                   {bankAccounts.map((account) => (
-                     <option key={account.id} value={account.id}>
-                       {account.name}
-                     </option>
-                   ))}
-                 </select>
-               </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-black">
+                    {editFormData.type === "지출" ? "출금 계좌" : "입금 계좌"}
+                  </label>
+                  <select
+                    value={editFormData.selectedAccountId}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        selectedAccountId: e.target.value,
+                      })
+                    }
+                    className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
+                  >
+                    <option value="">선택하기</option>
+                    {bankAccounts.map((account) => (
+                      <option key={account.id} value={account.id}>
+                        {account.name}
+                      </option>
+                    ))}
+                  </select>
+                  {!isCreatingNew && editFormData.withdrawal_source && (
+                    <div className="mt-1 text-xs text-gray-500">
+                      OCR: {editFormData.type === "지출" ? editFormData.withdrawal_source : editFormData.deposit_destination}
+                    </div>
+                  )}
+                </div>
 
                {isCreatingNew && (
                 <div>
