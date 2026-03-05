@@ -121,7 +121,8 @@ export async function getMonthlyTransactionStats(
         EXTRACT(YEAR FROM created_at) = ${year}
         AND EXTRACT(MONTH FROM created_at) = ${month}
         AND type = '지출'
-  `;
+        AND created_at <= now()
+   `;
 
   return {
     total_expense: result[0]?.total_expense ?? 0,
@@ -154,6 +155,7 @@ export async function getMonthlyExpenses(
     FROM transactions
     WHERE EXTRACT(YEAR FROM created_at) = ${year}
       AND type = '지출'
+      AND created_at <= now()
     GROUP BY month
     ORDER BY month ASC
   `;
@@ -174,6 +176,7 @@ export async function getMonthlyIncome(
     FROM transactions
     WHERE EXTRACT(YEAR FROM created_at) = ${year}
       AND type = '수입'
+      AND created_at <= now()
     GROUP BY month
     ORDER BY month ASC
   `;
@@ -196,6 +199,7 @@ export async function getCategoryBreakdown(
       EXTRACT(YEAR FROM created_at) = ${year}
       AND EXTRACT(MONTH FROM created_at) = ${month}
       AND type = '지출'
+      AND created_at <= now()
     GROUP BY category
     ORDER BY total DESC
   `;
@@ -218,6 +222,7 @@ export async function getDailyExpenses(
       EXTRACT(YEAR FROM created_at) = ${year}
       AND EXTRACT(MONTH FROM created_at) = ${month}
       AND type = '지출'
+      AND created_at <= now()
     GROUP BY day
     ORDER BY day ASC
   `;
@@ -240,6 +245,7 @@ export async function getDailyIncome(
       EXTRACT(YEAR FROM created_at) = ${year}
       AND EXTRACT(MONTH FROM created_at) = ${month}
       AND type = '수입'
+      AND created_at <= now()
     GROUP BY day
     ORDER BY day ASC
   `;
@@ -598,6 +604,7 @@ export async function getTransactionsByCategory(
       EXTRACT(YEAR FROM created_at) = ${year}
       AND EXTRACT(MONTH FROM created_at) = ${month}
       AND category = ${category}
+      AND created_at <= now()
     ORDER BY created_at DESC
   `;
 }
