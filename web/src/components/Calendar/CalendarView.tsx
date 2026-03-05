@@ -52,6 +52,14 @@ const findMatchingAccountId = (ocrText: string | null, bankAccounts: BankAccount
   return "";
 };
 
+const isFutureTransaction = (createdAt: string): boolean => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const transactionDate = new Date(createdAt);
+  transactionDate.setHours(0, 0, 0, 0);
+  return transactionDate > today;
+};
+
 export default function CalendarView({
   transactions,
   currentDate,
@@ -290,25 +298,25 @@ export default function CalendarView({
             });
 
             const expenseTotal = dayTransactions
-              .filter(t => t.type === "지출")
+              .filter(t => t.type === "지출" && !isFutureTransaction(t.created_at))
               .reduce((sum, t) => sum + Number(t.amount), 0);
 
             const incomeTotal = dayTransactions
-              .filter(t => t.type === "수입")
+              .filter(t => t.type === "수입" && !isFutureTransaction(t.created_at))
               .reduce((sum, t) => sum + Number(t.amount), 0);
 
             return (
               <div
                 key={day}
-                className={`group relative flex h-[117px] cursor-pointer flex-col border-r border-b border-stroke p-2 transition hover:bg-gray-50 bg-white`}
+                className={`group relative flex h-[117px] cursor-pointer flex-col border-r border-b border-stroke p-1 transition hover:bg-gray-50 bg-white overflow-hidden`}
                 onClick={() => handleDayClick(currentDayDate, dayTransactions)}
               >
-                <div className="flex flex-col h-full">
-                  <div className="flex items-start justify-end mb-1">
+                <div className="flex flex-col h-full w-full">
+                  <div className="flex items-start justify-end mb-0.5 shrink-0">
                     <span
-                      className={`font-medium text-sm flex items-center justify-center ${
+                      className={`font-medium text-xs flex items-center justify-center ${
                         isToday 
-                          ? "w-7 h-7 rounded-full border-2 border-brand-500 text-brand-500" 
+                          ? "w-6 h-6 rounded-full border border-brand-500 bg-brand-50 text-brand-600" 
                           : dayOfWeek === 0
                           ? "text-red-600"
                           : dayOfWeek === 6
@@ -320,34 +328,42 @@ export default function CalendarView({
                     </span>
                   </div>
                   
-                   <div className="flex flex-col gap-0.5 flex-1 pb-1">
-                     {dayTransactions.slice(0, 2).map((t) => (
-                       <div
-                         key={t.id}
-                         onClick={(e) => {
-                           e.stopPropagation();
-                           handleTransactionClick(t);
-                         }}
-                         className="mb-1 rounded bg-gray-50 px-2 py-1 text-xs truncate cursor-pointer hover:bg-gray-100 transition-colors"
-                       >
-                         <div className="font-medium text-gray-800 truncate">{t.title}</div>
-                         <div className="flex items-center justify-between mt-0.5">
-                           <span className="text-[10px] text-gray-500 truncate mr-1 max-w-[50%]">
-                             {t.type === "지출" 
-                               ? parseAccountName(t.withdrawal_source, bankAccounts)
-                               : parseAccountName(t.deposit_destination, bankAccounts)
-                             }
-                           </span>
-                           <span className={`font-medium whitespace-nowrap ${t.type === "수입" ? "text-blue-600" : "text-red-600"}`}>
-                             {Number(t.amount).toLocaleString()}원
-                           </span>
-                         </div>
-                       </div>
-                     ))}
+                    <div className="flex flex-col gap-0.5 flex-1 min-h-0 w-full">
+                      {dayTransactions.slice(0, 2).map((t) => {
+                        const isFuture = isFutureTransaction(t.created_at);
+                        return (
+                        <div
+                          key={t.id}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleTransactionClick(t);
+                          }}
+                          className={`flex flex-col rounded-[3px] bg-gray-50 px-1.5 py-0.5 border border-gray-100 cursor-pointer hover:bg-gray-100 hover:border-gray-200 transition-all shrink-0 ${isFuture ? 'opacity-50' : ''}`}
+                        >
+                          <div className="flex items-start justify-between gap-1">
+                            <div className="font-medium text-[11px] text-gray-800 truncate leading-tight flex-1">{t.title}</div>
+                            {isFuture && (
+                              <span className="text-[8px] bg-amber-100 text-amber-700 px-1 rounded whitespace-nowrap shrink-0">예정</span>
+                            )}
+                          </div>
+                          <div className="flex items-center justify-between mt-[1px]">
+                            <span className="text-[9px] text-gray-500 truncate mr-1 max-w-[60%] leading-none">
+                              {t.type === "지출" 
+                                ? parseAccountName(t.withdrawal_source, bankAccounts)
+                                : parseAccountName(t.deposit_destination, bankAccounts)
+                              }
+                            </span>
+                            <span className={`font-medium text-[10px] whitespace-nowrap leading-none ${t.type === "수입" ? "text-blue-600" : "text-red-600"}`}>
+                              {Number(t.amount).toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+                        );
+                      })}
                    </div>
                   
                    {dayTransactions.length > 2 && (
-                     <div className="text-xs text-gray-400 text-left mt-auto pt-0.5">
+                     <div className="text-[10px] font-medium text-gray-400 text-left mt-auto pt-0.5 px-0.5 shrink-0">
                        +{dayTransactions.length - 2} more
                      </div>
                    )}
@@ -609,55 +625,63 @@ export default function CalendarView({
                     거래 내역이 없습니다.
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    {dayModalTransactions.map((txn) => (
-                        <div
-                          key={txn.id}
-                          onClick={() => handleTransactionClick(txn)}
-                          className="cursor-pointer rounded-lg border border-gray-200 p-4 hover:bg-gray-50 transition-colors"
-                        >
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h4 className="font-medium text-gray-900">{txn.title}</h4>
-                              <p className="text-sm text-gray-500 mt-1">
-                                {txn.type === "지출" 
-                                  ? parseAccountName(txn.withdrawal_source, bankAccounts)
-                                  : parseAccountName(txn.deposit_destination, bankAccounts)
-                                }
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className={`font-semibold ${txn.type === "수입" ? "text-blue-600" : "text-red-600"}`}>
-                                {Number(txn.amount).toLocaleString("ko-KR")}원
-                              </p>
-                              <p className="text-xs text-gray-500 mt-1">{txn.category || "미분류"}</p>
-                            </div>
-                          </div>
-                        </div>
-                    ))}
+                   <div className="space-y-3">
+                     {dayModalTransactions.map((txn) => {
+                       const isFuture = isFutureTransaction(txn.created_at);
+                       return (
+                         <div
+                           key={txn.id}
+                           onClick={() => handleTransactionClick(txn)}
+                           className={`cursor-pointer rounded-lg border border-gray-200 p-4 hover:bg-gray-50 transition-colors ${isFuture ? 'opacity-50' : ''}`}
+                         >
+                           <div className="flex items-start justify-between">
+                             <div className="flex-1">
+                               <div className="flex items-center gap-2">
+                                 <h4 className="font-medium text-gray-900">{txn.title}</h4>
+                                 {isFuture && (
+                                   <span className="text-[8px] bg-amber-100 text-amber-700 px-1 rounded">예정</span>
+                                 )}
+                               </div>
+                               <p className="text-sm text-gray-500 mt-1">
+                                 {txn.type === "지출" 
+                                   ? parseAccountName(txn.withdrawal_source, bankAccounts)
+                                   : parseAccountName(txn.deposit_destination, bankAccounts)
+                                 }
+                               </p>
+                             </div>
+                             <div className="text-right">
+                               <p className={`font-semibold ${txn.type === "수입" ? "text-blue-600" : "text-red-600"}`}>
+                                 {Number(txn.amount).toLocaleString("ko-KR")}원
+                               </p>
+                               <p className="text-xs text-gray-500 mt-1">{txn.category || "미분류"}</p>
+                             </div>
+                           </div>
+                         </div>
+                       );
+                     })}
                   </div>
                 )}
               </div>
 
-              <div className="border-t border-stroke px-6 py-4 space-y-3">
-                <button
-                  onClick={handleAddTransaction}
-                  className="w-full rounded bg-brand-500 py-2 px-4 font-medium text-white hover:bg-brand-600 transition-colors"
-                >
-                  추가하기
-                </button>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">총 {dayModalTransactions.length}건</span>
-                  <div className="flex gap-4">
-                    <span className="text-blue-600 font-medium">
-                      수입: +{dayModalTransactions.filter(t => t.type === "수입").reduce((sum, t) => sum + Number(t.amount), 0).toLocaleString("ko-KR")}원
-                    </span>
-                    <span className="text-red-600 font-medium">
-                      지출: -{dayModalTransactions.filter(t => t.type === "지출").reduce((sum, t) => sum + Number(t.amount), 0).toLocaleString("ko-KR")}원
-                    </span>
-                  </div>
-                </div>
-              </div>
+               <div className="border-t border-stroke px-6 py-4 space-y-3">
+                 <button
+                   onClick={handleAddTransaction}
+                   className="w-full rounded bg-brand-500 py-2 px-4 font-medium text-white hover:bg-brand-600 transition-colors"
+                 >
+                   추가하기
+                 </button>
+                 <div className="flex items-center justify-between text-sm">
+                   <span className="text-gray-600">총 {dayModalTransactions.filter(t => !isFutureTransaction(t.created_at)).length}건</span>
+                   <div className="flex gap-4">
+                     <span className="text-blue-600 font-medium">
+                       수입: +{dayModalTransactions.filter(t => t.type === "수입" && !isFutureTransaction(t.created_at)).reduce((sum, t) => sum + Number(t.amount), 0).toLocaleString("ko-KR")}원
+                     </span>
+                     <span className="text-red-600 font-medium">
+                       지출: -{dayModalTransactions.filter(t => t.type === "지출" && !isFutureTransaction(t.created_at)).reduce((sum, t) => sum + Number(t.amount), 0).toLocaleString("ko-KR")}원
+                     </span>
+                   </div>
+                 </div>
+               </div>
             </div>
           )}
         </div>

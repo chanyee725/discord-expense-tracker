@@ -34,8 +34,14 @@ export default async function TransactionsPage({
   
   const bankAccounts = await getBankAccounts();
   
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
   const totalIncome = transactions
-    .filter(t => t.type === "수입")
+    .filter(t => {
+      const isFuture = new Date(t.created_at) > today;
+      return t.type === "수입" && !isFuture;
+    })
     .reduce((sum, t) => sum + t.amount, 0);
 
   const serializedTransactions = transactions.map((t) => ({
