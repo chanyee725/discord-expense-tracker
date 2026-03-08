@@ -21,6 +21,7 @@ export async function saveBankAccountAction(data: {
   account_number?: string | null;
   balance: number;
   sort_order?: number;
+  account_type?: string;
 }) {
   try {
     if (data.id) {
@@ -39,7 +40,8 @@ export async function saveBankAccountAction(data: {
         name: data.account_name, 
         account_number: data.account_number,
         balance: data.balance,
-        sort_order: data.sort_order
+        sort_order: data.sort_order,
+        account_type: data.account_type
       });
       revalidatePath('/account-management');
       return { success: true, data: result };
