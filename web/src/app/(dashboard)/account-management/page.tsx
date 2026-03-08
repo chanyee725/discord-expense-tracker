@@ -290,12 +290,23 @@ export default function AccountManagementPage() {
               ))}
 
               <div className="mt-6 p-5 rounded-xl bg-gray-50 border border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm font-semibold text-gray-600">
-                    {activeTab === 'bank' ? '은행 자산' : '투자 자산'}
+                {activeTab === 'bank' ? (
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm font-semibold text-gray-600">은행 자산</div>
+                    <div className="text-2xl font-bold text-gray-900">{calculateSubtotal('bank')}원</div>
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">{calculateSubtotal(activeTab)}원</div>
-                </div>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm font-semibold text-gray-600">투자 예수금</div>
+                      <div className="text-xl font-bold text-gray-900">{calculateInvestmentSubtotals().deposit}원</div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm font-semibold text-gray-600">투자 평가금액</div>
+                      <div className="text-xl font-bold text-gray-900">{calculateInvestmentSubtotals().investment}원</div>
+                    </div>
+                  </div>
+                )}
               </div>
             </>
           )}
@@ -509,7 +520,14 @@ export default function AccountManagementPage() {
                           </div>
                         </div>
                         <div className="flex items-center gap-5">
-                          <div className="font-bold text-lg text-blue-600">{formatNumber(account.balance)}원</div>
+                          {account.accountType === 'investment' ? (
+                            <div className="text-right">
+                              <div className="text-sm text-gray-500">예수금 <span className="font-bold text-blue-600">{formatNumber(account.depositBalance)}원</span></div>
+                              <div className="text-sm text-gray-500">투자금 <span className="font-bold text-blue-600">{formatNumber(account.investmentBalance)}원</span></div>
+                            </div>
+                          ) : (
+                            <div className="font-bold text-lg text-blue-600">{formatNumber(account.balance)}원</div>
+                          )}
                           <div className="text-gray-300 group-hover:text-gray-600 transition-colors">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -523,12 +541,23 @@ export default function AccountManagementPage() {
 
                 {filteredAccounts.length > 0 && (
                   <div className="mt-6 p-5 rounded-xl bg-gray-50 border border-gray-200">
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm font-semibold text-gray-600">
-                        {activeTab === 'bank' ? '은행 자산' : '투자 자산'}
+                    {activeTab === 'bank' ? (
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm font-semibold text-gray-600">은행 자산</div>
+                        <div className="text-2xl font-bold text-gray-900">{calculateSubtotal('bank')}원</div>
                       </div>
-                      <div className="text-2xl font-bold text-gray-900">{calculateSubtotal(activeTab)}원</div>
-                    </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="text-sm font-semibold text-gray-600">투자 예수금</div>
+                          <div className="text-xl font-bold text-gray-900">{calculateInvestmentSubtotals().deposit}원</div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="text-sm font-semibold text-gray-600">투자 평가금액</div>
+                          <div className="text-xl font-bold text-gray-900">{calculateInvestmentSubtotals().investment}원</div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

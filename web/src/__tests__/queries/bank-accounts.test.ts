@@ -37,6 +37,8 @@ describe('Bank Account Queries', () => {
         account_number: '123-456-789',
         account_type: 'bank',
         balance: 1000000,
+        deposit_balance: 0,
+        investment_balance: 0,
         sort_order: 1,
         created_at: '2024-01-01T00:00:00Z',
         updated_at: '2024-01-01T00:00:00Z'
@@ -48,6 +50,8 @@ describe('Bank Account Queries', () => {
         account_number: '111-222-333',
         account_type: 'bank',
         balance: 500000,
+        deposit_balance: 0,
+        investment_balance: 0,
         sort_order: 2,
         created_at: '2024-01-02T00:00:00Z',
         updated_at: '2024-01-02T00:00:00Z'
@@ -78,6 +82,8 @@ describe('Bank Account Queries', () => {
       account_number: '999-888-777',
       account_type: 'bank',
       balance: 2000000,
+      deposit_balance: 0,
+      investment_balance: 0,
       sort_order: 3,
       created_at: '2024-01-03T00:00:00Z',
       updated_at: '2024-01-03T00:00:00Z'
@@ -104,6 +110,8 @@ describe('Bank Account Queries', () => {
       account_number: null,
       account_type: 'bank',
       balance: 100000,
+      deposit_balance: 0,
+      investment_balance: 0,
       sort_order: 0,
       created_at: '2024-01-04T00:00:00Z',
       updated_at: '2024-01-04T00:00:00Z'
@@ -128,6 +136,8 @@ describe('Bank Account Queries', () => {
       account_number: '123-456-789',
       account_type: 'bank',
       balance: 1500000,
+      deposit_balance: 0,
+      investment_balance: 0,
       sort_order: 1,
       created_at: '2024-01-01T00:00:00Z',
       updated_at: '2024-01-05T00:00:00Z'
@@ -161,6 +171,8 @@ describe('Bank Account Queries', () => {
       account_number: '123-456-789',
       account_type: 'bank',
       balance: 0,
+      deposit_balance: 0,
+      investment_balance: 0,
       sort_order: 1,
       created_at: '2024-01-01T00:00:00Z',
       updated_at: '2024-01-05T00:00:00Z'
