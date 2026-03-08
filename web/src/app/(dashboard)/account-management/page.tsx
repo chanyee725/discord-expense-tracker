@@ -9,6 +9,7 @@ interface BankAccount {
   accountName: string;
   accountNumber: string;
   balance: string;
+  accountType: string;
 }
 
 const BANK_OPTIONS = [
@@ -24,6 +25,17 @@ const BANK_OPTIONS = [
   "SC제일은행",
 ];
 
+const INVESTMENT_OPTIONS = [
+  "키움증권",
+  "삼성증권",
+  "미래에셋증권",
+  "NH투자증권",
+  "한국투자증권",
+  "대신증권",
+  "KB증권",
+  "신한투자증권",
+];
+
 const BANK_ICONS: Record<string, string> = {
   "현금": "💵",
   "국민은행": "🏦",
@@ -37,10 +49,22 @@ const BANK_ICONS: Record<string, string> = {
   "SC제일은행": "💰",
 };
 
+const INVESTMENT_ICONS: Record<string, string> = {
+  "키움증권": "📈",
+  "삼성증권": "💹",
+  "미래에셋증권": "🌐",
+  "NH투자증권": "🏛️",
+  "한국투자증권": "📊",
+  "대신증권": "📉",
+  "KB증권": "🔷",
+  "신한투자증권": "💎",
+};
+
 export default function AccountManagementPage() {
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<BankAccount | null>(null);
+  const [activeTab, setActiveTab] = useState<'bank' | 'investment'>('bank');
 
   useEffect(() => {
     const loadAccounts = async () => {
@@ -52,6 +76,7 @@ export default function AccountManagementPage() {
           accountName: acc.name,
           accountNumber: acc.account_number || "",
           balance: String(acc.balance),
+          accountType: acc.account_type || 'bank',
         }));
         setBankAccounts(mappedAccounts);
       }
@@ -64,20 +89,23 @@ export default function AccountManagementPage() {
     return num.toLocaleString("ko-KR");
   };
 
-  const calculateTotalAssets = (): string => {
-    const total = bankAccounts.reduce((sum, account) => {
-      return sum + (parseInt(account.balance) || 0);
-    }, 0);
+  const calculateSubtotal = (type: 'bank' | 'investment'): string => {
+    const total = bankAccounts
+      .filter(acc => acc.accountType === type)
+      .reduce((sum, account) => {
+        return sum + (parseInt(account.balance) || 0);
+      }, 0);
     return total.toLocaleString("ko-KR");
   };
 
   const handleAddAccount = () => {
     setEditingAccount({
       id: "",
-      bankName: "현금",
+      bankName: activeTab === 'bank' ? "현금" : "키움증권",
       accountName: "",
       accountNumber: "",
       balance: "",
+      accountType: activeTab,
     });
     setIsPanelOpen(true);
   };
@@ -103,6 +131,7 @@ export default function AccountManagementPage() {
       account_name: editingAccount.accountName,
       account_number: editingAccount.accountNumber || null,
       balance: parseInt(editingAccount.balance) || 0,
+      account_type: editingAccount.accountType,
     };
 
     const result = await saveBankAccountAction(accountData);
@@ -114,6 +143,7 @@ export default function AccountManagementPage() {
         accountName: result.data.name,
         accountNumber: result.data.account_number || "",
         balance: String(result.data.balance),
+        accountType: result.data.account_type || 'bank',
       };
 
       setBankAccounts((prev) => {
@@ -146,6 +176,8 @@ export default function AccountManagementPage() {
     setEditingAccount({ ...editingAccount, [field]: value });
   };
 
+  const filteredAccounts = bankAccounts.filter((acc) => acc.accountType === activeTab);
+
   return (
     <div className="mx-auto max-w-7xl p-4 md:p-6 2xl:p-10">
       <div className="mb-6">
@@ -155,10 +187,29 @@ export default function AccountManagementPage() {
       </div>
 
       <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-default md:p-6">
-        <div className="mb-4 flex items-center justify-between gap-4">
-          <h4 className="text-xl font-semibold text-gray-800">
-            등록된 계좌
-          </h4>
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-1 bg-gray-100/50 p-1 rounded-xl">
+            <button
+              onClick={() => setActiveTab('bank')}
+              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
+                activeTab === 'bank'
+                  ? 'bg-white text-brand-500 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50'
+              }`}
+            >
+              은행
+            </button>
+            <button
+              onClick={() => setActiveTab('investment')}
+              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
+                activeTab === 'investment'
+                  ? 'bg-white text-brand-500 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50'
+              }`}
+            >
+              투자
+            </button>
+          </div>
           <button
             onClick={handleAddAccount}
             className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 transition-colors shadow-sm"
@@ -171,15 +222,19 @@ export default function AccountManagementPage() {
         </div>
 
         <div className="space-y-3">
-          {bankAccounts.length === 0 ? (
+          {filteredAccounts.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="text-4xl mb-3">🏦</div>
-              <div className="text-gray-500">등록된 계좌가 없습니다.</div>
+              <div className="text-4xl mb-3">
+                {activeTab === 'bank' ? '🏦' : '📈'}
+              </div>
+              <div className="text-gray-500">
+                {activeTab === 'bank' ? '등록된 은행 계좌가 없습니다.' : '등록된 투자 계좌가 없습니다.'}
+              </div>
               <div className="text-sm text-gray-400 mt-1">새로운 계좌를 추가해보세요.</div>
             </div>
           ) : (
             <>
-              {bankAccounts.map((account) => (
+              {filteredAccounts.map((account) => (
                 <div
                   key={account.id}
                   onClick={() => handleEditAccount(account)}
@@ -187,7 +242,7 @@ export default function AccountManagementPage() {
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-xl shadow-sm border border-gray-100">
-                      {BANK_ICONS[account.bankName] || "🏦"}
+                      {BANK_ICONS[account.bankName] || INVESTMENT_ICONS[account.bankName] || "🏦"}
                     </div>
                     <div>
                       <div className="font-semibold text-gray-900 mb-0.5">{account.accountName}</div>
@@ -205,14 +260,14 @@ export default function AccountManagementPage() {
                 </div>
               ))}
 
-              {bankAccounts.length > 0 && (
-                <div className="mt-6 p-5 rounded-xl bg-gray-50 border border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm font-semibold text-gray-600">총 자산</div>
-                    <div className="text-2xl font-bold text-gray-900">{calculateTotalAssets()}원</div>
+              <div className="mt-6 p-5 rounded-xl bg-gray-50 border border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm font-semibold text-gray-600">
+                    {activeTab === 'bank' ? '은행 자산' : '투자 자산'}
                   </div>
+                  <div className="text-2xl font-bold text-gray-900">{calculateSubtotal(activeTab)}원</div>
                 </div>
-              )}
+              </div>
             </>
           )}
         </div>
@@ -250,14 +305,16 @@ export default function AccountManagementPage() {
 
               <div className="flex-1 overflow-y-auto p-6 space-y-8">
                 <div className="space-y-3">
-                  <label className="text-sm font-semibold text-gray-700 block">은행</label>
+                  <label className="text-sm font-semibold text-gray-700 block">
+                    {editingAccount.accountType === 'bank' ? '은행' : '증권사'}
+                  </label>
                   <div className="relative">
                     <select
                       value={editingAccount.bankName}
                       onChange={(e) => updateAccountField("bankName", e.target.value)}
                       className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none appearance-none bg-gray-50/50 focus:bg-white"
                     >
-                      {BANK_OPTIONS.map((bank) => (
+                      {(editingAccount.accountType === 'bank' ? BANK_OPTIONS : INVESTMENT_OPTIONS).map((bank) => (
                         <option key={bank} value={bank}>
                           {bank}
                         </option>
@@ -354,15 +411,19 @@ export default function AccountManagementPage() {
               </div>
 
               <div className="flex-1 overflow-y-auto p-6">
-                {bankAccounts.length === 0 ? (
+                {filteredAccounts.length === 0 ? (
                   <div className="p-12 text-center">
-                    <div className="text-4xl mb-3">🏦</div>
-                    <div className="text-gray-500">등록된 계좌가 없습니다.</div>
+                    <div className="text-4xl mb-3">
+                      {activeTab === 'bank' ? '🏦' : '📈'}
+                    </div>
+                    <div className="text-gray-500">
+                      {activeTab === 'bank' ? '등록된 은행 계좌가 없습니다.' : '등록된 투자 계좌가 없습니다.'}
+                    </div>
                     <div className="text-sm text-gray-400 mt-1">새로운 계좌를 추가해보세요.</div>
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {bankAccounts.map((account) => (
+                    {filteredAccounts.map((account) => (
                       <div
                         key={account.id}
                         onClick={() => handleEditAccount(account)}
@@ -370,7 +431,7 @@ export default function AccountManagementPage() {
                       >
                         <div className="flex items-center gap-4">
                           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-xl shadow-sm border border-gray-100">
-                            {BANK_ICONS[account.bankName] || "🏦"}
+                            {BANK_ICONS[account.bankName] || INVESTMENT_ICONS[account.bankName] || "🏦"}
                           </div>
                           <div>
                             <div className="font-semibold text-gray-900 mb-0.5">{account.accountName}</div>
@@ -390,11 +451,13 @@ export default function AccountManagementPage() {
                   </div>
                 )}
 
-                {bankAccounts.length > 0 && (
+                {filteredAccounts.length > 0 && (
                   <div className="mt-6 p-5 rounded-xl bg-gray-50 border border-gray-200">
                     <div className="flex items-center justify-between">
-                      <div className="text-sm font-semibold text-gray-600">총 자산</div>
-                      <div className="text-2xl font-bold text-gray-900">{calculateTotalAssets()}원</div>
+                      <div className="text-sm font-semibold text-gray-600">
+                        {activeTab === 'bank' ? '은행 자산' : '투자 자산'}
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900">{calculateSubtotal(activeTab)}원</div>
                     </div>
                   </div>
                 )}
