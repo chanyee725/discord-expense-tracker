@@ -10,6 +10,8 @@ interface BankAccount {
   accountNumber: string;
   balance: string;
   accountType: string;
+  depositBalance: string;
+  investmentBalance: string;
 }
 
 const BANK_OPTIONS = [
@@ -77,6 +79,8 @@ export default function AccountManagementPage() {
           accountNumber: acc.account_number || "",
           balance: String(acc.balance),
           accountType: acc.account_type || 'bank',
+          depositBalance: String(acc.deposit_balance || 0),
+          investmentBalance: String(acc.investment_balance || 0),
         }));
         setBankAccounts(mappedAccounts);
       }
@@ -98,6 +102,16 @@ export default function AccountManagementPage() {
     return total.toLocaleString("ko-KR");
   };
 
+  const calculateInvestmentSubtotals = (): { deposit: string; investment: string } => {
+    const investmentAccounts = bankAccounts.filter(acc => acc.accountType === 'investment');
+    const depositTotal = investmentAccounts.reduce((sum, acc) => sum + (parseInt(acc.depositBalance) || 0), 0);
+    const investmentTotal = investmentAccounts.reduce((sum, acc) => sum + (parseInt(acc.investmentBalance) || 0), 0);
+    return {
+      deposit: depositTotal.toLocaleString("ko-KR"),
+      investment: investmentTotal.toLocaleString("ko-KR"),
+    };
+  };
+
   const handleAddAccount = () => {
     setEditingAccount({
       id: "",
@@ -106,6 +120,8 @@ export default function AccountManagementPage() {
       accountNumber: "",
       balance: "",
       accountType: activeTab,
+      depositBalance: "",
+      investmentBalance: "",
     });
     setIsPanelOpen(true);
   };
@@ -130,8 +146,12 @@ export default function AccountManagementPage() {
       bank_name: editingAccount.bankName,
       account_name: editingAccount.accountName,
       account_number: editingAccount.accountNumber || null,
-      balance: parseInt(editingAccount.balance) || 0,
+      balance: editingAccount.accountType === 'bank' 
+        ? (parseInt(editingAccount.balance) || 0)
+        : (parseInt(editingAccount.depositBalance) || 0) + (parseInt(editingAccount.investmentBalance) || 0),
       account_type: editingAccount.accountType,
+      deposit_balance: editingAccount.accountType === 'investment' ? (parseInt(editingAccount.depositBalance) || 0) : undefined,
+      investment_balance: editingAccount.accountType === 'investment' ? (parseInt(editingAccount.investmentBalance) || 0) : undefined,
     };
 
     const result = await saveBankAccountAction(accountData);
@@ -144,6 +164,8 @@ export default function AccountManagementPage() {
         accountNumber: result.data.account_number || "",
         balance: String(result.data.balance),
         accountType: result.data.account_type || 'bank',
+        depositBalance: String(result.data.deposit_balance || 0),
+        investmentBalance: String(result.data.investment_balance || 0),
       };
 
       setBankAccounts((prev) => {
@@ -250,7 +272,14 @@ export default function AccountManagementPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-5">
-                    <div className="font-bold text-lg text-blue-600">{formatNumber(account.balance)}원</div>
+                    {account.accountType === 'investment' ? (
+                      <div className="text-right">
+                        <div className="text-sm text-gray-500">예수금 <span className="font-bold text-blue-600">{formatNumber(account.depositBalance)}원</span></div>
+                        <div className="text-sm text-gray-500">투자금 <span className="font-bold text-blue-600">{formatNumber(account.investmentBalance)}원</span></div>
+                      </div>
+                    ) : (
+                      <div className="font-bold text-lg text-blue-600">{formatNumber(account.balance)}원</div>
+                    )}
                     <div className="text-gray-300 group-hover:text-gray-600 transition-colors">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -353,26 +382,67 @@ export default function AccountManagementPage() {
                   </p>
                 </div>
 
-                <div className="space-y-3">
-                  <label className="text-sm font-semibold text-gray-700 block">잔액</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={editingAccount.balance === '' || editingAccount.balance === '0' 
-                        ? '' 
-                        : parseInt(editingAccount.balance).toLocaleString('ko-KR')}
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/,/g, '');
-                        if (value === '' || !isNaN(Number(value))) {
-                          updateAccountField("balance", value);
-                        }
-                      }}
-                      placeholder="0"
-                      className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
-                    />
-                    <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">원</div>
+                {editingAccount.accountType === 'bank' ? (
+                  <div className="space-y-3">
+                    <label className="text-sm font-semibold text-gray-700 block">잔액</label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={editingAccount.balance === '' || editingAccount.balance === '0' 
+                          ? '' 
+                          : parseInt(editingAccount.balance).toLocaleString('ko-KR')}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/,/g, '');
+                          if (value === '' || !isNaN(Number(value))) {
+                            updateAccountField("balance", value);
+                          }
+                        }}
+                        placeholder="0"
+                        className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
+                      />
+                      <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">원</div>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <>
+                    <div className="space-y-3">
+                      <label className="text-sm font-semibold text-gray-700 block">예수금</label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={editingAccount.depositBalance === '' || editingAccount.depositBalance === '0' ? '' : parseInt(editingAccount.depositBalance).toLocaleString('ko-KR')}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/,/g, '');
+                            if (value === '' || !isNaN(Number(value))) {
+                              updateAccountField("depositBalance", value);
+                            }
+                          }}
+                          placeholder="0"
+                          className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
+                        />
+                        <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">원</div>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-sm font-semibold text-gray-700 block">투자금 (평가금액)</label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={editingAccount.investmentBalance === '' || editingAccount.investmentBalance === '0' ? '' : parseInt(editingAccount.investmentBalance).toLocaleString('ko-KR')}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/,/g, '');
+                            if (value === '' || !isNaN(Number(value))) {
+                              updateAccountField("investmentBalance", value);
+                            }
+                          }}
+                          placeholder="0"
+                          className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
+                        />
+                        <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">원</div>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
 
               <div className="p-6 border-t border-gray-100 bg-white z-10 pb-8">
