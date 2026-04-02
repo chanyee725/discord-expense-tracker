@@ -347,6 +347,10 @@ export async function insertAccountBalanceSnapshot(
       (account_id, account_name, bank_name, balance, snapshot_date)
     VALUES
       (${account_id}, ${account_name}, ${bank_name}, ${balance}, ${snapshot_date})
+    ON CONFLICT (account_id, snapshot_date) DO UPDATE SET
+      balance = EXCLUDED.balance,
+      account_name = EXCLUDED.account_name,
+      bank_name = EXCLUDED.bank_name
     RETURNING
       id,
       account_id,
@@ -358,6 +362,39 @@ export async function insertAccountBalanceSnapshot(
   `;
 
   return result[0];
+}
+
+/**
+ * Generate balance snapshots for all accounts for a specific month
+ * Uses UPSERT to handle duplicate snapshots gracefully
+ * @param year - The year (e.g., 2026)
+ * @param month - The month (1-12)
+ * @returns Object with count of snapshotted accounts and list of account names
+ */
+export async function generateBalanceSnapshots(
+  year: number,
+  month: number,
+): Promise<{ snapshotted: number; accounts: string[] }> {
+  const accounts = await getBankAccounts();
+  
+  const snapshotDate = `${year}-${month.toString().padStart(2, '0')}-01`;
+  const snapshotedAccounts: string[] = [];
+
+  for (const account of accounts) {
+    await insertAccountBalanceSnapshot(
+      account.id,
+      account.name,
+      account.bank_name,
+      account.balance,
+      snapshotDate,
+    );
+    snapshotedAccounts.push(account.name);
+  }
+
+  return {
+    snapshotted: snapshotedAccounts.length,
+    accounts: snapshotedAccounts,
+  };
 }
 
 /**
