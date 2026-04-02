@@ -186,6 +186,30 @@ export async function getMonthlyIncome(
 }
 
 /**
+ * Get monthly income and expense summary for all time
+ * Returns aggregated totals for each year-month combination
+ * Uses created_at for reliable date filtering
+ */
+export async function getMonthlySummary(): Promise<Array<{
+  year: number;
+  month: number;
+  income: number;
+  expense: number;
+}>> {
+  return sql<Array<{ year: number; month: number; income: number; expense: number }>>`
+    SELECT
+      EXTRACT(YEAR FROM created_at)::int as year,
+      EXTRACT(MONTH FROM created_at)::int as month,
+      COALESCE(SUM(CASE WHEN type = '수입' THEN amount ELSE 0 END), 0)::int as income,
+      COALESCE(SUM(CASE WHEN type = '지출' THEN amount ELSE 0 END), 0)::int as expense
+    FROM transactions
+    WHERE created_at <= now()
+    GROUP BY year, month
+    ORDER BY year DESC, month DESC
+  `;
+}
+
+/**
  * Get expense breakdown by category for a given month
  * Uses created_at for reliable date filtering
  */

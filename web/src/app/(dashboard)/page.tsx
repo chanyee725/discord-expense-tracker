@@ -2,16 +2,21 @@ import React from "react";
 import {
   getMonthlyExpenses,
   getMonthlyIncome,
+  getMonthlySummary,
   getCategoryBreakdown,
   getDailyExpenses,
   getDailyIncome,
   getMonthlyTransactionStats,
   getAppSetting,
   getRecurringDueInRange,
+  getTransactionsByMonth,
+  getBankAccounts,
 } from "@/lib/queries";
+import { isSelfTransfer } from "@/lib/transfer-utils";
 import MonthlyExpenseChart from "@/components/Charts/MonthlyExpenseChart";
 import CategoryDonutChart from "@/components/Charts/CategoryDonutChart";
 import DailyExpenseChart from "@/components/Charts/DailyExpenseChart";
+import MonthlySummaryTable from "@/components/Tables/MonthlySummaryTable";
 import MonthlyExpenseCard from "@/components/Dashboard/MonthlyExpenseCard";
 import MonthSelector from "@/components/Dashboard/MonthSelector";
 import UpcomingPaymentsCard from "@/components/Dashboard/UpcomingPaymentsCard";
@@ -50,6 +55,9 @@ export default async function DashboardPage({
     prevYearMonthlyExpenses,
     prevYearMonthlyIncome,
     upcomingPayments,
+    bankAccounts,
+    selectedMonthTransactions,
+    monthlySummary,
   ] = await Promise.all([
     getMonthlyTransactionStats(selectedYear, selectedMonth),
     getMonthlyExpenses(currentYear),
@@ -60,22 +68,34 @@ export default async function DashboardPage({
     currentMonth < 6
       ? getMonthlyExpenses(currentYear - 1)
       : Promise.resolve([]),
-    currentMonth < 6
-      ? getMonthlyIncome(currentYear - 1)
-      : Promise.resolve([]),
+    currentMonth < 6 ? getMonthlyIncome(currentYear - 1) : Promise.resolve([]),
     (async () => {
       const today = new Date();
       const nextWeek = new Date(today);
       nextWeek.setDate(today.getDate() + 7);
       return getRecurringDueInRange(today, nextWeek);
     })(),
+    getBankAccounts(),
+    getTransactionsByMonth(selectedYear, selectedMonth),
+    getMonthlySummary(),
   ]);
 
-  const monthlyBudgetStr = await getAppSetting('monthly_budget');
+  const monthlyBudgetStr = await getAppSetting("monthly_budget");
   const monthlyBudget = monthlyBudgetStr ? parseInt(monthlyBudgetStr) : null;
 
+  // Calculate self-transfer amounts per day to subtract from income
+  const selfTransferByDay: Record<number, number> = {};
+  for (const transaction of selectedMonthTransactions) {
+    if (isSelfTransfer(transaction, bankAccounts)) {
+      const day = new Date(transaction.created_at).getDate();
+      selfTransferByDay[day] =
+        (selfTransferByDay[day] || 0) + transaction.amount;
+    }
+  }
+
   let combinedMonthly: { month: number; total: number; year: number }[] = [];
-  let combinedMonthlyIncome: { month: number; total: number; year: number }[] = [];
+  let combinedMonthlyIncome: { month: number; total: number; year: number }[] =
+    [];
   if (currentMonth < 6) {
     combinedMonthly = [
       ...prevYearMonthlyExpenses.map((m) => ({ ...m, year: currentYear - 1 })),
@@ -87,7 +107,10 @@ export default async function DashboardPage({
     ];
   } else {
     combinedMonthly = monthlyExpenses.map((m) => ({ ...m, year: currentYear }));
-    combinedMonthlyIncome = monthlyIncome.map((m) => ({ ...m, year: currentYear }));
+    combinedMonthlyIncome = monthlyIncome.map((m) => ({
+      ...m,
+      year: currentYear,
+    }));
   }
 
   const last6Months = [];
@@ -102,14 +125,14 @@ export default async function DashboardPage({
 
   const monthlyChartData = last6Months.map((m) => {
     const found = combinedMonthly.find(
-      (item) => item.month === m.month && item.year === m.year
+      (item) => item.month === m.month && item.year === m.year,
     );
     return found ? found.total : 0;
   });
 
   const monthlyChartIncomeData = last6Months.map((m) => {
     const found = combinedMonthlyIncome.find(
-      (item) => item.month === m.month && item.year === m.year
+      (item) => item.month === m.month && item.year === m.year,
     );
     return found ? found.total : 0;
   });
@@ -122,7 +145,7 @@ export default async function DashboardPage({
 
   const dailyChartCategories = Array.from(
     { length: daysInSelectedMonth },
-    (_, i) => `${i + 1}일`
+    (_, i) => `${i + 1}일`,
   );
   const dailyChartData = Array.from({ length: daysInSelectedMonth }, (_, i) => {
     const day = i + 1;
@@ -130,11 +153,15 @@ export default async function DashboardPage({
     return found ? found.total : 0;
   });
 
-  const dailyIncomeChartData = Array.from({ length: daysInSelectedMonth }, (_, i) => {
-    const day = i + 1;
-    const found = dailyIncome.find((d) => d.day === day);
-    return found ? found.total : 0;
-  });
+  const dailyIncomeChartData = Array.from(
+    { length: daysInSelectedMonth },
+    (_, i) => {
+      const day = i + 1;
+      const found = dailyIncome.find((d) => d.day === day);
+      const selfTransferAmount = selfTransferByDay[day] || 0;
+      return Math.max(0, (found ? found.total : 0) - selfTransferAmount);
+    },
+  );
 
   const totalExpense = monthlyStats.total_expense;
   const transactionCount = monthlyStats.transaction_count;
@@ -148,7 +175,10 @@ export default async function DashboardPage({
     <div className="grid grid-cols-12 gap-4 md:gap-6">
       <RecurringCheckTrigger />
       <div className="col-span-12 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 md:gap-6">
-        <MonthlyExpenseCard totalExpense={totalExpense} budgetGoal={monthlyBudget} />
+        <MonthlyExpenseCard
+          totalExpense={totalExpense}
+          budgetGoal={monthlyBudget}
+        />
         <Card
           title="이번 달 거래 건수"
           value={`${transactionCount}건`}
@@ -208,6 +238,9 @@ export default async function DashboardPage({
               categories={monthlyChartCategories}
             />
           </div>
+          <div className="col-span-12">
+            <MonthlySummaryTable data={monthlySummary} />
+          </div>
         </>
       )}
     </div>
@@ -232,9 +265,7 @@ function Card({
       <div className="flex items-end justify-between mt-5">
         <div>
           <span className="text-sm text-gray-500">{title}</span>
-          <h4 className="mt-2 font-bold text-gray-800 text-2xl">
-            {value}
-          </h4>
+          <h4 className="mt-2 font-bold text-gray-800 text-2xl">{value}</h4>
         </div>
       </div>
     </div>
