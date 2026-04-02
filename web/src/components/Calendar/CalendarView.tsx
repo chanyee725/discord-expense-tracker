@@ -640,24 +640,24 @@ export default function CalendarView({
               </div>
 
               {/* Panel Footer - Buttons */}
-              <div className="border-t border-stroke px-6 py-4 space-y-2">
+              <div className="border-t border-stroke px-6 py-4 flex gap-2">
                 <button
                   onClick={handleSave}
-                  className="w-full rounded bg-brand-500 py-2 px-4 font-medium text-white hover:bg-brand-600 transition-colors"
+                  className="flex-1 rounded bg-brand-500 py-2 px-4 font-medium text-white hover:bg-brand-600 transition-colors"
                 >
                   저장
                 </button>
                 {!isCreatingNew && (
                   <button
                     onClick={handleDelete}
-                    className="w-full rounded border border-red-500 py-2 px-4 font-medium text-red-500 hover:bg-red-50 transition-colors"
+                    className="flex-1 rounded border border-red-500 py-2 px-4 font-medium text-red-500 hover:bg-red-50 transition-colors"
                   >
                     삭제
                   </button>
                 )}
                 <button
                   onClick={handleClosePanel}
-                  className="w-full rounded border border-stroke py-2 px-4 font-medium text-black hover:bg-gray-50 transition-colors"
+                  className="flex-1 rounded border border-stroke py-2 px-4 font-medium text-black hover:bg-gray-50 transition-colors"
                 >
                   취소
                 </button>
