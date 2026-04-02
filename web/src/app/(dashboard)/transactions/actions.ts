@@ -28,7 +28,7 @@ export async function createTransactionAction(data: {
 
 export async function updateTransactionAction(
   id: string,
-  data: Partial<Pick<Transaction, 'title' | 'amount' | 'category' | 'transaction_date' | 'raw_ocr_text' | 'withdrawal_source' | 'deposit_destination'>>
+  data: Partial<Pick<Transaction, 'title' | 'amount' | 'type' | 'category' | 'transaction_date' | 'raw_ocr_text' | 'withdrawal_source' | 'deposit_destination'>>
 ) {
   try {
     const result = await updateTransaction(id, data);

@@ -44,7 +44,7 @@ export interface BankAccountRow {
 export interface CategoryRow {
   id: string;
   name: string;
-  type: string;  // 'expense' | 'income' | 'both'
+  type: string; // 'expense' | 'income' | 'both'
   sort_order: number;
   created_at: string;
 }
@@ -54,7 +54,7 @@ export interface CategoryRow {
  */
 export interface RecurringTransactionRow {
   id: string;
-  type: string;  // 'expense' | 'income'
+  type: string; // 'expense' | 'income'
   day_of_month: number;
   title: string;
   amount: number;
@@ -82,7 +82,7 @@ export interface RecurringTransactionLog {
  */
 export async function getTransactions(
   page: number = 1,
-  limit: number = 20
+  limit: number = 20,
 ): Promise<Transaction[]> {
   const offset = (page - 1) * limit;
 
@@ -111,7 +111,7 @@ export async function getTransactions(
  */
 export async function getMonthlyTransactionStats(
   year: number,
-  month: number
+  month: number,
 ): Promise<{ total_expense: number; transaction_count: number }> {
   const result = await sql<
     [{ total_expense: number | null; transaction_count: number }]
@@ -149,7 +149,7 @@ export async function getTransactionCount(): Promise<number> {
  * Uses created_at for reliable date filtering
  */
 export async function getMonthlyExpenses(
-  year: number
+  year: number,
 ): Promise<Array<{ month: number; total: number }>> {
   return sql<Array<{ month: number; total: number }>>`
     SELECT
@@ -170,7 +170,7 @@ export async function getMonthlyExpenses(
  * Uses created_at for reliable date filtering
  */
 export async function getMonthlyIncome(
-  year: number
+  year: number,
 ): Promise<Array<{ month: number; total: number }>> {
   return sql<Array<{ month: number; total: number }>>`
     SELECT
@@ -191,7 +191,7 @@ export async function getMonthlyIncome(
  */
 export async function getCategoryBreakdown(
   year: number,
-  month: number
+  month: number,
 ): Promise<Array<{ category: string | null; total: number }>> {
   return sql<Array<{ category: string | null; total: number }>>`
     SELECT
@@ -214,7 +214,7 @@ export async function getCategoryBreakdown(
  */
 export async function getDailyExpenses(
   year: number,
-  month: number
+  month: number,
 ): Promise<Array<{ day: number; total: number }>> {
   return sql<Array<{ day: number; total: number }>>`
     SELECT
@@ -237,7 +237,7 @@ export async function getDailyExpenses(
  */
 export async function getDailyIncome(
   year: number,
-  month: number
+  month: number,
 ): Promise<Array<{ day: number; total: number }>> {
   return sql<Array<{ day: number; total: number }>>`
     SELECT
@@ -259,7 +259,7 @@ export async function getDailyIncome(
  * Uses created_at for reliable ordering
  */
 export async function getRecentTransactions(
-  limit: number = 10
+  limit: number = 10,
 ): Promise<Transaction[]> {
   return sql<Transaction[]>`
     SELECT
@@ -285,7 +285,7 @@ export async function getRecentTransactions(
  */
 export async function getTransactionsByMonth(
   year: number,
-  month: number
+  month: number,
 ): Promise<Transaction[]> {
   return sql<Transaction[]>`
     SELECT
@@ -316,7 +316,7 @@ export async function insertAccountBalanceSnapshot(
   account_name: string,
   bank_name: string,
   balance: number,
-  snapshot_date: string
+  snapshot_date: string,
 ): Promise<AccountBalanceHistory> {
   const result = await sql<[AccountBalanceHistory]>`
     INSERT INTO account_balance_history
@@ -342,7 +342,7 @@ export async function insertAccountBalanceSnapshot(
  */
 export async function getAccountBalanceHistory(
   account_id: string,
-  limit?: number
+  limit?: number,
 ): Promise<AccountBalanceHistory[]> {
   if (limit === undefined) {
     return sql<AccountBalanceHistory[]>`
@@ -382,7 +382,7 @@ export async function getAccountBalanceHistory(
  * Returns data for all 12 months (Jan-Dec), with 0 for months with no data
  */
 export async function getMonthlyAssetGrowth(
-  year: number
+  year: number,
 ): Promise<Array<{ month: number; total_balance: number }>> {
   // Get current year and month
   const now = new Date();
@@ -390,9 +390,7 @@ export async function getMonthlyAssetGrowth(
   const currentMonth = now.getMonth() + 1; // JavaScript months are 0-indexed
 
   // Query historical data from account_balance_history
-  const result = await sql<
-    Array<{ month: number; total_balance: number }>
-  >`
+  const result = await sql<Array<{ month: number; total_balance: number }>>`
     SELECT
       EXTRACT(MONTH FROM snapshot_date)::int as month,
       SUM(balance)::int as total_balance
@@ -411,7 +409,7 @@ export async function getMonthlyAssetGrowth(
       SELECT COALESCE(SUM(balance), 0)::int as total
       FROM bank_accounts
     `;
-    
+
     const currentTotal = currentBalanceResult[0]?.total ?? 0;
     monthMap.set(currentMonth, currentTotal);
   }
@@ -434,7 +432,7 @@ export async function getMonthlyAssetGrowth(
  */
 export async function getMonthlyAssetGrowthByAccount(
   year: number,
-  accountId: string | null
+  accountId: string | null,
 ): Promise<Array<{ month: number; total_balance: number }>> {
   if (!accountId) {
     return getMonthlyAssetGrowth(year);
@@ -446,9 +444,7 @@ export async function getMonthlyAssetGrowthByAccount(
   const currentMonth = now.getMonth() + 1;
 
   // Query historical data from account_balance_history filtered by account
-  const result = await sql<
-    Array<{ month: number; total_balance: number }>
-  >`
+  const result = await sql<Array<{ month: number; total_balance: number }>>`
     SELECT
       EXTRACT(MONTH FROM snapshot_date)::int as month,
       SUM(balance)::int as total_balance
@@ -469,7 +465,7 @@ export async function getMonthlyAssetGrowthByAccount(
       FROM bank_accounts
       WHERE id = ${accountId}
     `;
-    
+
     const currentTotal = currentBalanceResult[0]?.total ?? 0;
     monthMap.set(currentMonth, currentTotal);
   }
@@ -494,53 +490,94 @@ export async function getMonthlyAssetGrowthByAccount(
  */
 export async function updateTransaction(
   id: string,
-  data: Partial<Pick<Transaction, 'title' | 'amount' | 'category' | 'transaction_date' | 'raw_ocr_text'>>
+  data: Partial<
+    Pick<
+      Transaction,
+      | "title"
+      | "amount"
+      | "type"
+      | "category"
+      | "transaction_date"
+      | "raw_ocr_text"
+      | "withdrawal_source"
+      | "deposit_destination"
+    >
+  >,
 ): Promise<Transaction | null> {
-  const { title, amount, category, transaction_date, raw_ocr_text } = data;
+  return await sql.begin(async (tx: any) => {
+    const oldTx = await tx<[Transaction | undefined]>`
+      SELECT * FROM transactions WHERE id = ${id}
+    `.then((rows: any) => rows[0]);
 
-  const oldTx = await sql<[Transaction | undefined]>`
-    SELECT * FROM transactions WHERE id = ${id}
-  `.then(rows => rows[0]);
-  
-  if (!oldTx) return null;
+    if (!oldTx) return null;
 
-  const result = await sql<[Transaction | undefined]>`
-    UPDATE transactions
-    SET
-      title = ${title ?? sql`title`},
-      amount = ${amount ?? sql`amount`},
-      category = ${category ?? sql`category`},
-      transaction_date = ${transaction_date ?? sql`transaction_date`},
-      raw_ocr_text = ${raw_ocr_text ?? sql`raw_ocr_text`}
-    WHERE id = ${id}
-    RETURNING
-      id, title, amount, type, category, deposit_destination, withdrawal_source, transaction_date, raw_ocr_text, created_at
-  `;
-
-  const updated = result[0];
-  if (!updated) return null;
-
-  if (amount !== undefined && amount !== oldTx.amount) {
-    const amountDiff = amount - oldTx.amount;
-    
-    if (updated.type === '지출' && updated.withdrawal_source) {
-      await sql`
+    // STEP 1: Restore old account balances (reverse original transaction)
+    if (oldTx.type === "지출" && oldTx.withdrawal_source) {
+      await tx`
         UPDATE bank_accounts 
-        SET balance = balance - ${amountDiff}, updated_at = now() 
+        SET balance = balance + ${oldTx.amount}, updated_at = now() 
+        WHERE name = ${oldTx.withdrawal_source}
+      `;
+    }
+
+    if (oldTx.type === "수입" && oldTx.deposit_destination) {
+      await tx`
+        UPDATE bank_accounts 
+        SET balance = balance - ${oldTx.amount}, updated_at = now() 
+        WHERE name = ${oldTx.deposit_destination}
+      `;
+    }
+
+    // STEP 2: Update transaction record
+    const {
+      title,
+      amount,
+      type,
+      category,
+      transaction_date,
+      raw_ocr_text,
+      withdrawal_source,
+      deposit_destination,
+    } = data;
+
+    const result = await tx<[Transaction | undefined]>`
+      UPDATE transactions
+      SET
+        title = ${title ?? tx`title`},
+        amount = ${amount ?? tx`amount`},
+        type = ${type ?? tx`type`},
+        category = ${category ?? tx`category`},
+        transaction_date = ${transaction_date ?? tx`transaction_date`},
+        raw_ocr_text = ${raw_ocr_text ?? tx`raw_ocr_text`},
+        withdrawal_source = ${withdrawal_source ?? tx`withdrawal_source`},
+        deposit_destination = ${deposit_destination ?? tx`deposit_destination`}
+      WHERE id = ${id}
+      RETURNING
+        id, title, amount, type, category, deposit_destination, withdrawal_source, transaction_date, raw_ocr_text, created_at
+    `;
+
+    const updated = result[0];
+    if (!updated) return null;
+
+    // STEP 3: Apply new account balances (apply updated transaction)
+    if (updated.type === "지출" && updated.withdrawal_source) {
+      await tx`
+        UPDATE bank_accounts 
+        SET balance = balance - ${updated.amount}, updated_at = now() 
         WHERE name = ${updated.withdrawal_source}
       `;
     }
-    
-    if (updated.type === '수입' && updated.deposit_destination) {
-      await sql`
+
+    if (updated.type === "수입" && updated.deposit_destination) {
+      await tx`
         UPDATE bank_accounts 
-        SET balance = balance + ${amountDiff}, updated_at = now() 
+        SET balance = balance + ${updated.amount}, updated_at = now() 
         WHERE name = ${updated.deposit_destination}
       `;
     }
-  }
 
-  return updated;
+    return updated;
+  });
 }
 
 /**
@@ -549,7 +586,7 @@ export async function updateTransaction(
  * Automatically reverses bank_accounts.balance changes
  */
 export async function deleteTransaction(
-  id: string
+  id: string,
 ): Promise<Transaction | null> {
   const result = await sql<[Transaction | undefined]>`
     DELETE FROM transactions
@@ -570,15 +607,15 @@ export async function deleteTransaction(
   const deleted = result[0];
   if (!deleted) return null;
 
-  if (deleted.type === '지출' && deleted.withdrawal_source) {
+  if (deleted.type === "지출" && deleted.withdrawal_source) {
     await sql`
       UPDATE bank_accounts 
       SET balance = balance + ${deleted.amount}, updated_at = now() 
       WHERE name = ${deleted.withdrawal_source}
     `;
   }
-  
-  if (deleted.type === '수입' && deleted.deposit_destination) {
+
+  if (deleted.type === "수입" && deleted.deposit_destination) {
     await sql`
       UPDATE bank_accounts 
       SET balance = balance - ${deleted.amount}, updated_at = now() 
@@ -596,7 +633,7 @@ export async function deleteTransaction(
 export async function getTransactionsByCategory(
   year: number,
   month: number,
-  category: string
+  category: string,
 ): Promise<Transaction[]> {
   return sql<Transaction[]>`
     SELECT
@@ -626,7 +663,7 @@ export async function getAppSetting(key: string): Promise<string | null> {
     FROM app_settings
     WHERE key = ${key}
   `;
-  
+
   return result[0]?.value ?? null;
 }
 
@@ -672,7 +709,7 @@ export async function createBankAccount(data: {
 }): Promise<BankAccountRow> {
   const result = await sql<BankAccountRow[]>`
     INSERT INTO bank_accounts (bank_name, name, account_number, balance, deposit_balance, investment_balance, sort_order, account_type, updated_at)
-    VALUES (${data.bank_name}, ${data.name}, ${data.account_number ?? null}, ${data.balance}, ${data.deposit_balance ?? 0}, ${data.investment_balance ?? 0}, ${data.sort_order ?? 0}, ${data.account_type ?? 'bank'}, now())
+    VALUES (${data.bank_name}, ${data.name}, ${data.account_number ?? null}, ${data.balance}, ${data.deposit_balance ?? 0}, ${data.investment_balance ?? 0}, ${data.sort_order ?? 0}, ${data.account_type ?? "bank"}, now())
     RETURNING *
   `;
   return result[0];
@@ -683,9 +720,20 @@ export async function createBankAccount(data: {
  */
 export async function updateBankAccount(
   id: string,
-  data: Partial<{ bank_name: string; name: string; account_number: string | null; balance: number; deposit_balance: number; investment_balance: number; sort_order: number }>
+  data: Partial<{
+    bank_name: string;
+    name: string;
+    account_number: string | null;
+    balance: number;
+    deposit_balance: number;
+    investment_balance: number;
+    sort_order: number;
+  }>,
 ): Promise<BankAccountRow | null> {
-  const updates = { ...data, updated_at: new Date().toISOString() };
+  const cleanedData = Object.fromEntries(
+    Object.entries(data).filter(([_, value]) => value !== undefined),
+  );
+  const updates = { ...cleanedData, updated_at: new Date().toISOString() };
   const result = await sql<BankAccountRow[]>`
     UPDATE bank_accounts
     SET ${sql(updates)}
@@ -703,7 +751,9 @@ export async function updateBankAccount(
  * Get categories, optionally filtered by type
  * If type is provided, returns categories where type matches OR type='both'
  */
-export async function getCategories(type?: 'expense' | 'income'): Promise<CategoryRow[]> {
+export async function getCategories(
+  type?: "expense" | "income",
+): Promise<CategoryRow[]> {
   if (type) {
     return sql<CategoryRow[]>`
       SELECT * FROM categories
@@ -711,7 +761,7 @@ export async function getCategories(type?: 'expense' | 'income'): Promise<Catego
       ORDER BY sort_order ASC
     `;
   }
-  
+
   return sql<CategoryRow[]>`
     SELECT * FROM categories
     ORDER BY sort_order ASC
@@ -721,7 +771,9 @@ export async function getCategories(type?: 'expense' | 'income'): Promise<Catego
 /**
  * Get categories by type (convenience wrapper)
  */
-export async function getCategoriesByType(type: 'expense' | 'income'): Promise<CategoryRow[]> {
+export async function getCategoriesByType(
+  type: "expense" | "income",
+): Promise<CategoryRow[]> {
   return getCategories(type);
 }
 
@@ -732,7 +784,9 @@ export async function getCategoriesByType(type: 'expense' | 'income'): Promise<C
 /**
  * Get recurring transactions, optionally filtered by type
  */
-export async function getRecurringTransactions(type?: 'expense' | 'income'): Promise<RecurringTransactionRow[]> {
+export async function getRecurringTransactions(
+  type?: "expense" | "income",
+): Promise<RecurringTransactionRow[]> {
   if (type) {
     return sql<RecurringTransactionRow[]>`
       SELECT * FROM recurring_transactions
@@ -740,7 +794,7 @@ export async function getRecurringTransactions(type?: 'expense' | 'income'): Pro
       ORDER BY day_of_month ASC
     `;
   }
-  
+
   return sql<RecurringTransactionRow[]>`
     SELECT * FROM recurring_transactions
     ORDER BY day_of_month ASC
@@ -751,7 +805,7 @@ export async function getRecurringTransactions(type?: 'expense' | 'income'): Pro
  * Create a new recurring transaction
  */
 export async function createRecurringTransaction(data: {
-  type: 'expense' | 'income';
+  type: "expense" | "income";
   day_of_month: number;
   title: string;
   amount: number;
@@ -760,7 +814,7 @@ export async function createRecurringTransaction(data: {
 }): Promise<RecurringTransactionRow> {
   const result = await sql<RecurringTransactionRow[]>`
     INSERT INTO recurring_transactions (type, day_of_month, title, amount, category, bank_account, is_active, created_at, updated_at)
-    VALUES (${data.type}, ${data.day_of_month}, ${data.title}, ${data.amount}, ${data.category ?? ''}, ${data.bank_account ?? ''}, true, now(), now())
+    VALUES (${data.type}, ${data.day_of_month}, ${data.title}, ${data.amount}, ${data.category ?? ""}, ${data.bank_account ?? ""}, true, now(), now())
     RETURNING *
   `;
   return result[0];
@@ -771,7 +825,14 @@ export async function createRecurringTransaction(data: {
  */
 export async function updateRecurringTransaction(
   id: string,
-  data: Partial<{ type: string; day_of_month: number; title: string; amount: number; category: string | null; bank_account: string | null }>
+  data: Partial<{
+    type: string;
+    day_of_month: number;
+    title: string;
+    amount: number;
+    category: string | null;
+    bank_account: string | null;
+  }>,
 ): Promise<RecurringTransactionRow | null> {
   const updates = { ...data, updated_at: new Date().toISOString() };
   const result = await sql<RecurringTransactionRow[]>`
@@ -786,7 +847,9 @@ export async function updateRecurringTransaction(
 /**
  * Delete a recurring transaction
  */
-export async function deleteRecurringTransaction(id: string): Promise<RecurringTransactionRow | null> {
+export async function deleteRecurringTransaction(
+  id: string,
+): Promise<RecurringTransactionRow | null> {
   const result = await sql<RecurringTransactionRow[]>`
     DELETE FROM recurring_transactions
     WHERE id = ${id}
@@ -798,7 +861,9 @@ export async function deleteRecurringTransaction(id: string): Promise<RecurringT
 /**
  * Delete a bank account
  */
-export async function deleteBankAccount(id: string): Promise<BankAccountRow | null> {
+export async function deleteBankAccount(
+  id: string,
+): Promise<BankAccountRow | null> {
   const result = await sql<BankAccountRow[]>`
     DELETE FROM bank_accounts
     WHERE id = ${id}
@@ -807,20 +872,24 @@ export async function deleteBankAccount(id: string): Promise<BankAccountRow | nu
   return result[0] || null;
 }
 
-export function getNextBusinessDay(year: number, month: number, day: number): Date {
+export function getNextBusinessDay(
+  year: number,
+  month: number,
+  day: number,
+): Date {
   const lastDay = new Date(year, month, 0).getDate();
   const clampedDay = Math.min(day, lastDay);
-  
+
   const date = new Date(year, month - 1, clampedDay);
-  
+
   const dayOfWeek = date.getDay();
-  
+
   if (dayOfWeek === 6) {
     date.setDate(date.getDate() + 2);
   } else if (dayOfWeek === 0) {
     date.setDate(date.getDate() + 1);
   }
-  
+
   return date;
 }
 
@@ -831,11 +900,27 @@ export function getNextBusinessDay(year: number, month: number, day: number): Da
  */
 export async function getRecurringDueInRange(
   startDate: Date,
-  endDate: Date
+  endDate: Date,
 ): Promise<Array<{ template: RecurringTransactionRow; dueDate: Date }>> {
   // Normalize dates to midnight/end-of-day for accurate range checking
-  const start = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 0, 0, 0, 0);
-  const end = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59, 999);
+  const start = new Date(
+    startDate.getFullYear(),
+    startDate.getMonth(),
+    startDate.getDate(),
+    0,
+    0,
+    0,
+    0,
+  );
+  const end = new Date(
+    endDate.getFullYear(),
+    endDate.getMonth(),
+    endDate.getDate(),
+    23,
+    59,
+    59,
+    999,
+  );
 
   // Load all active recurring transaction templates
   const templates = await sql<RecurringTransactionRow[]>`
@@ -846,22 +931,24 @@ export async function getRecurringDueInRange(
   const months: Array<{ year: number; month: number }> = [];
   let cursor = new Date(start.getFullYear(), start.getMonth(), 1);
   const lastMonth = new Date(end.getFullYear(), end.getMonth(), 1);
-  
+
   while (
     cursor.getFullYear() < lastMonth.getFullYear() ||
-    (cursor.getFullYear() === lastMonth.getFullYear() && cursor.getMonth() <= lastMonth.getMonth())
+    (cursor.getFullYear() === lastMonth.getFullYear() &&
+      cursor.getMonth() <= lastMonth.getMonth())
   ) {
     months.push({ year: cursor.getFullYear(), month: cursor.getMonth() + 1 });
     cursor.setMonth(cursor.getMonth() + 1);
   }
 
   // Calculate due dates and filter by range
-  const results: Array<{ template: RecurringTransactionRow; dueDate: Date }> = [];
-  
+  const results: Array<{ template: RecurringTransactionRow; dueDate: Date }> =
+    [];
+
   for (const template of templates) {
     for (const { year, month } of months) {
       const dueDate = getNextBusinessDay(year, month, template.day_of_month);
-      
+
       // Check if due date falls within the range
       if (dueDate >= start && dueDate <= end) {
         results.push({ template, dueDate });
@@ -871,52 +958,59 @@ export async function getRecurringDueInRange(
 
   // Sort by dueDate in ascending order
   results.sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
-  
+
   return results;
 }
 
 export async function generateRecurringTransactions(
-  year: number, 
+  year: number,
   month: number,
-  day?: number // Optional: if provided, only generate for this specific day
+  day?: number, // Optional: if provided, only generate for this specific day
 ): Promise<{ generated: number; skipped: number }> {
-  
   const recurring = await sql<RecurringTransactionRow[]>`
     SELECT * FROM recurring_transactions 
     WHERE is_active = true
   `;
-  
+
   const existingLogs = await sql<RecurringTransactionLog[]>`
     SELECT * FROM recurring_transaction_log
     WHERE year = ${year} AND month = ${month}
   `;
-  
-  const existingIds = new Set(existingLogs.map(log => log.recurring_transaction_id));
-  
+
+  const existingIds = new Set(
+    existingLogs.map((log) => log.recurring_transaction_id),
+  );
+
   // Filter by day if provided (for daily cron), otherwise generate all for the month (for catch-up)
-  let toGenerate = recurring.filter(r => !existingIds.has(r.id));
-  
+  let toGenerate = recurring.filter((r) => !existingIds.has(r.id));
+
   if (day !== undefined) {
     // Only generate templates whose day_of_month matches today's date
-    toGenerate = toGenerate.filter(r => r.day_of_month === day);
+    toGenerate = toGenerate.filter((r) => r.day_of_month === day);
   }
-  
+
   let generated = 0;
   let skipped = 0;
-  
+
   for (const template of toGenerate) {
     try {
-      const businessDay = getNextBusinessDay(year, month, template.day_of_month);
-      
-      const transactionType = template.type === 'expense' ? '지출' : '수입';
-      
-      const withdrawalSource = template.type === 'expense' ? template.bank_account : null;
-      const depositDestination = template.type === 'income' ? template.bank_account : null;
-      
+      const businessDay = getNextBusinessDay(
+        year,
+        month,
+        template.day_of_month,
+      );
+
+      const transactionType = template.type === "expense" ? "지출" : "수입";
+
+      const withdrawalSource =
+        template.type === "expense" ? template.bank_account : null;
+      const depositDestination =
+        template.type === "income" ? template.bank_account : null;
+
       const koreanMonth = businessDay.getMonth() + 1;
       const koreanDay = businessDay.getDate();
       const transactionDate = `${koreanMonth}월 ${koreanDay}일`;
-      
+
       await sql.begin(async (tx: any) => {
         // CRITICAL: Insert log FIRST to prevent race conditions
         // If duplicate exists, UNIQUE constraint will fail and entire transaction rolls back
@@ -929,7 +1023,7 @@ export async function generateRecurringTransactions(
             ${template.id}, ${year}, ${month}, ${null}, now()
           )
         `;
-        
+
         const insertedRows = await tx`
           INSERT INTO transactions (
             title, amount, type, category, 
@@ -944,7 +1038,7 @@ export async function generateRecurringTransactions(
           RETURNING *
         `;
         const inserted = insertedRows[0] as Transaction;
-        
+
         // Update the log with the actual transaction_id
         await tx`
           UPDATE recurring_transaction_log
@@ -953,16 +1047,16 @@ export async function generateRecurringTransactions(
             AND year = ${year}
             AND month = ${month}
         `;
-        
-        if (transactionType === '지출' && withdrawalSource) {
+
+        if (transactionType === "지출" && withdrawalSource) {
           await tx`
             UPDATE bank_accounts 
             SET balance = balance - ${template.amount}, updated_at = now()
             WHERE name = ${withdrawalSource}
           `;
         }
-        
-        if (transactionType === '수입' && depositDestination) {
+
+        if (transactionType === "수입" && depositDestination) {
           await tx`
             UPDATE bank_accounts 
             SET balance = balance + ${template.amount}, updated_at = now()
@@ -970,19 +1064,21 @@ export async function generateRecurringTransactions(
           `;
         }
       });
-      
+
       generated++;
-      
     } catch (error: any) {
-      if (error?.code === '23505') {
+      if (error?.code === "23505") {
         skipped++;
       } else {
-        console.error(`Failed to generate recurring transaction ${template.id}:`, error);
+        console.error(
+          `Failed to generate recurring transaction ${template.id}:`,
+          error,
+        );
         throw error;
       }
     }
   }
-  
+
   return { generated, skipped };
 }
 
@@ -995,19 +1091,73 @@ export async function createTransaction(data: {
   withdrawal_source?: string;
   deposit_destination?: string;
 }) {
-  const result = await sql`
-    INSERT INTO transactions (
-      title, amount, type, category, 
-      deposit_destination, withdrawal_source, 
-      transaction_date, raw_ocr_text, created_at
-    )
-    VALUES (
-      ${data.title}, ${data.amount}, ${data.type}, ${data.category || null},
-      ${data.deposit_destination || null}, ${data.withdrawal_source || null},
-      ${data.transaction_date}, ${null}, now()
-    )
+  return await sql.begin(async (tx: any) => {
+    const result = await tx`
+      INSERT INTO transactions (
+        title, amount, type, category, 
+        deposit_destination, withdrawal_source, 
+        transaction_date, raw_ocr_text, created_at
+      )
+      VALUES (
+        ${data.title}, ${data.amount}, ${data.type}, ${data.category || null},
+        ${data.deposit_destination || null}, ${data.withdrawal_source || null},
+        ${data.transaction_date}, ${null}, now()
+      )
+      RETURNING *
+    `;
+    const inserted = result[0] as Transaction;
+
+    if (data.type === "지출" && data.withdrawal_source) {
+      await tx`
+        UPDATE bank_accounts 
+        SET balance = balance - ${data.amount}, updated_at = now()
+        WHERE name = ${data.withdrawal_source}
+      `;
+    }
+
+    if (data.type === "수입" && data.deposit_destination) {
+      await tx`
+        UPDATE bank_accounts 
+        SET balance = balance + ${data.amount}, updated_at = now()
+        WHERE name = ${data.deposit_destination}
+      `;
+    }
+
+    return inserted;
+  });
+}
+
+export interface SavingsGoal {
+  id: string;
+  year: number;
+  goal_amount: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function getSavingsGoal(
+  year: number,
+): Promise<SavingsGoal | null> {
+  const result = await sql<SavingsGoal[]>`
+    SELECT * FROM savings_goals WHERE year = ${year}
+  `;
+  return result[0] || null;
+}
+
+export async function upsertSavingsGoal(
+  year: number,
+  goalAmount: number,
+): Promise<SavingsGoal> {
+  const result = await sql<SavingsGoal[]>`
+    INSERT INTO savings_goals (year, goal_amount, updated_at)
+    VALUES (${year}, ${goalAmount}, now())
+    ON CONFLICT (year)
+    DO UPDATE SET goal_amount = ${goalAmount}, updated_at = now()
     RETURNING *
   `;
-  
-  return result[0] as Transaction;
+  return result[0];
+}
+
+export async function deleteSavingsGoal(year: number): Promise<void> {
+  await sql`DELETE FROM savings_goals WHERE year = ${year}`;
 }
