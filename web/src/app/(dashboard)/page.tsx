@@ -265,7 +265,7 @@ function Card({
       <div className="flex items-end justify-between mt-5">
         <div>
           <span className="text-sm text-gray-500">{title}</span>
-          <h4 className="mt-2 font-bold text-gray-800 text-2xl">{value}</h4>
+          <h4 className="mt-2 font-bold text-2xl text-gray-800">{value}</h4>
         </div>
       </div>
     </div>

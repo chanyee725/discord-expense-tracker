@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { getMonthlyBudgetAction, saveMonthlyBudgetAction } from "@/app/(dashboard)/settings/actions";
+import { getMonthlyBudgetAction, saveMonthlyBudgetAction } from "@/lib/app-settings-actions";
 
 interface MonthlyExpenseCardProps {
   totalExpense: number;
@@ -40,11 +40,6 @@ export default function MonthlyExpenseCard({
     await saveMonthlyBudgetAction(budgetInput);
     setIsModalOpen(false);
     router.refresh();
-  };
-
-  const formatNumber = (value: string): string => {
-    const num = parseInt(value) || 0;
-    return num.toLocaleString("ko-KR");
   };
 
   return (

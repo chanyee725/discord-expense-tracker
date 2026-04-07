@@ -362,7 +362,25 @@ export default function RecurringManagementClient({
                     min="1"
                     max="31"
                     value={editingItem.date}
-                    onChange={(e) => updateField("date", Math.min(31, Math.max(1, parseInt(e.target.value) || 1)))}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === '') {
+                        updateField("date", 1);
+                      } else {
+                        const numVal = parseInt(val);
+                        if (!isNaN(numVal)) {
+                          updateField("date", numVal);
+                        }
+                      }
+                    }}
+                    onBlur={(e) => {
+                      const val = parseInt(e.target.value);
+                      if (isNaN(val) || val < 1) {
+                        updateField("date", 1);
+                      } else if (val > 31) {
+                        updateField("date", 31);
+                      }
+                    }}
                     className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
                   />
                   <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">일</div>
