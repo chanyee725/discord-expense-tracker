@@ -55,7 +55,7 @@ const Sidebar = () => {
             </svg>
           </div>
           <span className="text-xl font-bold text-gray-800">
-            POOR GUY
+            가계부
           </span>
         </Link>
       </div>

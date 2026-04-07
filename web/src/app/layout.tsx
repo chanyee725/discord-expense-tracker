@@ -10,8 +10,8 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Poor Guy - Financial Dashboard",
-  description: "Track your expenses and income efficiently",
+  title: "나만의 가계부",
+  description: "개인 재무 관리를 위한 스마트 가계부",
 };
 
 export default function RootLayout({
