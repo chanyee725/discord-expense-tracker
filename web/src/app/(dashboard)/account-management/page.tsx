@@ -1,7 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { getBankAccountsAction, saveBankAccountAction, deleteBankAccountAction } from "./actions";
+import {
+  getBankAccountsAction,
+  saveBankAccountAction,
+  deleteBankAccountAction,
+} from "./actions";
 
 interface BankAccount {
   id: string;
@@ -39,34 +43,36 @@ const INVESTMENT_OPTIONS = [
 ];
 
 const BANK_ICONS: Record<string, string> = {
-  "현금": "💵",
-  "국민은행": "🏦",
-  "신한은행": "🏛️",
-  "우리은행": "💼",
-  "하나은행": "🏢",
-  "카카오뱅크": "📱",
-  "토스뱅크": "💳",
-  "NH농협": "🌾",
-  "IBK기업은행": "🏭",
-  "SC제일은행": "💰",
+  현금: "💵",
+  국민은행: "🏦",
+  신한은행: "🏛️",
+  우리은행: "💼",
+  하나은행: "🏢",
+  카카오뱅크: "📱",
+  토스뱅크: "💳",
+  NH농협: "🌾",
+  IBK기업은행: "🏭",
+  SC제일은행: "💰",
 };
 
 const INVESTMENT_ICONS: Record<string, string> = {
-  "키움증권": "📈",
-  "삼성증권": "💹",
-  "미래에셋증권": "🌐",
-  "NH투자증권": "🏛️",
-  "한국투자증권": "📊",
-  "대신증권": "📉",
-  "KB증권": "🔷",
-  "신한투자증권": "💎",
+  키움증권: "📈",
+  삼성증권: "💹",
+  미래에셋증권: "🌐",
+  NH투자증권: "🏛️",
+  한국투자증권: "📊",
+  대신증권: "📉",
+  KB증권: "🔷",
+  신한투자증권: "💎",
 };
 
 export default function AccountManagementPage() {
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
-  const [editingAccount, setEditingAccount] = useState<BankAccount | null>(null);
-  const [activeTab, setActiveTab] = useState<'bank' | 'investment'>('bank');
+  const [editingAccount, setEditingAccount] = useState<BankAccount | null>(
+    null,
+  );
+  const [activeTab, setActiveTab] = useState<"bank" | "investment">("bank");
 
   useEffect(() => {
     const loadAccounts = async () => {
@@ -78,7 +84,7 @@ export default function AccountManagementPage() {
           accountName: acc.name,
           accountNumber: acc.account_number || "",
           balance: String(acc.balance),
-          accountType: acc.account_type || 'bank',
+          accountType: acc.account_type || "bank",
           depositBalance: String(acc.deposit_balance || 0),
           investmentBalance: String(acc.investment_balance || 0),
         }));
@@ -93,19 +99,30 @@ export default function AccountManagementPage() {
     return num.toLocaleString("ko-KR");
   };
 
-  const calculateSubtotal = (type: 'bank' | 'investment'): string => {
+  const calculateSubtotal = (type: "bank" | "investment"): string => {
     const total = bankAccounts
-      .filter(acc => acc.accountType === type)
+      .filter((acc) => acc.accountType === type)
       .reduce((sum, account) => {
         return sum + (parseInt(account.balance) || 0);
       }, 0);
     return total.toLocaleString("ko-KR");
   };
 
-  const calculateInvestmentSubtotals = (): { deposit: string; investment: string } => {
-    const investmentAccounts = bankAccounts.filter(acc => acc.accountType === 'investment');
-    const depositTotal = investmentAccounts.reduce((sum, acc) => sum + (parseInt(acc.depositBalance) || 0), 0);
-    const investmentTotal = investmentAccounts.reduce((sum, acc) => sum + (parseInt(acc.investmentBalance) || 0), 0);
+  const calculateInvestmentSubtotals = (): {
+    deposit: string;
+    investment: string;
+  } => {
+    const investmentAccounts = bankAccounts.filter(
+      (acc) => acc.accountType === "investment",
+    );
+    const depositTotal = investmentAccounts.reduce(
+      (sum, acc) => sum + (parseInt(acc.depositBalance) || 0),
+      0,
+    );
+    const investmentTotal = investmentAccounts.reduce(
+      (sum, acc) => sum + (parseInt(acc.investmentBalance) || 0),
+      0,
+    );
     return {
       deposit: depositTotal.toLocaleString("ko-KR"),
       investment: investmentTotal.toLocaleString("ko-KR"),
@@ -115,7 +132,7 @@ export default function AccountManagementPage() {
   const handleAddAccount = () => {
     setEditingAccount({
       id: "",
-      bankName: activeTab === 'bank' ? "현금" : "키움증권",
+      bankName: activeTab === "bank" ? "현금" : "키움증권",
       accountName: "",
       accountNumber: "",
       balance: "",
@@ -146,12 +163,20 @@ export default function AccountManagementPage() {
       bank_name: editingAccount.bankName,
       account_name: editingAccount.accountName,
       account_number: editingAccount.accountNumber || null,
-      balance: editingAccount.accountType === 'bank' 
-        ? (parseInt(editingAccount.balance) || 0)
-        : (parseInt(editingAccount.depositBalance) || 0) + (parseInt(editingAccount.investmentBalance) || 0),
+      balance:
+        editingAccount.accountType === "bank"
+          ? parseInt(editingAccount.balance) || 0
+          : (parseInt(editingAccount.depositBalance) || 0) +
+            (parseInt(editingAccount.investmentBalance) || 0),
       account_type: editingAccount.accountType,
-      deposit_balance: editingAccount.accountType === 'investment' ? (parseInt(editingAccount.depositBalance) || 0) : undefined,
-      investment_balance: editingAccount.accountType === 'investment' ? (parseInt(editingAccount.investmentBalance) || 0) : undefined,
+      deposit_balance:
+        editingAccount.accountType === "investment"
+          ? parseInt(editingAccount.depositBalance) || 0
+          : undefined,
+      investment_balance:
+        editingAccount.accountType === "investment"
+          ? parseInt(editingAccount.investmentBalance) || 0
+          : undefined,
     };
 
     const result = await saveBankAccountAction(accountData);
@@ -163,7 +188,7 @@ export default function AccountManagementPage() {
         accountName: result.data.name,
         accountNumber: result.data.account_number || "",
         balance: String(result.data.balance),
-        accountType: result.data.account_type || 'bank',
+        accountType: result.data.account_type || "bank",
         depositBalance: String(result.data.deposit_balance || 0),
         investmentBalance: String(result.data.investment_balance || 0),
       };
@@ -188,7 +213,9 @@ export default function AccountManagementPage() {
     const result = await deleteBankAccountAction(editingAccount.id);
 
     if (result.success) {
-      setBankAccounts((prev) => prev.filter((acc) => acc.id !== editingAccount.id));
+      setBankAccounts((prev) =>
+        prev.filter((acc) => acc.id !== editingAccount.id),
+      );
       handleClosePanelWithDelay();
     }
   };
@@ -198,35 +225,35 @@ export default function AccountManagementPage() {
     setEditingAccount({ ...editingAccount, [field]: value });
   };
 
-  const filteredAccounts = bankAccounts.filter((acc) => acc.accountType === activeTab);
+  const filteredAccounts = bankAccounts.filter(
+    (acc) => acc.accountType === activeTab,
+  );
 
   return (
     <div className="mx-auto max-w-7xl p-4 md:p-6 2xl:p-10">
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800">
-          계좌 관리
-        </h2>
+        <h2 className="text-2xl font-semibold text-gray-800">계좌 관리</h2>
       </div>
 
       <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-default md:p-6">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-1 bg-gray-100/50 p-1 rounded-xl">
             <button
-              onClick={() => setActiveTab('bank')}
+              onClick={() => setActiveTab("bank")}
               className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
-                activeTab === 'bank'
-                  ? 'bg-white text-brand-500 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50'
+                activeTab === "bank"
+                  ? "bg-white text-brand-500 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
               }`}
             >
               은행
             </button>
             <button
-              onClick={() => setActiveTab('investment')}
+              onClick={() => setActiveTab("investment")}
               className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
-                activeTab === 'investment'
-                  ? 'bg-white text-brand-500 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50'
+                activeTab === "investment"
+                  ? "bg-white text-brand-500 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
               }`}
             >
               투자
@@ -236,8 +263,18 @@ export default function AccountManagementPage() {
             onClick={handleAddAccount}
             className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 transition-colors shadow-sm"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
             </svg>
             계좌 추가
           </button>
@@ -247,12 +284,16 @@ export default function AccountManagementPage() {
           {filteredAccounts.length === 0 ? (
             <div className="p-12 text-center">
               <div className="text-4xl mb-3">
-                {activeTab === 'bank' ? '🏦' : '📈'}
+                {activeTab === "bank" ? "🏦" : "📈"}
               </div>
               <div className="text-gray-500">
-                {activeTab === 'bank' ? '등록된 은행 계좌가 없습니다.' : '등록된 투자 계좌가 없습니다.'}
+                {activeTab === "bank"
+                  ? "등록된 은행 계좌가 없습니다."
+                  : "등록된 투자 계좌가 없습니다."}
               </div>
-              <div className="text-sm text-gray-400 mt-1">새로운 계좌를 추가해보세요.</div>
+              <div className="text-sm text-gray-400 mt-1">
+                새로운 계좌를 추가해보세요.
+              </div>
             </div>
           ) : (
             <>
@@ -264,25 +305,53 @@ export default function AccountManagementPage() {
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-xl shadow-sm border border-gray-100">
-                      {BANK_ICONS[account.bankName] || INVESTMENT_ICONS[account.bankName] || "🏦"}
+                      {BANK_ICONS[account.bankName] ||
+                        INVESTMENT_ICONS[account.bankName] ||
+                        "🏦"}
                     </div>
                     <div>
-                      <div className="font-semibold text-gray-900 mb-0.5">{account.accountName}</div>
-                      <div className="text-xs font-medium text-gray-500">{account.bankName}</div>
+                      <div className="font-semibold text-gray-900 mb-0.5">
+                        {account.accountName}
+                      </div>
+                      <div className="text-xs font-medium text-gray-500">
+                        {account.bankName}
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-5">
-                    {account.accountType === 'investment' ? (
+                    {account.accountType === "investment" ? (
                       <div className="text-right">
-                        <div className="text-sm text-gray-500">예수금 <span className="font-bold text-blue-600">{formatNumber(account.depositBalance)}원</span></div>
-                        <div className="text-sm text-gray-500">투자금 <span className="font-bold text-blue-600">{formatNumber(account.investmentBalance)}원</span></div>
+                        <div className="text-sm text-gray-500">
+                          예수금{" "}
+                          <span className="font-bold text-blue-600">
+                            {formatNumber(account.depositBalance)}원
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          투자금{" "}
+                          <span className="font-bold text-blue-600">
+                            {formatNumber(account.investmentBalance)}원
+                          </span>
+                        </div>
                       </div>
                     ) : (
-                      <div className="font-bold text-lg text-blue-600">{formatNumber(account.balance)}원</div>
+                      <div className="font-bold text-lg text-blue-600">
+                        {formatNumber(account.balance)}원
+                      </div>
                     )}
                     <div className="text-gray-300 group-hover:text-gray-600 transition-colors">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
                       </svg>
                     </div>
                   </div>
@@ -290,20 +359,32 @@ export default function AccountManagementPage() {
               ))}
 
               <div className="mt-6 p-5 rounded-xl bg-gray-50 border border-gray-200">
-                {activeTab === 'bank' ? (
+                {activeTab === "bank" ? (
                   <div className="flex items-center justify-between">
-                    <div className="text-sm font-semibold text-gray-600">은행 자산</div>
-                    <div className="text-2xl font-bold text-gray-900">{calculateSubtotal('bank')}원</div>
+                    <div className="text-sm font-semibold text-gray-600">
+                      은행 자산
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900">
+                      {calculateSubtotal("bank")}원
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <div className="text-sm font-semibold text-gray-600">투자 예수금</div>
-                      <div className="text-xl font-bold text-gray-900">{calculateInvestmentSubtotals().deposit}원</div>
+                      <div className="text-sm font-semibold text-gray-600">
+                        투자 예수금
+                      </div>
+                      <div className="text-xl font-bold text-gray-900">
+                        {calculateInvestmentSubtotals().deposit}원
+                      </div>
                     </div>
                     <div className="flex items-center justify-between">
-                      <div className="text-sm font-semibold text-gray-600">투자 평가금액</div>
-                      <div className="text-xl font-bold text-gray-900">{calculateInvestmentSubtotals().investment}원</div>
+                      <div className="text-sm font-semibold text-gray-600">
+                        투자 평가금액
+                      </div>
+                      <div className="text-xl font-bold text-gray-900">
+                        {calculateInvestmentSubtotals().investment}원
+                      </div>
                     </div>
                   </div>
                 )}
@@ -320,25 +401,39 @@ export default function AccountManagementPage() {
         />
       )}
 
-      <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none ${isPanelOpen ? "pointer-events-auto" : ""}`}>
+      <div
+        className={`fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none ${isPanelOpen ? "pointer-events-auto" : ""}`}
+      >
         <div
-          className={`bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden transform transition-all duration-300 ${
+          className={`bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden transform transition-all duration-300 ${
             isPanelOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
           }`}
         >
           {editingAccount ? (
-            <div className="flex flex-col h-full bg-white">
+            <div className="flex flex-col min-h-0 flex-1 bg-white">
               <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-white z-10">
                 <div>
                   <h3 className="text-xl font-bold text-gray-900">계좌 편집</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">계좌 정보를 입력합니다</p>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    계좌 정보를 입력합니다
+                  </p>
                 </div>
                 <button
                   onClick={handleClosePanelWithDelay}
                   className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -346,45 +441,68 @@ export default function AccountManagementPage() {
               <div className="flex-1 overflow-y-auto p-6 space-y-8">
                 <div className="space-y-3">
                   <label className="text-sm font-semibold text-gray-700 block">
-                    {editingAccount.accountType === 'bank' ? '은행' : '증권사'}
+                    {editingAccount.accountType === "bank" ? "은행" : "증권사"}
                   </label>
                   <div className="relative">
                     <select
                       value={editingAccount.bankName}
-                      onChange={(e) => updateAccountField("bankName", e.target.value)}
+                      onChange={(e) =>
+                        updateAccountField("bankName", e.target.value)
+                      }
                       className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none appearance-none bg-gray-50/50 focus:bg-white"
                     >
-                      {(editingAccount.accountType === 'bank' ? BANK_OPTIONS : INVESTMENT_OPTIONS).map((bank) => (
+                      {(editingAccount.accountType === "bank"
+                        ? BANK_OPTIONS
+                        : INVESTMENT_OPTIONS
+                      ).map((bank) => (
                         <option key={bank} value={bank}>
                           {bank}
                         </option>
                       ))}
                     </select>
                     <div className="absolute right-4 top-4 text-gray-400 pointer-events-none">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
                       </svg>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-sm font-semibold text-gray-700 block">계좌 이름</label>
+                  <label className="text-sm font-semibold text-gray-700 block">
+                    계좌 이름
+                  </label>
                   <input
                     type="text"
                     value={editingAccount.accountName}
-                    onChange={(e) => updateAccountField("accountName", e.target.value)}
+                    onChange={(e) =>
+                      updateAccountField("accountName", e.target.value)
+                    }
                     placeholder="예: 급여계좌"
                     className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
                   />
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-sm font-semibold text-gray-700 block">계좌번호</label>
+                  <label className="text-sm font-semibold text-gray-700 block">
+                    계좌번호
+                  </label>
                   <input
                     type="text"
                     value={editingAccount.accountNumber}
-                    onChange={(e) => updateAccountField("accountNumber", e.target.value)}
+                    onChange={(e) =>
+                      updateAccountField("accountNumber", e.target.value)
+                    }
                     placeholder="계좌번호를 입력하세요 (선택사항)"
                     className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
                   />
@@ -393,70 +511,101 @@ export default function AccountManagementPage() {
                   </p>
                 </div>
 
-                {editingAccount.accountType === 'bank' ? (
+                {editingAccount.accountType === "bank" ? (
                   <div className="space-y-3">
-                    <label className="text-sm font-semibold text-gray-700 block">잔액</label>
+                    <label className="text-sm font-semibold text-gray-700 block">
+                      잔액
+                    </label>
                     <div className="relative">
                       <input
                         type="text"
-                        value={editingAccount.balance === '' || editingAccount.balance === '0' 
-                          ? '' 
-                          : parseInt(editingAccount.balance).toLocaleString('ko-KR')}
+                        value={
+                          editingAccount.balance === "" ||
+                          editingAccount.balance === "0"
+                            ? ""
+                            : parseInt(editingAccount.balance).toLocaleString(
+                                "ko-KR",
+                              )
+                        }
                         onChange={(e) => {
-                          const value = e.target.value.replace(/,/g, '');
-                          if (value === '' || !isNaN(Number(value))) {
+                          const value = e.target.value.replace(/,/g, "");
+                          if (value === "" || !isNaN(Number(value))) {
                             updateAccountField("balance", value);
                           }
                         }}
                         placeholder="0"
                         className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
                       />
-                      <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">원</div>
+                      <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">
+                        원
+                      </div>
                     </div>
                   </div>
                 ) : (
                   <>
                     <div className="space-y-3">
-                      <label className="text-sm font-semibold text-gray-700 block">예수금</label>
+                      <label className="text-sm font-semibold text-gray-700 block">
+                        예수금
+                      </label>
                       <div className="relative">
                         <input
                           type="text"
-                          value={editingAccount.depositBalance === '' || editingAccount.depositBalance === '0' ? '' : parseInt(editingAccount.depositBalance).toLocaleString('ko-KR')}
+                          value={
+                            editingAccount.depositBalance === "" ||
+                            editingAccount.depositBalance === "0"
+                              ? ""
+                              : parseInt(
+                                  editingAccount.depositBalance,
+                                ).toLocaleString("ko-KR")
+                          }
                           onChange={(e) => {
-                            const value = e.target.value.replace(/,/g, '');
-                            if (value === '' || !isNaN(Number(value))) {
+                            const value = e.target.value.replace(/,/g, "");
+                            if (value === "" || !isNaN(Number(value))) {
                               updateAccountField("depositBalance", value);
                             }
                           }}
                           placeholder="0"
                           className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
                         />
-                        <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">원</div>
+                        <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">
+                          원
+                        </div>
                       </div>
                     </div>
                     <div className="space-y-3">
-                      <label className="text-sm font-semibold text-gray-700 block">투자금 (평가금액)</label>
+                      <label className="text-sm font-semibold text-gray-700 block">
+                        투자금 (평가금액)
+                      </label>
                       <div className="relative">
                         <input
                           type="text"
-                          value={editingAccount.investmentBalance === '' || editingAccount.investmentBalance === '0' ? '' : parseInt(editingAccount.investmentBalance).toLocaleString('ko-KR')}
+                          value={
+                            editingAccount.investmentBalance === "" ||
+                            editingAccount.investmentBalance === "0"
+                              ? ""
+                              : parseInt(
+                                  editingAccount.investmentBalance,
+                                ).toLocaleString("ko-KR")
+                          }
                           onChange={(e) => {
-                            const value = e.target.value.replace(/,/g, '');
-                            if (value === '' || !isNaN(Number(value))) {
+                            const value = e.target.value.replace(/,/g, "");
+                            if (value === "" || !isNaN(Number(value))) {
                               updateAccountField("investmentBalance", value);
                             }
                           }}
                           placeholder="0"
                           className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
                         />
-                        <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">원</div>
+                        <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">
+                          원
+                        </div>
                       </div>
                     </div>
                   </>
                 )}
               </div>
 
-              <div className="p-6 border-t border-gray-100 bg-white z-10 pb-8">
+              <div className="p-6 border-t border-gray-100 bg-white z-10">
                 <div className="flex flex-col gap-3">
                   <button
                     onClick={handleSaveAccount}
@@ -465,12 +614,14 @@ export default function AccountManagementPage() {
                     저장하기
                   </button>
 
-                  <button
-                    onClick={handleDeleteAccount}
-                    className="w-full rounded-xl py-3 text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors"
-                  >
-                    삭제하기
-                  </button>
+                  {editingAccount.id && (
+                    <button
+                      onClick={handleDeleteAccount}
+                      className="w-full rounded-xl py-3 text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                    >
+                      삭제하기
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -479,14 +630,26 @@ export default function AccountManagementPage() {
               <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-white z-10">
                 <div>
                   <h3 className="text-xl font-bold text-gray-900">계좌 관리</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">계좌를 관리합니다</p>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    계좌를 관리합니다
+                  </p>
                 </div>
                 <button
                   onClick={handleClosePanelWithDelay}
                   className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -495,12 +658,16 @@ export default function AccountManagementPage() {
                 {filteredAccounts.length === 0 ? (
                   <div className="p-12 text-center">
                     <div className="text-4xl mb-3">
-                      {activeTab === 'bank' ? '🏦' : '📈'}
+                      {activeTab === "bank" ? "🏦" : "📈"}
                     </div>
                     <div className="text-gray-500">
-                      {activeTab === 'bank' ? '등록된 은행 계좌가 없습니다.' : '등록된 투자 계좌가 없습니다.'}
+                      {activeTab === "bank"
+                        ? "등록된 은행 계좌가 없습니다."
+                        : "등록된 투자 계좌가 없습니다."}
                     </div>
-                    <div className="text-sm text-gray-400 mt-1">새로운 계좌를 추가해보세요.</div>
+                    <div className="text-sm text-gray-400 mt-1">
+                      새로운 계좌를 추가해보세요.
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -512,25 +679,53 @@ export default function AccountManagementPage() {
                       >
                         <div className="flex items-center gap-4">
                           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-xl shadow-sm border border-gray-100">
-                            {BANK_ICONS[account.bankName] || INVESTMENT_ICONS[account.bankName] || "🏦"}
+                            {BANK_ICONS[account.bankName] ||
+                              INVESTMENT_ICONS[account.bankName] ||
+                              "🏦"}
                           </div>
                           <div>
-                            <div className="font-semibold text-gray-900 mb-0.5">{account.accountName}</div>
-                            <div className="text-xs font-medium text-gray-500">{account.bankName}</div>
+                            <div className="font-semibold text-gray-900 mb-0.5">
+                              {account.accountName}
+                            </div>
+                            <div className="text-xs font-medium text-gray-500">
+                              {account.bankName}
+                            </div>
                           </div>
                         </div>
                         <div className="flex items-center gap-5">
-                          {account.accountType === 'investment' ? (
+                          {account.accountType === "investment" ? (
                             <div className="text-right">
-                              <div className="text-sm text-gray-500">예수금 <span className="font-bold text-blue-600">{formatNumber(account.depositBalance)}원</span></div>
-                              <div className="text-sm text-gray-500">투자금 <span className="font-bold text-blue-600">{formatNumber(account.investmentBalance)}원</span></div>
+                              <div className="text-sm text-gray-500">
+                                예수금{" "}
+                                <span className="font-bold text-blue-600">
+                                  {formatNumber(account.depositBalance)}원
+                                </span>
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                투자금{" "}
+                                <span className="font-bold text-blue-600">
+                                  {formatNumber(account.investmentBalance)}원
+                                </span>
+                              </div>
                             </div>
                           ) : (
-                            <div className="font-bold text-lg text-blue-600">{formatNumber(account.balance)}원</div>
+                            <div className="font-bold text-lg text-blue-600">
+                              {formatNumber(account.balance)}원
+                            </div>
                           )}
                           <div className="text-gray-300 group-hover:text-gray-600 transition-colors">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 5l7 7-7 7"
+                              />
                             </svg>
                           </div>
                         </div>
@@ -541,20 +736,32 @@ export default function AccountManagementPage() {
 
                 {filteredAccounts.length > 0 && (
                   <div className="mt-6 p-5 rounded-xl bg-gray-50 border border-gray-200">
-                    {activeTab === 'bank' ? (
+                    {activeTab === "bank" ? (
                       <div className="flex items-center justify-between">
-                        <div className="text-sm font-semibold text-gray-600">은행 자산</div>
-                        <div className="text-2xl font-bold text-gray-900">{calculateSubtotal('bank')}원</div>
+                        <div className="text-sm font-semibold text-gray-600">
+                          은행 자산
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900">
+                          {calculateSubtotal("bank")}원
+                        </div>
                       </div>
                     ) : (
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <div className="text-sm font-semibold text-gray-600">투자 예수금</div>
-                          <div className="text-xl font-bold text-gray-900">{calculateInvestmentSubtotals().deposit}원</div>
+                          <div className="text-sm font-semibold text-gray-600">
+                            투자 예수금
+                          </div>
+                          <div className="text-xl font-bold text-gray-900">
+                            {calculateInvestmentSubtotals().deposit}원
+                          </div>
                         </div>
                         <div className="flex items-center justify-between">
-                          <div className="text-sm font-semibold text-gray-600">투자 평가금액</div>
-                          <div className="text-xl font-bold text-gray-900">{calculateInvestmentSubtotals().investment}원</div>
+                          <div className="text-sm font-semibold text-gray-600">
+                            투자 평가금액
+                          </div>
+                          <div className="text-xl font-bold text-gray-900">
+                            {calculateInvestmentSubtotals().investment}원
+                          </div>
                         </div>
                       </div>
                     )}

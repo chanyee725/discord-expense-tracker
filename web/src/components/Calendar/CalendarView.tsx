@@ -30,10 +30,22 @@ const parseTransactionDate = (
   year: number,
   month: number,
 ): Date | null => {
-  const match = dateStr.match(/(\d+)월\s*(\d+)일/);
-  if (!match) return null;
-  const txMonth = parseInt(match[1], 10);
-  const txDay = parseInt(match[2], 10);
+  if (!dateStr) return null;
+
+  // Try parsing ISO format first (YYYY-MM-DD or YYYY-MM-DD HH:MM)
+  const isoMatch = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})(?:\s+\d{2}:\d{2})?$/);
+  if (isoMatch) {
+    const isoYear = parseInt(isoMatch[1], 10);
+    const isoMonth = parseInt(isoMatch[2], 10);
+    const isoDay = parseInt(isoMatch[3], 10);
+    return new Date(isoYear, isoMonth - 1, isoDay);
+  }
+
+  // Fall back to Korean format (N월 D일)
+  const koreanMatch = dateStr.match(/(\d+)월\s*(\d+)일/);
+  if (!koreanMatch) return null;
+  const txMonth = parseInt(koreanMatch[1], 10);
+  const txDay = parseInt(koreanMatch[2], 10);
   return new Date(year, txMonth - 1, txDay);
 };
 
@@ -173,7 +185,11 @@ export default function CalendarView({
   ) => {
     setSelectedDate(date.format("YYYY-MM-DD"));
     setDayModalDate(date.format("YYYY년 M월 D일"));
-    setDayModalTransactions(dayTransactions);
+    // Sort by created_at in descending order (newest first)
+    const sortedTransactions = [...dayTransactions].sort((a, b) => 
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+    setDayModalTransactions(sortedTransactions);
     setIsDayModalOpen(true);
   };
 
@@ -326,6 +342,11 @@ export default function CalendarView({
               if (!txDate) return false;
               return dayjs(txDate).isSame(currentDayDate, "day");
             });
+
+            // Sort by created_at in descending order (newest first)
+            dayTransactions.sort((a, b) => 
+              new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+            );
 
             const expenseTotal = dayTransactions
               .filter(

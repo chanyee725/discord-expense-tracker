@@ -4,7 +4,12 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
-import { fetchMonthlyAssetGrowthByAccount, fetchBankAccounts } from "./actions";
+import {
+  fetchMonthlyAssetGrowthByAccount,
+  fetchBankAccounts,
+  fetchSavingsGoal,
+  saveSavingsGoal,
+} from "./actions";
 import type { BankAccountRow } from "@/lib/queries";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
@@ -17,8 +22,18 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 });
 
 const MONTHS = [
-  "1월", "2월", "3월", "4월", "5월", "6월",
-  "7월", "8월", "9월", "10월", "11월", "12월"
+  "1월",
+  "2월",
+  "3월",
+  "4월",
+  "5월",
+  "6월",
+  "7월",
+  "8월",
+  "9월",
+  "10월",
+  "11월",
+  "12월",
 ];
 
 const AVAILABLE_YEARS = [2024, 2025, 2026];
@@ -29,6 +44,8 @@ export default function AssetsPage() {
   const [accounts, setAccounts] = useState<BankAccountRow[]>([]);
   const [chartData, setChartData] = useState<number[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [goalAmount, setGoalAmount] = useState<string>("");
+  const [savedGoalAmount, setSavedGoalAmount] = useState<number>(0);
 
   // Load accounts on mount
   useEffect(() => {
@@ -47,9 +64,10 @@ export default function AssetsPage() {
     const loadData = async () => {
       setLoading(true);
       try {
-        const data = await fetchMonthlyAssetGrowthByAccount(selectedYear, selectedAccount);
-        // Transform [{month: 1, total_balance: 100}, ...] to [100, ...]
-        // Ensure strictly 12 items ordered by month
+        const data = await fetchMonthlyAssetGrowthByAccount(
+          selectedYear,
+          selectedAccount,
+        );
         const seriesData = Array(12).fill(0);
         data.forEach((item) => {
           if (item.month >= 1 && item.month <= 12) {
@@ -67,15 +85,49 @@ export default function AssetsPage() {
     loadData();
   }, [selectedYear, selectedAccount]);
 
-  // Get selected account name for display
-  const selectedAccountName = selectedAccount 
-    ? accounts.find(a => a.id === selectedAccount)?.name 
+  useEffect(() => {
+    const loadGoal = async () => {
+      try {
+        const goal = await fetchSavingsGoal(selectedYear);
+        if (goal) {
+          setSavedGoalAmount(goal.goal_amount);
+          setGoalAmount(goal.goal_amount.toString());
+        } else {
+          setSavedGoalAmount(0);
+          setGoalAmount("");
+        }
+      } catch (error) {
+        console.error("Failed to load savings goal:", error);
+      }
+    };
+
+    loadGoal();
+  }, [selectedYear]);
+
+  const handleSaveGoal = async () => {
+    const amount = parseInt(goalAmount);
+    if (isNaN(amount) || amount <= 0) {
+      alert("올바른 금액을 입력해주세요");
+      return;
+    }
+
+    const result = await saveSavingsGoal(selectedYear, amount);
+    if (result.success) {
+      setSavedGoalAmount(amount);
+      alert("목표 금액이 저장되었습니다!");
+    } else {
+      alert("목표 금액 저장에 실패했습니다");
+    }
+  };
+
+  const selectedAccountName = selectedAccount
+    ? accounts.find((a) => a.id === selectedAccount)?.name
     : "전체";
 
   // Chart Configuration
   const options: ApexOptions = {
     chart: {
-      type: "area",
+      type: "bar",
       fontFamily: "Outfit, sans-serif",
       height: "100%",
       toolbar: {
@@ -86,17 +138,10 @@ export default function AssetsPage() {
       },
     },
     colors: ["#3C50E0"], // Primary brand color
-    stroke: {
-      curve: "smooth",
-      width: 2,
-    },
-    fill: {
-      type: "gradient",
-      gradient: {
-        shadeIntensity: 1,
-        opacityFrom: 0.7,
-        opacityTo: 0.1,
-        stops: [0, 90, 100],
+    plotOptions: {
+      bar: {
+        borderRadius: 6,
+        columnWidth: "50%",
       },
     },
     dataLabels: {
@@ -150,15 +195,6 @@ export default function AssetsPage() {
         },
       },
     },
-    markers: {
-      size: 4,
-      colors: ["#fff"],
-      strokeColors: ["#3C50E0"],
-      strokeWidth: 2,
-      hover: {
-        size: 6,
-      },
-    },
   };
 
   const series = [
@@ -170,13 +206,16 @@ export default function AssetsPage() {
 
   const hasData = chartData.some((val) => val > 0);
 
+  const currentTotalAssets =
+    chartData.reduce((sum, val) => sum + val, 0) * 10000;
+  const goalProgress =
+    savedGoalAmount > 0 ? (currentTotalAssets / savedGoalAmount) * 100 : 0;
+
   return (
     <div className="mx-auto max-w-7xl p-4 md:p-6 2xl:p-10 h-[calc(100vh-100px)] flex flex-col">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between shrink-0">
-        <h2 className="text-2xl font-semibold text-gray-800">
-          자산 현황
-        </h2>
-        
+        <h2 className="text-2xl font-semibold text-gray-800">자산 현황</h2>
+
         <div className="flex gap-3">
           {/* Account Selector */}
           <div className="relative">
@@ -237,6 +276,23 @@ export default function AssetsPage() {
                 />
               </svg>
             </div>
+
+            {/* TODO: 목표 금액 설정 UI - 디자인 수정 필요 */}
+            {/* <div className="flex items-center gap-2">
+            <input
+              type="number"
+              value={goalAmount}
+              onChange={(e) => setGoalAmount(e.target.value)}
+              placeholder="목표 금액"
+              className="w-32 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+            <button
+              onClick={handleSaveGoal}
+              className="rounded-lg bg-brand-500 px-3 py-2 text-sm font-medium text-white hover:bg-brand-600 transition-colors"
+            >
+              저장
+            </button>
+          </div> */}
           </div>
         </div>
       </div>
@@ -248,6 +304,22 @@ export default function AssetsPage() {
               월별 자산 증가 추이 - {selectedAccountName}
             </h4>
           </div>
+
+          {!selectedAccount && savedGoalAmount > 0 && (
+            <div className="flex flex-col items-end gap-1">
+              <div className="text-sm text-gray-500">
+                목표: {savedGoalAmount.toLocaleString()}원
+              </div>
+              <div className="text-lg font-bold text-brand-500">
+                {goalProgress.toFixed(1)}% 달성
+              </div>
+              <div className="text-xs text-gray-400">
+                {currentTotalAssets < savedGoalAmount
+                  ? `${(savedGoalAmount - currentTotalAssets).toLocaleString()}원 남음`
+                  : "목표 달성!"}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex-1 min-h-0 relative">
@@ -260,7 +332,7 @@ export default function AssetsPage() {
               <ReactApexChart
                 options={options}
                 series={series}
-                type="area"
+                type="bar"
                 height="100%"
               />
             ) : (
