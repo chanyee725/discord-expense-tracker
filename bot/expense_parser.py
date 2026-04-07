@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from google.cloud import vision
-from google import genai
+import google.generativeai as genai
 from PIL import Image
 import numpy as np
 
