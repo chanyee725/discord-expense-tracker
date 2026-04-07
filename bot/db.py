@@ -102,6 +102,35 @@ async def get_registered_account_numbers(pool: asyncpg.Pool) -> list[str]:
     return [row['account_number'] for row in rows]
 
 
+async def get_registered_categories(pool: asyncpg.Pool) -> list[str]:
+    """
+    Get all registered category names from categories table.
+    
+    Used to restrict OCR category extraction to only registered categories,
+    preventing the bot from creating new categories or misinterpreting 
+    transaction titles as categories.
+    
+    Args:
+        pool: asyncpg connection pool
+        
+    Returns:
+        List of category names sorted by sort_order
+        
+    Example:
+        >>> await get_registered_categories(pool)
+        ['식비', '쇼핑', '장보기', '공과금', '문화생활', ...]
+    """
+    rows = await pool.fetch(
+        """
+        SELECT name 
+        FROM categories 
+        ORDER BY sort_order ASC
+        """
+    )
+    
+    return [row['name'] for row in rows]
+
+
 async def check_duplicate_transaction(
     pool: asyncpg.Pool, 
     data: dict[str, Any]
@@ -144,6 +173,57 @@ async def check_duplicate_transaction(
     return result is not None
 
 
+async def normalize_account_name(
+    pool: asyncpg.Pool,
+    parsed_name: str | None
+) -> str | None:
+    """
+    Normalize parsed account name to match registered bank account name.
+    
+    Matching strategy (in priority order):
+    1. Exact match: parsed_name == bank_accounts.name
+    2. Account number match: extract digits from parsed_name and match against bank_accounts.account_number
+       - Example: "LH SC 50420476319" -> extracts "50420476319" -> matches SC 제일은행
+       - Example: "SC제일은행 50420476319" -> extracts "50420476319" -> matches SC 제일은행
+    
+    Args:
+        pool: asyncpg connection pool
+        parsed_name: Account name from Gemini (may include account number)
+        
+    Returns:
+        Exact bank_accounts.name if match found, None otherwise
+    """
+    if not parsed_name or not isinstance(parsed_name, str):
+        return None
+    
+    # Strategy 1: Exact match first
+    result = await pool.fetchrow(
+        "SELECT name FROM bank_accounts WHERE name = $1",
+        parsed_name
+    )
+    if result:
+        return result['name']
+    
+    # Strategy 2: Extract digits from parsed_name and match against account_number
+    digits = re.findall(r'\d+', parsed_name)
+    for d in sorted(digits, key=len, reverse=True):
+        if len(d) >= 5:  # account numbers are at least 5 digits
+            result = await pool.fetchrow(
+                """
+                SELECT name FROM bank_accounts 
+                WHERE account_number LIKE '%' || $1 || '%'
+                LIMIT 1
+                """,
+                d
+            )
+            if result:
+                return result['name']
+    
+    # No match found
+    print(f"[WARN] Account name normalization failed: '{parsed_name}' not found in bank_accounts")
+    return None
+
+
 async def insert_transaction(pool: asyncpg.Pool, data: dict[str, Any]) -> None:
     """
     Insert transaction record into database.
@@ -165,6 +245,7 @@ async def insert_transaction(pool: asyncpg.Pool, data: dict[str, Any]) -> None:
         - created_at auto-set by database with now()
         - All fields use .get() with defaults to handle missing keys gracefully
         - Automatically updates bank_accounts.balance for linked accounts
+        - Account names are normalized to match registered bank_accounts.name values
     """
     amount = int(data.get('amount', 0))
     trans_type = data.get('type')
@@ -191,22 +272,28 @@ async def insert_transaction(pool: asyncpg.Pool, data: dict[str, Any]) -> None:
         parsed_date
     )
     
+    # Normalize withdrawal_source before balance update
     if trans_type == '지출' and withdrawal_source:
-        await pool.execute(
-            """
-            UPDATE bank_accounts
-            SET balance = balance - $1, updated_at = now()
-            WHERE name = $2
-            """,
-            amount, withdrawal_source
-        )
+        normalized_source = await normalize_account_name(pool, withdrawal_source)
+        if normalized_source:
+            await pool.execute(
+                """
+                UPDATE bank_accounts
+                SET balance = balance - $1, updated_at = now()
+                WHERE name = $2
+                """,
+                amount, normalized_source
+            )
     
+    # Normalize deposit_destination before balance update
     if trans_type == '수입' and deposit_destination:
-        await pool.execute(
-            """
-            UPDATE bank_accounts
-            SET balance = balance + $1, updated_at = now()
-            WHERE name = $2
-            """,
-            amount, deposit_destination
-        )
+        normalized_dest = await normalize_account_name(pool, deposit_destination)
+        if normalized_dest:
+            await pool.execute(
+                """
+                UPDATE bank_accounts
+                SET balance = balance + $1, updated_at = now()
+                WHERE name = $2
+                """,
+                amount, normalized_dest
+            )

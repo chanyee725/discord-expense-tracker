@@ -112,12 +112,14 @@ class ExpenseParser:
             return {}
 
         registered_accounts = []
+        registered_categories = []
         if self.db_pool:
-            from bot.db import get_registered_account_numbers
+            from bot.db import get_registered_account_numbers, get_registered_categories
             try:
                 registered_accounts = await get_registered_account_numbers(self.db_pool)
+                registered_categories = await get_registered_categories(self.db_pool)
             except Exception as e:
-                print(f"계좌번호 조회 실패: {e}")
+                print(f"DB 조회 실패: {e}")
 
         accounts_info = ""
         if registered_accounts:
@@ -126,13 +128,24 @@ class ExpenseParser:
             {', '.join(registered_accounts)}
             """
 
+        categories_info = ""
+        if registered_categories:
+            categories_info = f"""
+            [등록된 카테고리 목록]
+            {', '.join(registered_categories)}
+            """
+
         # TODO :: 아래 김병찬이라는 이름은 웹에서 설정 값으로 받을 수 있도록 수정하기
         prompt = f"""
             당신은 은행 거래 내역 분석 전문가입니다. 다음 OCR 텍스트에서 가계부 정보를 추출하세요.
             추출 항목: 금액(숫자만), 카테고리, 입금처 전체, 출금처 (은행번호), 이체일시, 거래 유형
 
             [추출 및 생성 규칙]
-            1. **카테고리 (최우선)**: 반드시 '카테고리 설정' 글자 옆이나 '>' 기호 바로 앞에 있는 단어(예: 쇼핑, 이체, 식비 등)를 있는 그대로 추출하세요. 절대 임의로 수정하지 마세요.
+            1. **카테고리 (최우선)**: 
+               - **중요**: 반드시 아래 [등록된 카테고리 목록]에 있는 카테고리 중 하나만 선택하세요.
+               - OCR 텍스트에 '카테고리 설정' 또는 '>' 기호 옆에 있는 단어를 참고하되, 반드시 등록된 카테고리 목록과 매칭하세요.
+               - 등록된 카테고리 목록에 없는 카테고리는 절대 사용하지 마세요.
+               - 매칭되는 카테고리가 없으면 "기타" 또는 "기타수입"을 사용하세요.
             2. 금액 및 거래 유형:
                - OCR 텍스트에서 금액을 찾으세요.
                - **중요**: 입금처(deposit_destination)에 등록된 내 계좌번호가 포함되어 있으면 무조건 수입으로 분류하세요.
@@ -147,9 +160,12 @@ class ExpenseParser:
             - **1순위**: '메모' 항목에 적힌 내용이 있다면 그것을 제목으로 사용하세요. (예: "노트북 구매")
             - **2순위**: 메모가 없거나 기본 문구라면, 사용자("김병찬") 외의 타인 이름이 있을 시 "{{이름}}에게 이체"로 생성하세요.
             - **3순위**: 둘 다 없다면 입금처를 바탕으로 생성하세요.
+            - **주의**: 제목을 카테고리로 사용하지 마세요. 제목과 카테고리는 완전히 별개입니다.
             5. 반드시 아래 구조의 순수 JSON으로만 응답하세요.
             
             {accounts_info}
+            
+            {categories_info}
             
             [JSON 구조]
             {{
