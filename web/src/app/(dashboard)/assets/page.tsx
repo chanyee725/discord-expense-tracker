@@ -137,108 +137,57 @@ export default function AssetsPage() {
     savedGoalAmount > 0 ? (currentTotalAssets / savedGoalAmount) * 100 : 0;
 
   return (
-    <div className="mx-auto max-w-7xl p-4 md:p-6 2xl:p-10 h-[calc(100vh-100px)] flex flex-col">
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between shrink-0">
-        <h2 className="text-2xl font-semibold text-gray-800">자산 현황</h2>
+    <div className="mx-auto flex h-[calc(100vh-100px)] max-w-7xl flex-col p-4 md:p-6 2xl:p-10">
+      <div className="mb-6 flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="text-[22px] font-bold leading-snug text-text-primary">자산 현황</h2>
 
         <div className="flex gap-3">
           {/* Account Selector */}
-          <div className="relative">
-            <select
-              value={selectedAccount || ""}
-              onChange={(e) => setSelectedAccount(e.target.value || null)}
-              className="appearance-none rounded-lg border border-gray-300 bg-white px-4 py-2 pr-8 text-sm font-medium text-gray-700 focus:border-primary focus:outline-hidden focus:ring-1 focus:ring-primary"
-            >
-              <option value="">전체</option>
-              {accounts.map((account) => (
-                <option key={account.id} value={account.id}>
-                  {account.name}
-                </option>
-              ))}
-            </select>
-            <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-500">
-              <svg
-                className="fill-current"
-                width="10"
-                height="6"
-                viewBox="0 0 10 6"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M0.47072 1.08816C0.47072 1.02932 0.500141 0.955774 0.545754 0.882227C0.663365 0.691068 0.913365 0.646949 1.10452 0.76456L5.00033 3.10324L8.89614 0.76456C9.0873 0.646949 9.3373 0.691068 9.45491 0.882227C9.57252 1.07339 9.5284 1.32339 9.33724 1.441L5.2209 3.91206C5.14735 3.95618 5.07381 3.9856 5.00033 3.9856C4.92685 3.9856 4.8533 3.95618 4.77975 3.91206L0.663408 1.441C0.57519 1.38216 0.47072 1.25001 0.47072 1.08816Z"
-                  fill=""
-                />
-              </svg>
-            </div>
-          </div>
+          <select
+            value={selectedAccount || ""}
+            onChange={(e) => setSelectedAccount(e.target.value || null)}
+            className="appearance-none rounded-xl border border-border bg-card px-4 py-2 pe-8 text-[13px] font-medium text-text-primary outline-hidden transition focus:border-brand focus:ring-4 focus:ring-brand/10"
+          >
+            <option value="">전체</option>
+            {accounts.map((account) => (
+              <option key={account.id} value={account.id}>
+                {account.name}
+              </option>
+            ))}
+          </select>
 
           {/* Year Selector */}
-          <div className="relative">
-            <select
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(Number(e.target.value))}
-              className="appearance-none rounded-lg border border-gray-300 bg-white px-4 py-2 pr-8 text-sm font-medium text-gray-700 focus:border-primary focus:outline-hidden focus:ring-1 focus:ring-primary"
-            >
-              {AVAILABLE_YEARS.map((year) => (
-                <option key={year} value={year}>
-                  {year}년
-                </option>
-              ))}
-            </select>
-            <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-500">
-              <svg
-                className="fill-current"
-                width="10"
-                height="6"
-                viewBox="0 0 10 6"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M0.47072 1.08816C0.47072 1.02932 0.500141 0.955774 0.545754 0.882227C0.663365 0.691068 0.913365 0.646949 1.10452 0.76456L5.00033 3.10324L8.89614 0.76456C9.0873 0.646949 9.3373 0.691068 9.45491 0.882227C9.57252 1.07339 9.5284 1.32339 9.33724 1.441L5.2209 3.91206C5.14735 3.95618 5.07381 3.9856 5.00033 3.9856C4.92685 3.9856 4.8533 3.95618 4.77975 3.91206L0.663408 1.441C0.57519 1.38216 0.47072 1.25001 0.47072 1.08816Z"
-                  fill=""
-                />
-              </svg>
-            </div>
-
-            {/* TODO: 목표 금액 설정 UI - 디자인 수정 필요 */}
-            {/* <div className="flex items-center gap-2">
-            <input
-              type="number"
-              value={goalAmount}
-              onChange={(e) => setGoalAmount(e.target.value)}
-              placeholder="목표 금액"
-              className="w-32 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 focus:border-primary focus:outline-hidden focus:ring-1 focus:ring-primary"
-            />
-            <button
-              onClick={handleSaveGoal}
-              className="rounded-lg bg-brand-500 px-3 py-2 text-sm font-medium text-white hover:bg-brand-600 transition-colors"
-            >
-              저장
-            </button>
-          </div> */}
-          </div>
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
+            className="appearance-none rounded-xl border border-border bg-card px-4 py-2 pe-8 text-[13px] font-medium text-text-primary outline-hidden transition focus:border-brand focus:ring-4 focus:ring-brand/10"
+          >
+            {AVAILABLE_YEARS.map((year) => (
+              <option key={year} value={year}>
+                {year}년
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-default md:p-6 flex-1 flex flex-col min-h-0">
-        <div className="mb-4 justify-between gap-4 sm:flex shrink-0">
+      <div data-slot="section-card" className="flex min-h-0 flex-1 flex-col rounded-2xl bg-card p-5 shadow-[var(--shadow-card)] md:p-6">
+        <div className="mb-4 shrink-0 justify-between gap-4 sm:flex">
           <div>
-            <h4 className="text-xl font-semibold text-gray-800">
+            <h4 className="text-[18px] font-bold leading-snug text-text-primary">
               월별 자산 증가 추이 - {selectedAccountName}
             </h4>
           </div>
 
           {!selectedAccount && savedGoalAmount > 0 && (
             <div className="flex flex-col items-end gap-1">
-              <div className="text-sm text-gray-500">
+              <div className="text-[13px] text-text-secondary">
                 목표: {savedGoalAmount.toLocaleString()}원
               </div>
-              <div className="text-lg font-bold text-brand-500">
+              <div className="text-[18px] font-bold text-brand">
                 {goalProgress.toFixed(1)}% 달성
               </div>
-              <div className="text-xs text-gray-400">
+              <div className="text-[12px] text-text-disabled">
                 {currentTotalAssets < savedGoalAmount
                   ? `${(savedGoalAmount - currentTotalAssets).toLocaleString()}원 남음`
                   : "목표 달성!"}
@@ -247,8 +196,8 @@ export default function AssetsPage() {
           )}
         </div>
 
-        <div className="flex-1 min-h-0 relative">
-          <div id="assetChart" className="h-full absolute inset-0">
+        <div className="relative min-h-0 flex-1">
+          <div id="assetChart" className="absolute inset-0 h-full">
             {loading ? (
               <div className="flex h-full items-center justify-center text-text-tertiary">
                 데이터를 불러오는 중...

@@ -140,16 +140,16 @@ export default function BudgetCalculatorPage() {
   return (
     <div className="mx-auto max-w-(--breakpoint-2xl) relative">
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800">예산 비율 계산기</h2>
+        <h2 className="text-[22px] font-bold leading-snug text-text-primary">예산 비율 계산기</h2>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-2xl border border-gray-200 bg-white shadow-xs p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">💰 수입 설정</h3>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+        <div className="space-y-6 lg:col-span-2">
+          <div data-slot="section-card" className="rounded-2xl bg-card p-6 shadow-[var(--shadow-card)]">
+            <h3 className="mb-4 text-[18px] font-bold leading-snug text-text-primary">💰 수입 설정</h3>
             
             <div>
-              <label className="mb-2 block text-xs font-semibold text-gray-600 uppercase tracking-wide">
+              <label className="mb-2 block text-[12px] font-semibold uppercase tracking-[0.05em] text-text-secondary">
                 월 수입
               </label>
               <div className="flex gap-2">
@@ -164,39 +164,32 @@ export default function BudgetCalculatorPage() {
                       }
                     }}
                     placeholder="3,000,000"
-                    className="w-full rounded-lg border border-gray-300 py-3 px-4 pr-10 text-gray-900 text-lg font-semibold focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-hidden"
+                    className="w-full rounded-xl border border-border bg-card px-4 py-3 pe-10 text-[18px] font-semibold text-text-primary outline-hidden transition focus:border-brand focus:ring-4 focus:ring-brand/10"
                   />
-                  <div className="absolute right-4 top-3 text-gray-400 font-medium">원</div>
+                  <div className="absolute end-4 top-3 font-medium text-text-disabled">원</div>
                 </div>
                 {recurringIncome.length > 0 && (
-                  <div className="relative">
-                    <select
-                      onChange={(e) => {
-                        if (e.target.value) {
-                          applyIncomeAmount(parseInt(e.target.value));
-                          e.target.value = '';
-                        }
-                      }}
-                      className="h-full rounded-lg border border-gray-300 px-3 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-hidden appearance-none pr-8 bg-white"
-                      defaultValue=""
-                    >
-                      <option value="" disabled>불러오기</option>
-                      {recurringIncome.map((item) => (
-                        <option key={item.id} value={item.amount}>
-                          {item.title} ({formatNumber(item.amount)}원)
-                        </option>
-                      ))}
-                    </select>
-                    <div className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
-                  </div>
+                  <select
+                    onChange={(e) => {
+                      if (e.target.value) {
+                        applyIncomeAmount(parseInt(e.target.value));
+                        e.target.value = '';
+                      }
+                    }}
+                    className="h-full appearance-none rounded-xl border border-border bg-card px-3 py-3 pe-8 text-[13px] font-medium text-text-primary outline-hidden transition hover:bg-surface-subtle focus:border-brand focus:ring-4 focus:ring-brand/10"
+                    defaultValue=""
+                  >
+                    <option value="" disabled>불러오기</option>
+                    {recurringIncome.map((item) => (
+                      <option key={item.id} value={item.amount}>
+                        {item.title} ({formatNumber(item.amount)}원)
+                      </option>
+                    ))}
+                  </select>
                 )}
               </div>
               {income > 0 && (
-                <div className="mt-2 text-sm text-gray-500">
+                <div className="mt-2 text-[13px] text-text-secondary">
                   {formatNumber(monthlyIncome)}원
                 </div>
               )}
@@ -204,14 +197,14 @@ export default function BudgetCalculatorPage() {
           </div>
 
           {recurringExpenses.length > 0 && (
-            <div className="rounded-2xl border border-gray-200 bg-white shadow-xs p-6">
+            <div data-slot="section-card" className="rounded-2xl bg-card p-6 shadow-[var(--shadow-card)]">
               <button
                 onClick={() => setIsExpensesExpanded(!isExpensesExpanded)}
-                className="w-full flex items-center justify-between mb-4 text-left"
+                className="mb-4 flex w-full items-center justify-between text-start"
               >
-                <h3 className="text-lg font-semibold text-gray-800">📊 고정비 상세</h3>
+                <h3 className="text-[18px] font-bold leading-snug text-text-primary">📊 고정비 상세</h3>
                 <svg
-                  className={`w-5 h-5 text-gray-500 transition-transform ${isExpensesExpanded ? 'rotate-180' : ''}`}
+                  className={`size-5 text-icon-default transition-transform ${isExpensesExpanded ? 'rotate-180' : ''}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -222,24 +215,24 @@ export default function BudgetCalculatorPage() {
               
               {isExpensesExpanded && (
                 <div>
-                  <div className="space-y-2 mb-4 max-h-64 overflow-y-auto">
+                  <div className="mb-4 max-h-64 space-y-2 overflow-y-auto">
                     {recurringExpenses.map((item) => (
-                      <div key={item.id} className="flex items-center justify-between py-2 px-3 bg-orange-50 rounded-lg border border-orange-100">
+                      <div key={item.id} className="flex items-center justify-between rounded-xl bg-warning/5 px-3 py-2 border border-warning/10">
                         <div className="flex flex-col">
-                          <span className="text-sm font-medium text-gray-800">{item.title}</span>
-                          <span className="text-xs text-gray-500">매월 {item.day_of_month}일</span>
+                          <span className="text-[13px] font-medium text-text-primary">{item.title}</span>
+                          <span className="text-[12px] text-text-secondary">매월 {item.day_of_month}일</span>
                         </div>
-                        <span className="text-sm font-semibold text-orange-600">{formatNumber(item.amount)}원</span>
+                        <span className="text-[13px] font-semibold text-warning">{formatNumber(item.amount)}원</span>
                       </div>
                     ))}
                   </div>
-                  <div className="border-t border-gray-200 pt-3 mb-3 flex items-center justify-between">
-                    <span className="text-sm font-bold text-gray-800">합계</span>
-                    <span className="text-lg font-bold text-orange-600">{formatNumber(totalRecurringExpenses)}원</span>
+                  <div className="mb-3 flex items-center justify-between border-t border-border pt-3">
+                    <span className="text-[13px] font-bold text-text-primary">합계</span>
+                    <span className="text-[18px] font-bold text-warning">{formatNumber(totalRecurringExpenses)}원</span>
                   </div>
                   <button
                     onClick={applyFixedExpenses}
-                    className="w-full py-2.5 px-4 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors"
+                    className="w-full rounded-xl bg-warning px-4 py-2.5 text-[14px] font-medium text-white transition-colors hover:bg-warning/90"
                   >
                     고정비에 전체 적용
                   </button>
@@ -250,14 +243,14 @@ export default function BudgetCalculatorPage() {
         </div>
 
         <div className="lg:col-span-3">
-          <div className="rounded-2xl border border-gray-200 bg-white shadow-xs p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-6">📊 예산 비율 계산</h3>
+          <div data-slot="section-card" className="rounded-2xl bg-card p-6 shadow-[var(--shadow-card)]">
+            <h3 className="mb-6 text-[18px] font-bold leading-snug text-text-primary">📊 예산 비율 계산</h3>
             
             <div className="space-y-5">
               {categories.map((category) => (
                 <div key={category.name}>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm font-semibold text-gray-700">
+                  <div className="mb-2 flex items-center justify-between">
+                    <label className="text-[13px] font-semibold text-text-primary">
                       {category.name}
                     </label>
                     <div className="flex items-center gap-3">
@@ -272,17 +265,17 @@ export default function BudgetCalculatorPage() {
                             }
                           }}
                           placeholder="0"
-                          className="w-32 rounded-lg border border-gray-300 py-1.5 px-3 pr-8 text-sm text-gray-900 text-right font-semibold focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 focus:outline-hidden"
+                          className="w-32 rounded-xl border border-border bg-card px-3 py-1.5 pe-8 text-end text-[13px] font-semibold text-text-primary outline-hidden transition focus:border-brand focus:ring-2 focus:ring-brand/10"
                         />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-500">원</span>
+                        <span className="absolute end-3 top-1/2 -translate-y-1/2 text-[12px] text-text-secondary">원</span>
                       </div>
-                      <span className="text-sm text-gray-600 font-medium w-14 text-right">
+                      <span className="w-14 text-end text-[13px] font-medium text-text-secondary">
                         {category.percent.toFixed(1)}%
                       </span>
                     </div>
                   </div>
                   
-                  <div className="relative h-10 bg-gray-100 rounded-lg overflow-hidden">
+                  <div className="relative h-10 overflow-hidden rounded-xl bg-surface-muted">
                     <div 
                       className={`h-full ${category.color} transition-all duration-300`}
                       style={{ width: `${Math.min(100, category.percent)}%` }}
@@ -292,31 +285,31 @@ export default function BudgetCalculatorPage() {
               ))}
             </div>
 
-            <div className={`mt-6 p-5 rounded-xl border-2 ${isValidTotal ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'}`}>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-base font-bold text-gray-800">합계</span>
+            <div className={`mt-6 rounded-xl border-2 p-5 ${isValidTotal ? 'border-success bg-success/5' : 'border-destructive bg-destructive/5'}`}>
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-[14px] font-bold text-text-primary">합계</span>
                 <div className="flex items-center gap-3">
-                  <span className={`text-xl font-bold ${isValidTotal ? 'text-green-600' : 'text-red-600'}`}>
+                  <span className={`text-[20px] font-bold ${isValidTotal ? 'text-success' : 'text-destructive'}`}>
                     {formatNumber(totalAmount)}원
                   </span>
                   {isValidTotal ? (
-                    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="size-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   ) : (
-                    <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="size-6 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   )}
                 </div>
               </div>
               {!isValidTotal && income > 0 && (
-                <p className="text-sm text-red-700 font-medium">
+                <p className="text-[13px] font-medium text-destructive">
                   합계가 월 수입과 일치해야 합니다. (현재: {formatNumber(totalAmount)}원 / 목표: {formatNumber(income)}원)
                 </p>
               )}
               {income === 0 && (
-                <p className="text-sm text-gray-600">
+                <p className="text-[13px] text-text-secondary">
                   월 수입을 먼저 입력해주세요.
                 </p>
               )}

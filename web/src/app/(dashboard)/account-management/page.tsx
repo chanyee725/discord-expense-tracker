@@ -232,28 +232,28 @@ export default function AccountManagementPage() {
   return (
     <div className="mx-auto max-w-7xl p-4 md:p-6 2xl:p-10">
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800">계좌 관리</h2>
+        <h2 className="text-[22px] font-bold leading-snug text-text-primary">계좌 관리</h2>
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-default md:p-6">
+      <div data-slot="section-card" className="rounded-2xl bg-card p-5 shadow-[var(--shadow-card)] md:p-6">
         <div className="mb-6 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-1 bg-gray-100/50 p-1 rounded-xl">
+          <div className="flex items-center gap-1 rounded-xl bg-surface-muted p-1">
             <button
               onClick={() => setActiveTab("bank")}
-              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
+              className={`rounded-lg px-4 py-2 text-[13px] font-semibold transition-all ${
                 activeTab === "bank"
-                  ? "bg-white text-brand-500 shadow-xs"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
+                  ? "bg-card text-brand shadow-xs"
+                  : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
               }`}
             >
               은행
             </button>
             <button
               onClick={() => setActiveTab("investment")}
-              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
+              className={`rounded-lg px-4 py-2 text-[13px] font-semibold transition-all ${
                 activeTab === "investment"
-                  ? "bg-white text-brand-500 shadow-xs"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
+                  ? "bg-card text-brand shadow-xs"
+                  : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
               }`}
             >
               투자
@@ -261,10 +261,10 @@ export default function AccountManagementPage() {
           </div>
           <button
             onClick={handleAddAccount}
-            className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 transition-colors shadow-xs"
+            className="inline-flex items-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-[13px] font-medium text-white shadow-xs transition-colors hover:bg-brand/90"
           >
             <svg
-              className="w-4 h-4"
+              className="size-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -283,15 +283,15 @@ export default function AccountManagementPage() {
         <div className="space-y-3">
           {filteredAccounts.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="text-4xl mb-3">
+              <div className="mb-3 text-4xl">
                 {activeTab === "bank" ? "🏦" : "📈"}
               </div>
-              <div className="text-gray-500">
+              <div className="text-[13px] text-text-secondary">
                 {activeTab === "bank"
                   ? "등록된 은행 계좌가 없습니다."
                   : "등록된 투자 계좌가 없습니다."}
               </div>
-              <div className="text-sm text-gray-400 mt-1">
+              <div className="mt-1 text-[12px] text-text-disabled">
                 새로운 계좌를 추가해보세요.
               </div>
             </div>
@@ -301,47 +301,47 @@ export default function AccountManagementPage() {
                 <div
                   key={account.id}
                   onClick={() => handleEditAccount(account)}
-                  className="group flex items-center justify-between p-5 rounded-xl hover:bg-gray-50 cursor-pointer transition-all duration-200 border border-gray-100"
+                  className="group flex cursor-pointer items-center justify-between rounded-xl border border-border p-5 transition-all duration-200 hover:bg-surface-subtle"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-xl shadow-xs border border-gray-100">
+                    <div className="flex size-12 items-center justify-center rounded-xl border border-border bg-brand/10 text-xl shadow-xs">
                       {BANK_ICONS[account.bankName] ||
                         INVESTMENT_ICONS[account.bankName] ||
                         "🏦"}
                     </div>
                     <div>
-                      <div className="font-semibold text-gray-900 mb-0.5">
+                      <div className="mb-0.5 text-[14px] font-semibold text-text-primary">
                         {account.accountName}
                       </div>
-                      <div className="text-xs font-medium text-gray-500">
+                      <div className="text-[12px] font-medium text-text-secondary">
                         {account.bankName}
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-5">
                     {account.accountType === "investment" ? (
-                      <div className="text-right">
-                        <div className="text-sm text-gray-500">
+                      <div className="text-end">
+                        <div className="text-[13px] text-text-secondary">
                           예수금{" "}
-                          <span className="font-bold text-blue-600">
+                          <span className="font-bold text-info">
                             {formatNumber(account.depositBalance)}원
                           </span>
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-[13px] text-text-secondary">
                           투자금{" "}
-                          <span className="font-bold text-blue-600">
+                          <span className="font-bold text-info">
                             {formatNumber(account.investmentBalance)}원
                           </span>
                         </div>
                       </div>
                     ) : (
-                      <div className="font-bold text-lg text-blue-600">
+                      <div className="text-[18px] font-bold text-info">
                         {formatNumber(account.balance)}원
                       </div>
                     )}
-                    <div className="text-gray-300 group-hover:text-gray-600 transition-colors">
+                    <div className="text-icon-muted transition-colors group-hover:text-icon-default">
                       <svg
-                        className="w-5 h-5"
+                        className="size-5"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -358,31 +358,31 @@ export default function AccountManagementPage() {
                 </div>
               ))}
 
-              <div className="mt-6 p-5 rounded-xl bg-gray-50 border border-gray-200">
+              <div className="mt-6 rounded-xl bg-surface-subtle border border-border p-5">
                 {activeTab === "bank" ? (
                   <div className="flex items-center justify-between">
-                    <div className="text-sm font-semibold text-gray-600">
+                    <div className="text-[13px] font-semibold text-text-secondary">
                       은행 자산
                     </div>
-                    <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-2xl font-bold text-text-primary">
                       {calculateSubtotal("bank")}원
                     </div>
                   </div>
                 ) : (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <div className="text-sm font-semibold text-gray-600">
+                      <div className="text-[13px] font-semibold text-text-secondary">
                         투자 예수금
                       </div>
-                      <div className="text-xl font-bold text-gray-900">
+                      <div className="text-[20px] font-bold text-text-primary">
                         {calculateInvestmentSubtotals().deposit}원
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
-                      <div className="text-sm font-semibold text-gray-600">
+                      <div className="text-[13px] font-semibold text-text-secondary">
                         투자 평가금액
                       </div>
-                      <div className="text-xl font-bold text-gray-900">
+                      <div className="text-[20px] font-bold text-text-primary">
                         {calculateInvestmentSubtotals().investment}원
                       </div>
                     </div>
@@ -396,7 +396,7 @@ export default function AccountManagementPage() {
 
       {isPanelOpen && (
         <div
-          className="fixed inset-0 bg-gray-900/40 backdrop-blur-xs z-40 transition-opacity duration-300"
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 transition-opacity duration-300"
           onClick={handleClosePanelWithDelay}
         />
       )}
@@ -405,25 +405,25 @@ export default function AccountManagementPage() {
         className={`fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none ${isPanelOpen ? "pointer-events-auto" : ""}`}
       >
         <div
-          className={`bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden transform transition-all duration-300 ${
+          className={`bg-card rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden transform transition-all duration-300 ${
             isPanelOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
           }`}
         >
           {editingAccount ? (
-            <div className="flex flex-col min-h-0 flex-1 bg-white">
-              <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-white z-10">
+            <div className="flex flex-col min-h-0 flex-1 bg-card">
+              <div className="flex items-center justify-between px-6 py-5 border-b border-border bg-card z-10">
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">계좌 편집</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">
+                  <h3 className="text-[18px] font-bold text-text-primary">계좌 편집</h3>
+                  <p className="text-[12px] text-text-secondary mt-0.5">
                     계좌 정보를 입력합니다
                   </p>
                 </div>
                 <button
                   onClick={handleClosePanelWithDelay}
-                  className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+                  className="flex size-8 items-center justify-center rounded-lg text-icon-default hover:bg-surface-subtle transition-colors"
                 >
                   <svg
-                    className="w-6 h-6"
+                    className="size-6"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -440,7 +440,7 @@ export default function AccountManagementPage() {
 
               <div className="flex-1 overflow-y-auto p-6 space-y-8">
                 <div className="space-y-3">
-                  <label className="text-sm font-semibold text-gray-700 block">
+                  <label className="text-[13px] font-medium text-text-primary block">
                     {editingAccount.accountType === "bank" ? "은행" : "증권사"}
                   </label>
                   <div className="relative">
@@ -449,7 +449,7 @@ export default function AccountManagementPage() {
                       onChange={(e) =>
                         updateAccountField("bankName", e.target.value)
                       }
-                      className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden appearance-none bg-gray-50/50 focus:bg-white"
+                      className="w-full rounded-xl border border-border py-3.5 px-4 text-text-primary focus:border-brand focus:ring-4 focus:ring-brand/10 transition-all outline-hidden appearance-none bg-card"
                     >
                       {(editingAccount.accountType === "bank"
                         ? BANK_OPTIONS
@@ -460,9 +460,9 @@ export default function AccountManagementPage() {
                         </option>
                       ))}
                     </select>
-                    <div className="absolute right-4 top-4 text-gray-400 pointer-events-none">
+                    <div className="absolute right-4 top-4 text-icon-muted pointer-events-none">
                       <svg
-                        className="w-5 h-5"
+                        className="size-5"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -479,7 +479,7 @@ export default function AccountManagementPage() {
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-sm font-semibold text-gray-700 block">
+                  <label className="text-[13px] font-medium text-text-primary block">
                     계좌 이름
                   </label>
                   <input
@@ -489,12 +489,12 @@ export default function AccountManagementPage() {
                       updateAccountField("accountName", e.target.value)
                     }
                     placeholder="예: 급여계좌"
-                    className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden bg-gray-50/50 focus:bg-white"
+                    className="w-full rounded-xl border border-border py-3.5 px-4 text-text-primary focus:border-brand focus:ring-4 focus:ring-brand/10 transition-all outline-hidden bg-card"
                   />
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-sm font-semibold text-gray-700 block">
+                  <label className="text-[13px] font-medium text-text-primary block">
                     계좌번호
                   </label>
                   <input
@@ -504,16 +504,16 @@ export default function AccountManagementPage() {
                       updateAccountField("accountNumber", e.target.value)
                     }
                     placeholder="계좌번호를 입력하세요 (선택사항)"
-                    className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden bg-gray-50/50 focus:bg-white"
+                    className="w-full rounded-xl border border-border py-3.5 px-4 text-text-primary focus:border-brand focus:ring-4 focus:ring-brand/10 transition-all outline-hidden bg-card"
                   />
-                  <p className="text-xs text-gray-500">
+                  <p className="text-[12px] text-text-secondary">
                     디스코드 봇이 수입/지출을 자동 분류하는데 사용됩니다
                   </p>
                 </div>
 
                 {editingAccount.accountType === "bank" ? (
                   <div className="space-y-3">
-                    <label className="text-sm font-semibold text-gray-700 block">
+                    <label className="text-[13px] font-medium text-text-primary block">
                       잔액
                     </label>
                     <div className="relative">
@@ -534,9 +534,9 @@ export default function AccountManagementPage() {
                           }
                         }}
                         placeholder="0"
-                        className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden bg-gray-50/50 focus:bg-white"
+                        className="w-full rounded-xl border border-border py-3.5 px-4 text-text-primary focus:border-brand focus:ring-4 focus:ring-brand/10 transition-all outline-hidden bg-card"
                       />
-                      <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">
+                      <div className="absolute right-4 top-3.5 text-text-secondary text-[13px] font-medium">
                         원
                       </div>
                     </div>
@@ -544,7 +544,7 @@ export default function AccountManagementPage() {
                 ) : (
                   <>
                     <div className="space-y-3">
-                      <label className="text-sm font-semibold text-gray-700 block">
+                      <label className="text-[13px] font-medium text-text-primary block">
                         예수금
                       </label>
                       <div className="relative">
@@ -565,15 +565,15 @@ export default function AccountManagementPage() {
                             }
                           }}
                           placeholder="0"
-                          className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden bg-gray-50/50 focus:bg-white"
+                          className="w-full rounded-xl border border-border py-3.5 px-4 text-text-primary focus:border-brand focus:ring-4 focus:ring-brand/10 transition-all outline-hidden bg-card"
                         />
-                        <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">
+                        <div className="absolute right-4 top-3.5 text-text-secondary text-[13px] font-medium">
                           원
                         </div>
                       </div>
                     </div>
                     <div className="space-y-3">
-                      <label className="text-sm font-semibold text-gray-700 block">
+                      <label className="text-[13px] font-medium text-text-primary block">
                         투자금 (평가금액)
                       </label>
                       <div className="relative">
@@ -594,9 +594,9 @@ export default function AccountManagementPage() {
                             }
                           }}
                           placeholder="0"
-                          className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden bg-gray-50/50 focus:bg-white"
+                          className="w-full rounded-xl border border-border py-3.5 px-4 text-text-primary focus:border-brand focus:ring-4 focus:ring-brand/10 transition-all outline-hidden bg-card"
                         />
-                        <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">
+                        <div className="absolute right-4 top-3.5 text-text-secondary text-[13px] font-medium">
                           원
                         </div>
                       </div>
@@ -605,11 +605,11 @@ export default function AccountManagementPage() {
                 )}
               </div>
 
-              <div className="p-6 border-t border-gray-100 bg-white z-10">
+              <div className="p-6 border-t border-border bg-card z-10">
                 <div className="flex flex-col gap-3">
                   <button
                     onClick={handleSaveAccount}
-                    className="w-full rounded-xl bg-brand-500 py-4 text-sm font-bold text-white shadow-lg shadow-brand-500/10 hover:bg-brand-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
+                    className="w-full rounded-xl bg-brand py-4 text-[13px] font-bold text-white hover:bg-brand/90 transition-all duration-200"
                   >
                     저장하기
                   </button>
@@ -617,7 +617,7 @@ export default function AccountManagementPage() {
                   {editingAccount.id && (
                     <button
                       onClick={handleDeleteAccount}
-                      className="w-full rounded-xl py-3 text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                      className="w-full rounded-xl py-3 text-[13px] font-medium text-destructive hover:bg-destructive/10 transition-colors"
                     >
                       삭제하기
                     </button>
@@ -626,20 +626,20 @@ export default function AccountManagementPage() {
               </div>
             </div>
           ) : (
-            <div className="flex flex-col h-full bg-white">
-              <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-white z-10">
+            <div className="flex flex-col h-full bg-card">
+              <div className="flex items-center justify-between px-6 py-5 border-b border-border bg-card z-10">
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">계좌 관리</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">
+                  <h3 className="text-[18px] font-bold text-text-primary">계좌 관리</h3>
+                  <p className="text-[12px] text-text-secondary mt-0.5">
                     계좌를 관리합니다
                   </p>
                 </div>
                 <button
                   onClick={handleClosePanelWithDelay}
-                  className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+                  className="flex size-8 items-center justify-center rounded-lg text-icon-default hover:bg-surface-subtle transition-colors"
                 >
                   <svg
-                    className="w-6 h-6"
+                    className="size-6"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -660,12 +660,12 @@ export default function AccountManagementPage() {
                     <div className="text-4xl mb-3">
                       {activeTab === "bank" ? "🏦" : "📈"}
                     </div>
-                    <div className="text-gray-500">
+                    <div className="text-text-secondary">
                       {activeTab === "bank"
                         ? "등록된 은행 계좌가 없습니다."
                         : "등록된 투자 계좌가 없습니다."}
                     </div>
-                    <div className="text-sm text-gray-400 mt-1">
+                    <div className="text-[13px] text-text-disabled mt-1">
                       새로운 계좌를 추가해보세요.
                     </div>
                   </div>
@@ -675,47 +675,47 @@ export default function AccountManagementPage() {
                       <div
                         key={account.id}
                         onClick={() => handleEditAccount(account)}
-                        className="group flex items-center justify-between p-5 rounded-xl hover:bg-gray-50 cursor-pointer transition-all duration-200 border border-gray-100"
+                        className="group flex items-center justify-between p-5 rounded-xl hover:bg-surface-subtle cursor-pointer transition-all duration-200 border border-border"
                       >
                         <div className="flex items-center gap-4">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-xl shadow-xs border border-gray-100">
+                          <div className="flex size-12 items-center justify-center rounded-xl bg-brand/10 text-xl shadow-xs border border-border">
                             {BANK_ICONS[account.bankName] ||
                               INVESTMENT_ICONS[account.bankName] ||
                               "🏦"}
                           </div>
                           <div>
-                            <div className="font-semibold text-gray-900 mb-0.5">
+                            <div className="font-semibold text-text-primary mb-0.5">
                               {account.accountName}
                             </div>
-                            <div className="text-xs font-medium text-gray-500">
+                            <div className="text-[12px] font-medium text-text-secondary">
                               {account.bankName}
                             </div>
                           </div>
                         </div>
                         <div className="flex items-center gap-5">
                           {account.accountType === "investment" ? (
-                            <div className="text-right">
-                              <div className="text-sm text-gray-500">
+                            <div className="text-end">
+                              <div className="text-[13px] text-text-secondary">
                                 예수금{" "}
-                                <span className="font-bold text-blue-600">
+                                <span className="font-bold text-info">
                                   {formatNumber(account.depositBalance)}원
                                 </span>
                               </div>
-                              <div className="text-sm text-gray-500">
+                              <div className="text-[13px] text-text-secondary">
                                 투자금{" "}
-                                <span className="font-bold text-blue-600">
+                                <span className="font-bold text-info">
                                   {formatNumber(account.investmentBalance)}원
                                 </span>
                               </div>
                             </div>
                           ) : (
-                            <div className="font-bold text-lg text-blue-600">
+                            <div className="font-bold text-[18px] text-info">
                               {formatNumber(account.balance)}원
                             </div>
                           )}
-                          <div className="text-gray-300 group-hover:text-gray-600 transition-colors">
+                          <div className="text-icon-muted group-hover:text-text-secondary transition-colors">
                             <svg
-                              className="w-5 h-5"
+                              className="size-5"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -735,31 +735,31 @@ export default function AccountManagementPage() {
                 )}
 
                 {filteredAccounts.length > 0 && (
-                  <div className="mt-6 p-5 rounded-xl bg-gray-50 border border-gray-200">
+                  <div className="mt-6 p-5 rounded-xl bg-surface-subtle border border-border">
                     {activeTab === "bank" ? (
                       <div className="flex items-center justify-between">
-                        <div className="text-sm font-semibold text-gray-600">
+                        <div className="text-[13px] font-semibold text-text-secondary">
                           은행 자산
                         </div>
-                        <div className="text-2xl font-bold text-gray-900">
+                        <div className="text-[22px] font-bold text-text-primary">
                           {calculateSubtotal("bank")}원
                         </div>
                       </div>
                     ) : (
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <div className="text-sm font-semibold text-gray-600">
+                          <div className="text-[13px] font-semibold text-text-secondary">
                             투자 예수금
                           </div>
-                          <div className="text-xl font-bold text-gray-900">
+                          <div className="text-[20px] font-bold text-text-primary">
                             {calculateInvestmentSubtotals().deposit}원
                           </div>
                         </div>
                         <div className="flex items-center justify-between">
-                          <div className="text-sm font-semibold text-gray-600">
+                          <div className="text-[13px] font-semibold text-text-secondary">
                             투자 평가금액
                           </div>
-                          <div className="text-xl font-bold text-gray-900">
+                          <div className="text-[20px] font-bold text-text-primary">
                             {calculateInvestmentSubtotals().investment}원
                           </div>
                         </div>
@@ -769,10 +769,10 @@ export default function AccountManagementPage() {
                 )}
               </div>
 
-              <div className="p-6 border-t border-gray-100 bg-white z-10 pb-8">
+              <div className="p-6 border-t border-border bg-card z-10 pb-8">
                 <button
                   onClick={handleAddAccount}
-                  className="w-full rounded-xl bg-brand-500 py-4 text-sm font-bold text-white shadow-lg shadow-brand-500/10 hover:bg-brand-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
+                  className="w-full rounded-xl bg-brand py-4 text-[13px] font-bold text-white hover:bg-brand/90 transition-all duration-200"
                 >
                   계좌 추가
                 </button>

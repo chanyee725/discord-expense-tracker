@@ -223,18 +223,18 @@ export default function RecurringManagementClient({
   return (
     <div className="mx-auto max-w-(--breakpoint-xl) relative">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-2xl font-semibold text-gray-800">반복 관리</h2>
+        <h2 className="text-[22px] font-bold text-text-primary">반복 관리</h2>
       </div>
 
       <div className="mb-6">
-        <div className="border-b border-gray-200">
+        <div className="border-b border-border">
           <nav className="flex gap-8">
             <button
               onClick={() => setActiveTab("expenses")}
               className={`px-6 py-3 font-medium transition-colors ${
                 activeTab === "expenses"
-                  ? "border-b-2 border-brand-500 text-brand-500"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "border-b-2 border-brand text-brand"
+                  : "text-text-secondary hover:text-text-primary"
               }`}
             >
               반복 지출
@@ -243,8 +243,8 @@ export default function RecurringManagementClient({
               onClick={() => setActiveTab("income")}
               className={`px-6 py-3 font-medium transition-colors ${
                 activeTab === "income"
-                  ? "border-b-2 border-brand-500 text-brand-500"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "border-b-2 border-brand text-brand"
+                  : "text-text-secondary hover:text-text-primary"
               }`}
             >
               반복 수입
@@ -253,63 +253,63 @@ export default function RecurringManagementClient({
         </div>
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white shadow-xs overflow-hidden">
-        <div className="border-b border-gray-200 px-6 py-4 flex justify-between items-center bg-gray-50/50">
-          <h3 className="font-semibold text-gray-800">
+      <div data-slot="card" className="rounded-2xl border border-border bg-card shadow-[var(--shadow-card)] overflow-hidden">
+        <div data-slot="card-header" className="border-b border-border px-6 py-4 flex justify-between items-center bg-surface-subtle">
+          <h3 className="font-semibold text-text-primary">
             {activeTab === "expenses" ? "반복 지출 목록" : "반복 수입 목록"}
           </h3>
           <button
             onClick={handleAddNew}
-            className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 transition-colors shadow-xs"
+            className="inline-flex items-center gap-2 rounded-xl bg-brand px-4 py-2 text-[13px] font-medium text-white hover:bg-brand/90 transition-colors"
           >
             <span>+</span>
             <span>추가하기</span>
           </button>
         </div>
         
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-border">
           {currentList.length === 0 ? (
             <div className="p-12 text-center">
               <div className="text-4xl mb-3">📝</div>
-              <div className="text-gray-500">등록된 반복 내역이 없습니다.</div>
-              <div className="text-sm text-gray-400 mt-1">새로운 내역을 추가해보세요.</div>
+              <div className="text-text-secondary">등록된 반복 내역이 없습니다.</div>
+              <div className="text-[13px] text-text-disabled mt-1">새로운 내역을 추가해보세요.</div>
             </div>
           ) : (
             currentList.map((item) => (
               <div
                 key={item.id}
                 onClick={() => handleEdit(item)}
-                className="group flex items-center justify-between p-5 hover:bg-gray-50 cursor-pointer transition-all duration-200"
+                className="group flex items-center justify-between p-5 hover:bg-surface-subtle cursor-pointer transition-all duration-200"
               >
                 <div className="flex items-center gap-4">
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-xl shadow-xs border border-gray-100 ${
+                  <div className={`flex size-12 items-center justify-center rounded-xl shadow-xs border border-border ${
                     activeTab === "expenses" 
-                      ? "bg-red-50 text-red-600" 
-                      : "bg-brand-50 text-brand-600"
+                      ? "bg-destructive/10 text-destructive" 
+                      : "bg-brand/10 text-brand"
                   }`}>
                     <span className="text-xl">
                       {activeTab === "expenses" ? "💸" : "💰"}
                     </span>
                   </div>
                   <div>
-                    <div className="font-semibold text-gray-900 mb-0.5">{item.name || "이름 없음"}</div>
-                    <div className="text-xs font-medium text-gray-500 flex items-center gap-2">
-                      <span className="bg-gray-100 px-2 py-0.5 rounded-xs text-gray-600">매월 {item.date}일</span>
-                      <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+                    <div className="font-semibold text-text-primary mb-0.5">{item.name || "이름 없음"}</div>
+                    <div className="text-[12px] font-medium text-text-secondary flex items-center gap-2">
+                      <span className="bg-surface-muted px-2 py-0.5 rounded-xs text-text-secondary">매월 {item.date}일</span>
+                      <span className="size-1 bg-icon-muted rounded-full"></span>
                       <span>{item.category}</span>
-                      <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+                      <span className="size-1 bg-icon-muted rounded-full"></span>
                       <span>{item.bankAccount}</span>
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-5">
-                  <div className={`font-bold text-lg ${
-                    activeTab === "expenses" ? "text-red-600" : "text-blue-600"
+                  <div className={`font-bold text-[18px] ${
+                    activeTab === "expenses" ? "text-destructive" : "text-info"
                   }`}>
                     {item.amount ? `${formatNumber(item.amount)}원` : "0원"}
                   </div>
-                  <div className="text-gray-300 group-hover:text-gray-600 transition-colors transform group-hover:translate-x-1 duration-200">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="text-icon-muted group-hover:text-text-secondary transition-colors transform group-hover:translate-x-1 duration-200">
+                    <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </div>
@@ -322,31 +322,31 @@ export default function RecurringManagementClient({
 
       {isPanelOpen && (
         <div 
-          className="fixed inset-0 bg-gray-900/40 backdrop-blur-xs z-40 transition-opacity duration-300"
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 transition-opacity duration-300"
           onClick={handleClose}
         />
       )}
 
       <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none ${isPanelOpen ? "pointer-events-auto" : ""}`}>
         <div 
-          className={`bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden transform transition-all duration-300 ${
+          className={`bg-card rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden transform transition-all duration-300 ${
             isPanelOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
           }`}
         >
         {editingItem && (
-          <div className="flex flex-col h-full bg-white">
-            <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-white z-10">
+          <div className="flex flex-col h-full bg-card">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-border bg-card z-10">
               <div>
-                <h3 className="text-xl font-bold text-gray-900">
+                <h3 className="text-[18px] font-bold text-text-primary">
                   {editingType === "expense" ? "지출 편집" : "수입 편집"}
                 </h3>
-                <p className="text-xs text-gray-500 mt-0.5">상세 정보를 수정합니다</p>
+                <p className="text-[12px] text-text-secondary mt-0.5">상세 정보를 수정합니다</p>
               </div>
               <button 
                 onClick={handleClose}
-                className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+                className="flex size-8 items-center justify-center rounded-lg text-icon-default hover:bg-surface-subtle transition-colors"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
@@ -355,7 +355,7 @@ export default function RecurringManagementClient({
             <div className="flex-1 overflow-y-auto p-6 space-y-8">
               
               <div className="space-y-3">
-                <label className="text-sm font-semibold text-gray-700 block">날짜 (매월)</label>
+                <label className="text-[13px] font-medium text-text-primary block">날짜 (매월)</label>
                 <div className="relative group">
                   <input
                     type="number"
@@ -381,25 +381,25 @@ export default function RecurringManagementClient({
                         updateField("date", 31);
                       }
                     }}
-                    className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden bg-gray-50/50 focus:bg-white"
+                    className="w-full rounded-xl border border-border py-3.5 px-4 text-text-primary focus:border-brand focus:ring-4 focus:ring-brand/10 transition-all outline-hidden bg-card"
                   />
-                  <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">일</div>
+                  <div className="absolute right-4 top-3.5 text-text-secondary text-[13px] font-medium">일</div>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <label className="text-sm font-semibold text-gray-700 block">이름</label>
+                <label className="text-[13px] font-medium text-text-primary block">이름</label>
                 <input
                   type="text"
                   value={editingItem.name}
                   onChange={(e) => updateField("name", e.target.value)}
                   placeholder={editingType === "expense" ? "예: 넷플릭스" : "예: 월급"}
-                  className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden bg-gray-50/50 focus:bg-white"
+                  className="w-full rounded-xl border border-border py-3.5 px-4 text-text-primary focus:border-brand focus:ring-4 focus:ring-brand/10 transition-all outline-hidden bg-card"
                 />
               </div>
 
               <div className="space-y-3">
-                <label className="text-sm font-semibold text-gray-700 block">금액</label>
+                <label className="text-[13px] font-medium text-text-primary block">금액</label>
                 <div className="relative">
                   <input
                     type="text"
@@ -413,27 +413,27 @@ export default function RecurringManagementClient({
                       }
                     }}
                     placeholder="0"
-                    className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden bg-gray-50/50 focus:bg-white"
+                    className="w-full rounded-xl border border-border py-3.5 px-4 text-text-primary focus:border-brand focus:ring-4 focus:ring-brand/10 transition-all outline-hidden bg-card"
                   />
-                  <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">원</div>
+                  <div className="absolute right-4 top-3.5 text-text-secondary text-[13px] font-medium">원</div>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 gap-6 pt-2">
                 <div className="space-y-3">
-                  <label className="text-sm font-semibold text-gray-700 block">분류</label>
+                  <label className="text-[13px] font-medium text-text-primary block">분류</label>
                   <div className="relative">
                     <select
                       value={editingItem.category}
                       onChange={(e) => updateField("category", e.target.value)}
-                      className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden appearance-none bg-gray-50/50 focus:bg-white"
+                      className="w-full rounded-xl border border-border py-3.5 px-4 text-text-primary focus:border-brand focus:ring-4 focus:ring-brand/10 transition-all outline-hidden appearance-none bg-card"
                     >
                       {categories.map((cat) => (
                         <option key={cat} value={cat}>{cat}</option>
                       ))}
                     </select>
-                    <div className="absolute right-4 top-4 text-gray-400 pointer-events-none">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="absolute right-4 top-4 text-icon-muted pointer-events-none">
+                      <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     </div>
@@ -441,19 +441,19 @@ export default function RecurringManagementClient({
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-sm font-semibold text-gray-700 block">은행 계좌</label>
+                  <label className="text-[13px] font-medium text-text-primary block">은행 계좌</label>
                   <div className="relative">
                     <select
                       value={editingItem.bankAccount}
                       onChange={(e) => updateField("bankAccount", e.target.value)}
-                      className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden appearance-none bg-gray-50/50 focus:bg-white"
+                      className="w-full rounded-xl border border-border py-3.5 px-4 text-text-primary focus:border-brand focus:ring-4 focus:ring-brand/10 transition-all outline-hidden appearance-none bg-card"
                     >
                       {bankAccounts.map((acc) => (
                         <option key={acc} value={acc}>{acc}</option>
                       ))}
                     </select>
-                    <div className="absolute right-4 top-4 text-gray-400 pointer-events-none">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="absolute right-4 top-4 text-icon-muted pointer-events-none">
+                      <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     </div>
@@ -463,11 +463,11 @@ export default function RecurringManagementClient({
 
             </div>
 
-            <div className="p-6 border-t border-gray-100 bg-white z-10 pb-8">
+            <div className="p-6 border-t border-border bg-card z-10 pb-8">
               <div className="flex flex-col gap-3">
                 <button
                   onClick={handleSave}
-                  className="w-full rounded-xl bg-brand-500 py-4 text-sm font-bold text-white shadow-lg shadow-brand-500/10 hover:bg-brand-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
+                  className="w-full rounded-xl bg-brand py-4 text-[13px] font-bold text-white hover:bg-brand/90 transition-all duration-200"
                 >
                   저장하기
                 </button>
@@ -475,7 +475,7 @@ export default function RecurringManagementClient({
                 {editingItem.id && (
                   <button
                     onClick={handleDelete}
-                    className="w-full rounded-xl py-3 text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                    className="w-full rounded-xl py-3 text-[13px] font-medium text-destructive hover:bg-destructive/10 transition-colors"
                   >
                     삭제하기
                   </button>
