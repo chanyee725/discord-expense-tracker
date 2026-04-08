@@ -11,12 +11,12 @@ test('verify dashboard charts', async ({ page }) => {
 
   await page.screenshot({ path: 'dashboard.png', fullPage: true });
 
-  const dailyChart = page.locator('.apexcharts-bar-series');
-  await expect(dailyChart).toBeVisible();
+  const dailyChart = page.locator('.recharts-bar-rectangles');
+  await expect(dailyChart.first()).toBeVisible();
 
   await expect(page.locator('body')).toContainText('편의점·마트·잡화');
-  const pieChartSlice = page.locator('.apexcharts-pie-series[seriesName="편의점·마트·잡화"]');
-  await expect(pieChartSlice).toBeVisible();
+  const pieChart = page.locator('.recharts-pie');
+  await expect(pieChart.first()).toBeVisible();
 
   await expect(page.locator('body')).toContainText('월별 수입/지출 추이');
   await expect(page.locator('body')).toContainText('2월');

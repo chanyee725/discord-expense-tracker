@@ -380,33 +380,3 @@
     }
   }
 }
-
-.apexcharts-legend-text {
-  color: #344054 !important;
-  font-family: 'Pretendard', 'Inter', sans-serif !important;
-}
-.apexcharts-text {
-  fill: #667085 !important;
-  font-family: 'Pretendard', 'Inter', sans-serif !important;
-}
-.apexcharts-tooltip {
-  background: #ffffff !important;
-  border: 1px solid #E4E7EC !important;
-  border-radius: 8px !important;
-  box-shadow: 0px 4px 8px -2px rgba(16, 24, 40, 0.1), 0px 2px 4px -2px rgba(16, 24, 40, 0.06) !important;
-}
-.apexcharts-tooltip .apexcharts-tooltip-title {
-  background: #F9FAFB !important;
-  border-bottom: 1px solid #E4E7EC !important;
-  font-family: 'Pretendard', 'Inter', sans-serif !important;
-}
-.apexcharts-xaxistooltip,
-.apexcharts-yaxistooltip {
-  background: #ffffff !important;
-  border: 1px solid #E4E7EC !important;
-  border-radius: 4px !important;
-  color: #344054 !important;
-}
-.apexcharts-gridline {
-  stroke: #E4E7EC !important;
-}
