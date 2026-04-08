@@ -2,8 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import dynamic from "next/dynamic";
-import { ApexOptions } from "apexcharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import {
   fetchMonthlyAssetGrowthByAccount,
   fetchBankAccounts,
@@ -11,15 +18,6 @@ import {
   saveSavingsGoal,
 } from "./actions";
 import type { BankAccountRow } from "@/lib/queries";
-
-const ReactApexChart = dynamic(() => import("react-apexcharts"), {
-  ssr: false,
-  loading: () => (
-    <div className="flex h-full items-center justify-center bg-gray-50 text-gray-400">
-      차트 로딩 중...
-    </div>
-  ),
-});
 
 const MONTHS = [
   "1월",
@@ -124,85 +122,12 @@ export default function AssetsPage() {
     ? accounts.find((a) => a.id === selectedAccount)?.name
     : "전체";
 
-  // Chart Configuration
-  const options: ApexOptions = {
-    chart: {
-      type: "bar",
-      fontFamily: "'Pretendard Variable', 'Inter', sans-serif",
-      height: "100%",
-      toolbar: {
-        show: false,
-      },
-      zoom: {
-        enabled: false,
-      },
-    },
-    colors: ["#3C50E0"], // Primary brand color
-    plotOptions: {
-      bar: {
-        borderRadius: 6,
-        columnWidth: "50%",
-      },
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    grid: {
-      borderColor: "#E2E8F0",
-      strokeDashArray: 5,
-      xaxis: {
-        lines: {
-          show: false,
-        },
-      },
-      yaxis: {
-        lines: {
-          show: true,
-        },
-      },
-    },
-    xaxis: {
-      categories: MONTHS,
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
-      labels: {
-        style: {
-          colors: "#64748B",
-          fontSize: "12px",
-        },
-      },
-    },
-    yaxis: {
-      labels: {
-        style: {
-          colors: "#64748B",
-          fontSize: "12px",
-        },
-        formatter: (val) => {
-          return val.toLocaleString("ko-KR") + "만";
-        },
-      },
-    },
-    tooltip: {
-      theme: "light",
-      y: {
-        formatter: (val) => {
-          return (val * 10000).toLocaleString("ko-KR") + " 원";
-        },
-      },
-    },
-  };
-
-  const series = [
-    {
-      name: "총 자산",
-      data: chartData,
-    },
-  ];
+  const rechartsData = React.useMemo(() => {
+    return MONTHS.map((month, index) => ({
+      name: month,
+      "총 자산": chartData[index] ?? 0,
+    }));
+  }, [chartData]);
 
   const hasData = chartData.some((val) => val > 0);
 
@@ -323,20 +248,60 @@ export default function AssetsPage() {
         </div>
 
         <div className="flex-1 min-h-0 relative">
-          <div id="assetChart" className="-ml-5 h-full absolute inset-0">
+          <div id="assetChart" className="h-full absolute inset-0">
             {loading ? (
-              <div className="flex h-full items-center justify-center text-gray-400">
+              <div className="flex h-full items-center justify-center text-text-tertiary">
                 데이터를 불러오는 중...
               </div>
             ) : chartData.length > 0 ? (
-              <ReactApexChart
-                options={options}
-                series={series}
-                type="bar"
-                height="100%"
-              />
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={rechartsData}
+                  margin={{ top: 5, right: 10, left: 10, bottom: 5 }}
+                >
+                  <CartesianGrid
+                    strokeDasharray="5 5"
+                    vertical={false}
+                    stroke="var(--border)"
+                  />
+                  <XAxis
+                    dataKey="name"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 12, fill: "var(--text-secondary)" }}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 12, fill: "var(--text-secondary)" }}
+                    tickFormatter={(val: number) =>
+                      val.toLocaleString("ko-KR") + "만"
+                    }
+                  />
+                  <Tooltip
+                    formatter={(value) => [
+                      (Number(value ?? 0) * 10000).toLocaleString("ko-KR") +
+                        " 원",
+                    ]}
+                    contentStyle={{
+                      borderRadius: 12,
+                      border: "1px solid var(--border)",
+                      boxShadow: "var(--shadow-card)",
+                      fontSize: 13,
+                      fontFamily:
+                        "'Pretendard Variable', 'Inter', sans-serif",
+                    }}
+                  />
+                  <Bar
+                    dataKey="총 자산"
+                    fill="var(--brand)"
+                    radius={[6, 6, 0, 0]}
+                    maxBarSize={40}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
             ) : (
-              <div className="flex h-full items-center justify-center text-gray-500">
+              <div className="flex h-full items-center justify-center text-text-tertiary">
                 아직 기록된 자산 데이터가 없습니다
               </div>
             )}
