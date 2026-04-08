@@ -221,7 +221,7 @@ export default function RecurringManagementClient({
   const categories = activeTab === "expenses" ? expenseCategories : incomeCategories;
 
   return (
-    <div className="mx-auto max-w-screen-xl relative">
+    <div className="mx-auto max-w-(--breakpoint-xl) relative">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-2xl font-semibold text-gray-800">반복 관리</h2>
       </div>
@@ -253,14 +253,14 @@ export default function RecurringManagementClient({
         </div>
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-2xl border border-gray-200 bg-white shadow-xs overflow-hidden">
         <div className="border-b border-gray-200 px-6 py-4 flex justify-between items-center bg-gray-50/50">
           <h3 className="font-semibold text-gray-800">
             {activeTab === "expenses" ? "반복 지출 목록" : "반복 수입 목록"}
           </h3>
           <button
             onClick={handleAddNew}
-            className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 transition-colors shadow-sm"
+            className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 transition-colors shadow-xs"
           >
             <span>+</span>
             <span>추가하기</span>
@@ -282,7 +282,7 @@ export default function RecurringManagementClient({
                 className="group flex items-center justify-between p-5 hover:bg-gray-50 cursor-pointer transition-all duration-200"
               >
                 <div className="flex items-center gap-4">
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-xl shadow-sm border border-gray-100 ${
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-xl shadow-xs border border-gray-100 ${
                     activeTab === "expenses" 
                       ? "bg-red-50 text-red-600" 
                       : "bg-brand-50 text-brand-600"
@@ -294,7 +294,7 @@ export default function RecurringManagementClient({
                   <div>
                     <div className="font-semibold text-gray-900 mb-0.5">{item.name || "이름 없음"}</div>
                     <div className="text-xs font-medium text-gray-500 flex items-center gap-2">
-                      <span className="bg-gray-100 px-2 py-0.5 rounded text-gray-600">매월 {item.date}일</span>
+                      <span className="bg-gray-100 px-2 py-0.5 rounded-xs text-gray-600">매월 {item.date}일</span>
                       <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
                       <span>{item.category}</span>
                       <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
@@ -322,7 +322,7 @@ export default function RecurringManagementClient({
 
       {isPanelOpen && (
         <div 
-          className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-40 transition-opacity duration-300"
+          className="fixed inset-0 bg-gray-900/40 backdrop-blur-xs z-40 transition-opacity duration-300"
           onClick={handleClose}
         />
       )}
@@ -381,7 +381,7 @@ export default function RecurringManagementClient({
                         updateField("date", 31);
                       }
                     }}
-                    className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
+                    className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden bg-gray-50/50 focus:bg-white"
                   />
                   <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">일</div>
                 </div>
@@ -394,7 +394,7 @@ export default function RecurringManagementClient({
                   value={editingItem.name}
                   onChange={(e) => updateField("name", e.target.value)}
                   placeholder={editingType === "expense" ? "예: 넷플릭스" : "예: 월급"}
-                  className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
+                  className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden bg-gray-50/50 focus:bg-white"
                 />
               </div>
 
@@ -413,7 +413,7 @@ export default function RecurringManagementClient({
                       }
                     }}
                     placeholder="0"
-                    className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
+                    className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden bg-gray-50/50 focus:bg-white"
                   />
                   <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">원</div>
                 </div>
@@ -426,7 +426,7 @@ export default function RecurringManagementClient({
                     <select
                       value={editingItem.category}
                       onChange={(e) => updateField("category", e.target.value)}
-                      className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none appearance-none bg-gray-50/50 focus:bg-white"
+                      className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden appearance-none bg-gray-50/50 focus:bg-white"
                     >
                       {categories.map((cat) => (
                         <option key={cat} value={cat}>{cat}</option>
@@ -446,7 +446,7 @@ export default function RecurringManagementClient({
                     <select
                       value={editingItem.bankAccount}
                       onChange={(e) => updateField("bankAccount", e.target.value)}
-                      className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none appearance-none bg-gray-50/50 focus:bg-white"
+                      className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden appearance-none bg-gray-50/50 focus:bg-white"
                     >
                       {bankAccounts.map((acc) => (
                         <option key={acc} value={acc}>{acc}</option>

@@ -48,7 +48,7 @@ export default function CategoryExpensesClient({
         />
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-xs">
         <h3 className="mb-6 text-xl font-semibold text-gray-800">
           {selectedCategory ? `${selectedCategory} 상세 내역` : "카테고리별 상세"}
         </h3>

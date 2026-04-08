@@ -222,7 +222,7 @@ export default function AssetsPage() {
             <select
               value={selectedAccount || ""}
               onChange={(e) => setSelectedAccount(e.target.value || null)}
-              className="appearance-none rounded-lg border border-gray-300 bg-white px-4 py-2 pr-8 text-sm font-medium text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              className="appearance-none rounded-lg border border-gray-300 bg-white px-4 py-2 pr-8 text-sm font-medium text-gray-700 focus:border-primary focus:outline-hidden focus:ring-1 focus:ring-primary"
             >
               <option value="">전체</option>
               {accounts.map((account) => (
@@ -253,7 +253,7 @@ export default function AssetsPage() {
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(Number(e.target.value))}
-              className="appearance-none rounded-lg border border-gray-300 bg-white px-4 py-2 pr-8 text-sm font-medium text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              className="appearance-none rounded-lg border border-gray-300 bg-white px-4 py-2 pr-8 text-sm font-medium text-gray-700 focus:border-primary focus:outline-hidden focus:ring-1 focus:ring-primary"
             >
               {AVAILABLE_YEARS.map((year) => (
                 <option key={year} value={year}>
@@ -284,7 +284,7 @@ export default function AssetsPage() {
               value={goalAmount}
               onChange={(e) => setGoalAmount(e.target.value)}
               placeholder="목표 금액"
-              className="w-32 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-32 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 focus:border-primary focus:outline-hidden focus:ring-1 focus:ring-primary"
             />
             <button
               onClick={handleSaveGoal}

@@ -274,7 +274,7 @@ export default function CalendarView({
   const weekDays = ["일", "월", "화", "수", "목", "금", "토"];
 
   return (
-    <div className="rounded-sm border border-stroke bg-white shadow-default">
+    <div className="rounded-xs border border-stroke bg-white shadow-default">
       <div className="flex items-center justify-between border-b border-stroke px-4 py-4 sm:px-6 xl:px-7.5">
         <h3 className="font-medium text-black">{monthName}</h3>
         <div className="flex items-center gap-4">
@@ -285,13 +285,13 @@ export default function CalendarView({
           <div className="flex space-x-2">
             <button
               onClick={handlePrevMonth}
-              className="flex h-8 w-8 items-center justify-center rounded hover:bg-gray-100"
+              className="flex h-8 w-8 items-center justify-center rounded-xs hover:bg-gray-100"
             >
               ←
             </button>
             <button
               onClick={handleNextMonth}
-              className="flex h-8 w-8 items-center justify-center rounded hover:bg-gray-100"
+              className="flex h-8 w-8 items-center justify-center rounded-xs hover:bg-gray-100"
             >
               →
             </button>
@@ -406,12 +406,12 @@ export default function CalendarView({
                               {t.title}
                             </div>
                             {isFuture && (
-                              <span className="text-[8px] bg-amber-100 text-amber-700 px-1 rounded whitespace-nowrap shrink-0">
+                              <span className="text-[8px] bg-amber-100 text-amber-700 px-1 rounded-xs whitespace-nowrap shrink-0">
                                 예정
                               </span>
                             )}
                           </div>
-                          <div className="flex items-center justify-between mt-[1px]">
+                          <div className="flex items-center justify-between mt-px">
                             <span className="text-[9px] text-gray-500 truncate mr-1 max-w-[60%] leading-none">
                               {t.type === "지출"
                                 ? parseAccountName(
@@ -467,7 +467,7 @@ export default function CalendarView({
       {/* Edit Panel Backdrop */}
       {isEditPanelOpen && (
         <div
-          className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-40 transition-opacity"
+          className="fixed inset-0 bg-gray-900/40 backdrop-blur-xs z-40 transition-opacity"
           onClick={handleClosePanel}
         />
       )}
@@ -489,7 +489,7 @@ export default function CalendarView({
                 </h3>
                 <button
                   onClick={handleClosePanel}
-                  className="flex h-8 w-8 items-center justify-center rounded hover:bg-gray-100 transition-colors"
+                  className="flex h-8 w-8 items-center justify-center rounded-xs hover:bg-gray-100 transition-colors"
                 >
                   ✕
                 </button>
@@ -512,7 +512,7 @@ export default function CalendarView({
                           transaction_date: e.target.value,
                         })
                       }
-                      className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
+                      className="w-full rounded-xs border border-stroke bg-transparent py-2 px-3 text-black outline-hidden transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
                     />
                   ) : (
                     <>
@@ -546,7 +546,7 @@ export default function CalendarView({
                         title: e.target.value,
                       })
                     }
-                    className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
+                    className="w-full rounded-xs border border-stroke bg-transparent py-2 px-3 text-black outline-hidden transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
                   />
                 </div>
 
@@ -572,7 +572,7 @@ export default function CalendarView({
                       }
                     }}
                     placeholder="0"
-                    className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
+                    className="w-full rounded-xs border border-stroke bg-transparent py-2 px-3 text-black outline-hidden transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
                   />
                 </div>
 
@@ -588,7 +588,7 @@ export default function CalendarView({
                         selectedAccountId: e.target.value,
                       })
                     }
-                    className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
+                    className="w-full rounded-xs border border-stroke bg-transparent py-2 px-3 text-black outline-hidden transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
                   >
                     <option value="">선택하기</option>
                     {bankAccounts.map((account) => (
@@ -619,7 +619,7 @@ export default function CalendarView({
                         type: e.target.value as "수입" | "지출",
                       })
                     }
-                    className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
+                    className="w-full rounded-xs border border-stroke bg-transparent py-2 px-3 text-black outline-hidden transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
                   >
                     <option value="지출">지출</option>
                     <option value="수입">수입</option>
@@ -639,7 +639,7 @@ export default function CalendarView({
                         category: e.target.value,
                       })
                     }
-                    className="w-full rounded border border-stroke bg-transparent py-2 px-3 text-black outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
+                    className="w-full rounded-xs border border-stroke bg-transparent py-2 px-3 text-black outline-hidden transition focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10"
                   >
                     <option value="">선택하기</option>
                     {categories.map((cat) => (
@@ -664,21 +664,21 @@ export default function CalendarView({
               <div className="border-t border-stroke px-6 py-4 flex gap-2">
                 <button
                   onClick={handleSave}
-                  className="flex-1 rounded bg-brand-500 py-2 px-4 font-medium text-white hover:bg-brand-600 transition-colors"
+                  className="flex-1 rounded-xs bg-brand-500 py-2 px-4 font-medium text-white hover:bg-brand-600 transition-colors"
                 >
                   저장
                 </button>
                 {!isCreatingNew && (
                   <button
                     onClick={handleDelete}
-                    className="flex-1 rounded border border-red-500 py-2 px-4 font-medium text-red-500 hover:bg-red-50 transition-colors"
+                    className="flex-1 rounded-xs border border-red-500 py-2 px-4 font-medium text-red-500 hover:bg-red-50 transition-colors"
                   >
                     삭제
                   </button>
                 )}
                 <button
                   onClick={handleClosePanel}
-                  className="flex-1 rounded border border-stroke py-2 px-4 font-medium text-black hover:bg-gray-50 transition-colors"
+                  className="flex-1 rounded-xs border border-stroke py-2 px-4 font-medium text-black hover:bg-gray-50 transition-colors"
                 >
                   취소
                 </button>
@@ -691,7 +691,7 @@ export default function CalendarView({
       {/* Day Modal Backdrop */}
       {isDayModalOpen && (
         <div
-          className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-40 transition-opacity"
+          className="fixed inset-0 bg-gray-900/40 backdrop-blur-xs z-40 transition-opacity"
           onClick={handleCloseDayModal}
         />
       )}
@@ -713,7 +713,7 @@ export default function CalendarView({
                 </h3>
                 <button
                   onClick={handleCloseDayModal}
-                  className="flex h-8 w-8 items-center justify-center rounded hover:bg-gray-100 transition-colors"
+                  className="flex h-8 w-8 items-center justify-center rounded-xs hover:bg-gray-100 transition-colors"
                 >
                   ✕
                 </button>
@@ -741,7 +741,7 @@ export default function CalendarView({
                                   {txn.title}
                                 </h4>
                                 {isFuture && (
-                                  <span className="text-[8px] bg-amber-100 text-amber-700 px-1 rounded">
+                                  <span className="text-[8px] bg-amber-100 text-amber-700 px-1 rounded-xs">
                                     예정
                                   </span>
                                 )}
@@ -788,7 +788,7 @@ export default function CalendarView({
               <div className="border-t border-stroke px-6 py-4 space-y-3">
                 <button
                   onClick={handleAddTransaction}
-                  className="w-full rounded bg-brand-500 py-2 px-4 font-medium text-white hover:bg-brand-600 transition-colors"
+                  className="w-full rounded-xs bg-brand-500 py-2 px-4 font-medium text-white hover:bg-brand-600 transition-colors"
                 >
                   추가하기
                 </button>

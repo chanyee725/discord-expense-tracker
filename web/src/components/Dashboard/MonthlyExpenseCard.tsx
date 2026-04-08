@@ -124,7 +124,7 @@ export default function MonthlyExpenseCard({
                     setBudgetInput(value);
                   }
                 }}
-                className="w-full rounded-xl border border-gray-200 py-4 px-4 text-gray-900 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none"
+                className="w-full rounded-xl border border-gray-200 py-4 px-4 text-gray-900 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-hidden"
                 placeholder="0"
               />
             </div>

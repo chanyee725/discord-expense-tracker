@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "apexcharts": "^5.6.0",
-    "autoprefixer": "^10.4.24",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.19",
@@ -30,6 +29,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
+    "@tailwindcss/postcss": "^4.2.2",
     "@types/node": "^20.19.33",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
@@ -39,7 +39,7 @@
     "playwright": "^1.58.2",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
-    "tailwindcss": "^3.4.19",
+    "tailwindcss": "^4.2.2",
     "typescript": "^5",
     "vitest": "^4.0.18"
   }

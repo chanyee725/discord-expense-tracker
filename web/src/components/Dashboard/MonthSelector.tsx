@@ -47,7 +47,7 @@ export default function MonthSelector() {
   const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white to-gray-50 p-6 shadow-sm h-full flex flex-col justify-center">
+    <div className="rounded-2xl border border-gray-200 bg-linear-to-br from-white to-gray-50 p-6 shadow-xs h-full flex flex-col justify-center">
       {/* Header with Icon */}
       <div className="flex items-center gap-2.5 mb-5">
         <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-50 text-brand-600 ring-1 ring-brand-100">
@@ -70,7 +70,7 @@ export default function MonthSelector() {
               id="year-select"
               value={selectedYear}
               onChange={handleYearChange}
-              className="w-full appearance-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all duration-200 hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/10"
+              className="w-full appearance-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-xs transition-all duration-200 hover:border-brand-300 focus:border-brand-500 focus:outline-hidden focus:ring-4 focus:ring-brand-500/10"
             >
               {yearOptions.map((year) => (
                 <option key={year} value={year}>
@@ -96,7 +96,7 @@ export default function MonthSelector() {
               id="month-select"
               value={selectedMonth}
               onChange={handleMonthChange}
-              className="w-full appearance-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all duration-200 hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/10"
+              className="w-full appearance-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-xs transition-all duration-200 hover:border-brand-300 focus:border-brand-500 focus:outline-hidden focus:ring-4 focus:ring-brand-500/10"
             >
               {monthOptions.map((month) => (
                 <option key={month} value={month}>

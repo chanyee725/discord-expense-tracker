@@ -138,14 +138,14 @@ export default function BudgetCalculatorPage() {
   ];
 
   return (
-    <div className="mx-auto max-w-screen-2xl relative">
+    <div className="mx-auto max-w-(--breakpoint-2xl) relative">
       <div className="mb-6">
         <h2 className="text-2xl font-semibold text-gray-800">예산 비율 계산기</h2>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+          <div className="rounded-2xl border border-gray-200 bg-white shadow-xs p-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">💰 수입 설정</h3>
             
             <div>
@@ -164,7 +164,7 @@ export default function BudgetCalculatorPage() {
                       }
                     }}
                     placeholder="3,000,000"
-                    className="w-full rounded-lg border border-gray-300 py-3 px-4 pr-10 text-gray-900 text-lg font-semibold focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none"
+                    className="w-full rounded-lg border border-gray-300 py-3 px-4 pr-10 text-gray-900 text-lg font-semibold focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-hidden"
                   />
                   <div className="absolute right-4 top-3 text-gray-400 font-medium">원</div>
                 </div>
@@ -177,7 +177,7 @@ export default function BudgetCalculatorPage() {
                           e.target.value = '';
                         }
                       }}
-                      className="h-full rounded-lg border border-gray-300 px-3 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none appearance-none pr-8 bg-white"
+                      className="h-full rounded-lg border border-gray-300 px-3 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-hidden appearance-none pr-8 bg-white"
                       defaultValue=""
                     >
                       <option value="" disabled>불러오기</option>
@@ -204,7 +204,7 @@ export default function BudgetCalculatorPage() {
           </div>
 
           {recurringExpenses.length > 0 && (
-            <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+            <div className="rounded-2xl border border-gray-200 bg-white shadow-xs p-6">
               <button
                 onClick={() => setIsExpensesExpanded(!isExpensesExpanded)}
                 className="w-full flex items-center justify-between mb-4 text-left"
@@ -250,7 +250,7 @@ export default function BudgetCalculatorPage() {
         </div>
 
         <div className="lg:col-span-3">
-          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+          <div className="rounded-2xl border border-gray-200 bg-white shadow-xs p-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-6">📊 예산 비율 계산</h3>
             
             <div className="space-y-5">
@@ -272,7 +272,7 @@ export default function BudgetCalculatorPage() {
                             }
                           }}
                           placeholder="0"
-                          className="w-32 rounded-lg border border-gray-300 py-1.5 px-3 pr-8 text-sm text-gray-900 text-right font-semibold focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 focus:outline-none"
+                          className="w-32 rounded-lg border border-gray-300 py-1.5 px-3 pr-8 text-sm text-gray-900 text-right font-semibold focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 focus:outline-hidden"
                         />
                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-500">원</span>
                       </div>

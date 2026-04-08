@@ -242,7 +242,7 @@ export default function AccountManagementPage() {
               onClick={() => setActiveTab("bank")}
               className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
                 activeTab === "bank"
-                  ? "bg-white text-brand-500 shadow-sm"
+                  ? "bg-white text-brand-500 shadow-xs"
                   : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
               }`}
             >
@@ -252,7 +252,7 @@ export default function AccountManagementPage() {
               onClick={() => setActiveTab("investment")}
               className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
                 activeTab === "investment"
-                  ? "bg-white text-brand-500 shadow-sm"
+                  ? "bg-white text-brand-500 shadow-xs"
                   : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
               }`}
             >
@@ -261,7 +261,7 @@ export default function AccountManagementPage() {
           </div>
           <button
             onClick={handleAddAccount}
-            className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 transition-colors shadow-sm"
+            className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 transition-colors shadow-xs"
           >
             <svg
               className="w-4 h-4"
@@ -304,7 +304,7 @@ export default function AccountManagementPage() {
                   className="group flex items-center justify-between p-5 rounded-xl hover:bg-gray-50 cursor-pointer transition-all duration-200 border border-gray-100"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-xl shadow-sm border border-gray-100">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-xl shadow-xs border border-gray-100">
                       {BANK_ICONS[account.bankName] ||
                         INVESTMENT_ICONS[account.bankName] ||
                         "🏦"}
@@ -396,7 +396,7 @@ export default function AccountManagementPage() {
 
       {isPanelOpen && (
         <div
-          className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-40 transition-opacity duration-300"
+          className="fixed inset-0 bg-gray-900/40 backdrop-blur-xs z-40 transition-opacity duration-300"
           onClick={handleClosePanelWithDelay}
         />
       )}
@@ -449,7 +449,7 @@ export default function AccountManagementPage() {
                       onChange={(e) =>
                         updateAccountField("bankName", e.target.value)
                       }
-                      className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none appearance-none bg-gray-50/50 focus:bg-white"
+                      className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden appearance-none bg-gray-50/50 focus:bg-white"
                     >
                       {(editingAccount.accountType === "bank"
                         ? BANK_OPTIONS
@@ -489,7 +489,7 @@ export default function AccountManagementPage() {
                       updateAccountField("accountName", e.target.value)
                     }
                     placeholder="예: 급여계좌"
-                    className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
+                    className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden bg-gray-50/50 focus:bg-white"
                   />
                 </div>
 
@@ -504,7 +504,7 @@ export default function AccountManagementPage() {
                       updateAccountField("accountNumber", e.target.value)
                     }
                     placeholder="계좌번호를 입력하세요 (선택사항)"
-                    className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
+                    className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden bg-gray-50/50 focus:bg-white"
                   />
                   <p className="text-xs text-gray-500">
                     디스코드 봇이 수입/지출을 자동 분류하는데 사용됩니다
@@ -534,7 +534,7 @@ export default function AccountManagementPage() {
                           }
                         }}
                         placeholder="0"
-                        className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
+                        className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden bg-gray-50/50 focus:bg-white"
                       />
                       <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">
                         원
@@ -565,7 +565,7 @@ export default function AccountManagementPage() {
                             }
                           }}
                           placeholder="0"
-                          className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
+                          className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden bg-gray-50/50 focus:bg-white"
                         />
                         <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">
                           원
@@ -594,7 +594,7 @@ export default function AccountManagementPage() {
                             }
                           }}
                           placeholder="0"
-                          className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-none bg-gray-50/50 focus:bg-white"
+                          className="w-full rounded-xl border border-gray-200 py-3.5 px-4 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all outline-hidden bg-gray-50/50 focus:bg-white"
                         />
                         <div className="absolute right-4 top-3.5 text-gray-400 text-sm font-medium">
                           원
@@ -678,7 +678,7 @@ export default function AccountManagementPage() {
                         className="group flex items-center justify-between p-5 rounded-xl hover:bg-gray-50 cursor-pointer transition-all duration-200 border border-gray-100"
                       >
                         <div className="flex items-center gap-4">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-xl shadow-sm border border-gray-100">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-xl shadow-xs border border-gray-100">
                             {BANK_ICONS[account.bankName] ||
                               INVESTMENT_ICONS[account.bankName] ||
                               "🏦"}
