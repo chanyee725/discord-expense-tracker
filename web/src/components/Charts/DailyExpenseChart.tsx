@@ -60,7 +60,7 @@ const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
   const options: ApexOptions = {
     colors: chartColors,
     chart: {
-      fontFamily: "Outfit, sans-serif",
+      fontFamily: "'Pretendard Variable', 'Inter', sans-serif",
       type: "bar",
       height: 335,
       stacked: chartFilter === "all",
@@ -112,7 +112,7 @@ const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
     legend: {
       position: "top",
       horizontalAlign: "left",
-      fontFamily: "Outfit",
+      fontFamily: "'Pretendard Variable', 'Inter', sans-serif",
       fontWeight: 500,
       fontSize: "14px",
       labels: {

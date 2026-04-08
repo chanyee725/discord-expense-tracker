@@ -1,13 +1,7 @@
 import type { Metadata } from "next";
-import { Outfit } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import NextTopLoader from "nextjs-toploader";
-
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "나만의 가계부",
@@ -20,12 +14,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${outfit.variable} antialiased`}
-      >
+    <html lang="ko" suppressHydrationWarning>
+      <body className="antialiased">
         <NextTopLoader
-          color="#465FFF"
+          color="#721FE5"
           initialPosition={0.08}
           crawlSpeed={200}
           height={3}
@@ -33,7 +25,7 @@ export default function RootLayout({
           showSpinner={false}
           easing="ease"
           speed={200}
-          shadow="0 0 10px #465FFF,0 0 5px #465FFF"
+          shadow="0 0 10px #721FE5,0 0 5px #721FE5"
         />
         <Providers>{children}</Providers>
       </body>

@@ -24,7 +24,7 @@ const CategoryDonutChart: React.FC<CategoryDonutChartProps> = ({
   const options: ApexOptions = {
     chart: {
       type: "donut",
-      fontFamily: "Outfit, sans-serif",
+      fontFamily: "'Pretendard Variable', 'Inter', sans-serif",
       events: {
         dataPointSelection: (event, chartContext, config) => {
           const categoryLabel = config.w.config.labels[config.dataPointIndex];
@@ -62,14 +62,14 @@ const CategoryDonutChart: React.FC<CategoryDonutChartProps> = ({
             name: {
               show: true,
               fontSize: "16px",
-              fontFamily: "Outfit, sans-serif",
+              fontFamily: "'Pretendard Variable', 'Inter', sans-serif",
               color: "#667085",
               offsetY: -10,
             },
             value: {
               show: true,
               fontSize: "20px",
-              fontFamily: "Outfit, sans-serif",
+              fontFamily: "'Pretendard Variable', 'Inter', sans-serif",
               color: "#111827",
               offsetY: 10,
               formatter: function (val) {
@@ -80,7 +80,7 @@ const CategoryDonutChart: React.FC<CategoryDonutChartProps> = ({
               show: true,
               label: centerLabel || "총 지출",
               color: "#667085",
-              fontFamily: "Outfit, sans-serif",
+              fontFamily: "'Pretendard Variable', 'Inter', sans-serif",
               formatter: function (w) {
                 return (
                   w.globals.seriesTotals

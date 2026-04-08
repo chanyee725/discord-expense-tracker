@@ -23,7 +23,7 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
   const options: ApexOptions = {
     colors: ["#EF4444", "#3B82F6"],
     chart: {
-      fontFamily: "Outfit, sans-serif",
+      fontFamily: "'Pretendard Variable', 'Inter', sans-serif",
       type: "bar",
       height: 350,
       width: 800,
@@ -74,7 +74,7 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
     legend: {
       position: "top",
       horizontalAlign: "left",
-      fontFamily: "Outfit",
+      fontFamily: "'Pretendard Variable', 'Inter', sans-serif",
       fontWeight: 500,
       fontSize: "14px",
       labels: {

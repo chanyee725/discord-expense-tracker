@@ -1,0 +1,57 @@
+@utility no-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@utility custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #e4e7ec;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@utility menu-item {
+  @apply relative flex items-center w-full gap-3 px-3 py-2 font-medium rounded-lg text-sm leading-5;
+}
+
+@utility menu-item-active {
+  @apply bg-brand-50 text-brand-500;
+}
+
+@utility menu-item-inactive {
+  @apply text-gray-700 hover:bg-gray-100;
+}
+
+@utility menu-item-icon-active {
+  @apply text-brand-500;
+}
+
+@utility menu-item-icon-inactive {
+  @apply text-gray-700;
+}
+
+@utility menu-item-text {
+  @apply whitespace-nowrap;
+}
+
+@utility menu-dropdown-item {
+  @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm leading-5 font-medium;
+}
+
+@utility menu-dropdown-item-active {
+  @apply text-brand-500;
+}
+
+@utility menu-dropdown-item-inactive {
+  @apply text-gray-500 hover:text-gray-700;
+}

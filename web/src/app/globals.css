@@ -1,9 +1,7 @@
-@import 'tailwindcss';
-
-@custom-variant dark (&:is(.dark *));
+@import '../styles/index.css';
 
 @theme {
-  --font-sans: Outfit, sans-serif;
+  --font-sans: 'Pretendard Variable', 'Pretendard', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   --breakpoint-2xsm: 375px;
   --breakpoint-xsm: 425px;
@@ -25,7 +23,6 @@
   --color-current: currentColor;
   --color-transparent: transparent;
   --color-white: #ffffff;
-  --color-primary: #465fff;
   --color-stroke: #e4e7ec;
   --color-stroke-dark: #27303e;
 
@@ -230,7 +227,6 @@
   --shadow-7: 0px 18px 25px 0px rgba(113, 116, 152, 0.05);
   --shadow-default: 0px 4px 7px 0px rgba(0, 0, 0, 0.14);
   --shadow-error: 0px 12px 34px 0px rgba(13, 10, 44, 0.05);
-  --shadow-card: 0px 1px 2px 0px rgba(0, 0, 0, 0.12);
   --shadow-card-2: 0px 8px 13px -3px rgba(0, 0, 0, 0.07);
   --shadow-card-3: 0px 2px 3px 0px rgba(183, 183, 183, 0.5);
   --shadow-card-4: 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
@@ -385,100 +381,13 @@
   }
 }
 
-/*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
-  }
-}
-
-@utility no-scrollbar {
-  /* Scrollbar utilities */
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-@utility custom-scrollbar {
-  &::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: #e4e7ec;
-    border-radius: 10px;
-  }
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-}
-
-@utility menu-item {
-  /* Sidebar menu item utilities */
-  @apply relative flex items-center w-full gap-3 px-3 py-2 font-medium rounded-lg text-sm leading-5;
-}
-
-@utility menu-item-active {
-  @apply bg-brand-50 text-brand-500;
-}
-
-@utility menu-item-inactive {
-  @apply text-gray-700 hover:bg-gray-100;
-}
-
-@utility menu-item-icon-active {
-  @apply text-brand-500;
-}
-
-@utility menu-item-icon-inactive {
-  @apply text-gray-700;
-}
-
-@utility menu-item-text {
-  @apply whitespace-nowrap;
-}
-
-@utility menu-dropdown-item {
-  /* Sidebar dropdown menu utilities */
-  @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm leading-5 font-medium;
-}
-
-@utility menu-dropdown-item-active {
-  @apply text-brand-500;
-}
-
-@utility menu-dropdown-item-inactive {
-  @apply text-gray-500 hover:text-gray-700;
-}
-
-@layer base {
-  body {
-    @apply relative z-[1] bg-gray-50 font-normal text-dark;
-    font-family: "Outfit", sans-serif;
-  }
-}
-
-/* ApexCharts overrides */
 .apexcharts-legend-text {
   color: #344054 !important;
-  font-family: "Outfit", sans-serif !important;
+  font-family: 'Pretendard', 'Inter', sans-serif !important;
 }
 .apexcharts-text {
   fill: #667085 !important;
-  font-family: "Outfit", sans-serif !important;
+  font-family: 'Pretendard', 'Inter', sans-serif !important;
 }
 .apexcharts-tooltip {
   background: #ffffff !important;
@@ -489,7 +398,7 @@
 .apexcharts-tooltip .apexcharts-tooltip-title {
   background: #F9FAFB !important;
   border-bottom: 1px solid #E4E7EC !important;
-  font-family: "Outfit", sans-serif !important;
+  font-family: 'Pretendard', 'Inter', sans-serif !important;
 }
 .apexcharts-xaxistooltip,
 .apexcharts-yaxistooltip {

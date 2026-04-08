@@ -128,7 +128,7 @@ export default function AssetsPage() {
   const options: ApexOptions = {
     chart: {
       type: "bar",
-      fontFamily: "Outfit, sans-serif",
+      fontFamily: "'Pretendard Variable', 'Inter', sans-serif",
       height: "100%",
       toolbar: {
         show: false,
