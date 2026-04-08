@@ -36,7 +36,7 @@ export default async function CategoryExpensesPage({
   return (
     <div className="mx-auto max-w-7xl">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-2xl font-bold text-gray-800">
+        <h2 className="text-[22px] font-bold leading-snug text-text-primary">
           카테고리별 지출 내역
         </h2>
       </div>

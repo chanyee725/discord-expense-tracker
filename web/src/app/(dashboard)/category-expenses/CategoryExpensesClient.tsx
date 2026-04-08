@@ -48,8 +48,8 @@ export default function CategoryExpensesClient({
         />
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-xs">
-        <h3 className="mb-6 text-xl font-semibold text-gray-800">
+      <div data-slot="section-card" className="rounded-2xl bg-card p-6 shadow-[var(--shadow-card)]">
+        <h3 className="mb-6 text-[18px] font-bold leading-snug text-text-primary">
           {selectedCategory ? `${selectedCategory} 상세 내역` : "카테고리별 상세"}
         </h3>
         
