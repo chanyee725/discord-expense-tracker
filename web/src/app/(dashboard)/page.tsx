@@ -172,7 +172,7 @@ export default async function DashboardPage({
   const hasData = transactionCount > 0 || monthlyExpenses.length > 0;
 
   return (
-    <div className="grid grid-cols-12 gap-4 md:gap-6">
+    <div data-slot="dashboard-page" className="grid grid-cols-12 gap-6">
       <RecurringCheckTrigger />
       <div className="col-span-12 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 md:gap-6">
         <MonthlyExpenseCard
@@ -184,16 +184,15 @@ export default async function DashboardPage({
           value={`${transactionCount}건`}
           icon={
             <svg
-              className="fill-current"
-              width="22"
-              height="22"
+              className="size-4 text-brand"
+              width="16"
+              height="16"
               viewBox="0 0 24 24"
-              fill="none"
+              fill="currentColor"
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
                 d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"
-                fill=""
               />
             </svg>
           }
@@ -203,11 +202,16 @@ export default async function DashboardPage({
       </div>
 
       {!hasData ? (
-        <div className="col-span-12 rounded-2xl border border-gray-200 bg-white px-5 py-10 text-center">
-          <h3 className="text-2xl font-medium text-gray-800">
-            아직 거래 데이터가 없습니다.
+        <div className="col-span-12 rounded-2xl bg-card px-6 py-12 text-center shadow-[var(--shadow-card)]">
+          <div className="mx-auto mb-3 size-8 rounded-xl bg-surface-muted flex items-center justify-center">
+            <svg className="size-4 text-text-tertiary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+            </svg>
+          </div>
+          <h3 className="text-[16px] font-bold text-text-primary tracking-[-0.01em] mb-1.5">
+            아직 거래 데이터가 없습니다
           </h3>
-          <p className="mt-2 text-gray-500">
+          <p className="text-[14px] leading-normal text-text-secondary">
             Discord 봇으로 영수증을 업로드해보세요.
           </p>
         </div>
@@ -257,15 +261,15 @@ function Card({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 md:p-6">
-      <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl">
+    <div data-slot="stat-card" className="rounded-2xl bg-card p-6 shadow-[var(--shadow-card)]">
+      <div className="flex items-center justify-center size-7 rounded-lg bg-brand/10">
         {icon}
       </div>
 
       <div className="flex items-end justify-between mt-5">
         <div>
-          <span className="text-sm text-gray-500">{title}</span>
-          <h4 className="mt-2 font-bold text-2xl text-gray-800">{value}</h4>
+          <span className="text-[12px] text-text-secondary font-medium">{title}</span>
+          <h4 className="mt-2 font-bold text-2xl text-text-primary">{value}</h4>
         </div>
       </div>
     </div>

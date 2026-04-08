@@ -47,22 +47,22 @@ export default function MonthSelector() {
   const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-linear-to-br from-white to-gray-50 p-6 shadow-xs h-full flex flex-col justify-center">
+    <div data-slot="month-selector" className="rounded-2xl bg-card p-6 shadow-[var(--shadow-card)] h-full flex flex-col justify-center">
       {/* Header with Icon */}
       <div className="flex items-center gap-2.5 mb-5">
-        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-50 text-brand-600 ring-1 ring-brand-100">
-          <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="flex items-center justify-center size-7 rounded-lg bg-brand/10">
+          <svg className="size-4 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
               d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
         </div>
-        <h4 className="text-base font-semibold text-gray-800 tracking-tight">조회 기간</h4>
+        <h4 className="text-[12px] text-text-secondary font-medium uppercase tracking-[0.05em]">조회 기간</h4>
       </div>
       
       <div className="flex flex-row gap-3">
         {/* Year Selector */}
         <div className="flex-1">
-          <label htmlFor="year-select" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 ml-0.5">
+          <label htmlFor="year-select" className="block text-[11px] font-semibold text-text-tertiary uppercase tracking-wider mb-1.5 ms-0.5">
             년도
           </label>
           <div className="relative">
@@ -70,7 +70,7 @@ export default function MonthSelector() {
               id="year-select"
               value={selectedYear}
               onChange={handleYearChange}
-              className="w-full appearance-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-xs transition-all duration-200 hover:border-brand-300 focus:border-brand-500 focus:outline-hidden focus:ring-4 focus:ring-brand-500/10"
+              className="w-full appearance-none rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-medium text-text-primary shadow-xs transition-all duration-200 hover:border-brand/40 focus:border-brand focus:outline-hidden focus:ring-2 focus:ring-brand/20"
             >
               {yearOptions.map((year) => (
                 <option key={year} value={year}>
@@ -78,8 +78,8 @@ export default function MonthSelector() {
                 </option>
               ))}
             </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center px-3 text-text-tertiary">
+              <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </div>
@@ -88,7 +88,7 @@ export default function MonthSelector() {
         
         {/* Month Selector */}
         <div className="flex-1">
-          <label htmlFor="month-select" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 ml-0.5">
+          <label htmlFor="month-select" className="block text-[11px] font-semibold text-text-tertiary uppercase tracking-wider mb-1.5 ms-0.5">
             월
           </label>
           <div className="relative">
@@ -96,7 +96,7 @@ export default function MonthSelector() {
               id="month-select"
               value={selectedMonth}
               onChange={handleMonthChange}
-              className="w-full appearance-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-xs transition-all duration-200 hover:border-brand-300 focus:border-brand-500 focus:outline-hidden focus:ring-4 focus:ring-brand-500/10"
+              className="w-full appearance-none rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-medium text-text-primary shadow-xs transition-all duration-200 hover:border-brand/40 focus:border-brand focus:outline-hidden focus:ring-2 focus:ring-brand/20"
             >
               {monthOptions.map((month) => (
                 <option key={month} value={month}>
@@ -104,8 +104,8 @@ export default function MonthSelector() {
                 </option>
               ))}
             </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center px-3 text-text-tertiary">
+              <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </div>

@@ -22,53 +22,53 @@ export default function MonthlySummaryTable({ data }: MonthlySummaryTableProps) 
   const totalNet = totalIncome - totalExpense;
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white px-5 pt-6 pb-2.5 sm:px-7.5 xl:pb-1">
+    <div data-slot="section-card" className="bg-card rounded-2xl p-6 shadow-[var(--shadow-card)]">
       {/* Title */}
-      <h4 className="mb-6 text-xl font-semibold text-gray-800">
+      <h3 className="mb-5 text-text-primary font-bold text-[18px] leading-snug">
         월별 수입/지출 요약
-      </h4>
+      </h3>
 
       {/* Table */}
-      <div className="max-w-full overflow-x-auto">
-        <table className="w-full table-auto">
-          <thead>
-            <tr className="bg-gray-50 text-left">
-              <th className="min-w-[120px] py-4 px-4 font-medium text-sm text-gray-700">
+      <div data-slot="table-container" className="relative w-full overflow-x-auto">
+        <table data-slot="table" className="w-full caption-bottom text-sm">
+          <thead data-slot="table-header" className="[&_tr]:border-b">
+            <tr className="border-b border-border">
+              <th data-slot="table-head" className="text-text-secondary h-10 px-4 text-start align-middle font-medium text-[12px] uppercase tracking-[0.05em] whitespace-nowrap">
                 월
               </th>
-              <th className="min-w-[120px] py-4 px-4 font-medium text-sm text-gray-700">
+              <th data-slot="table-head" className="text-text-secondary h-10 px-4 text-start align-middle font-medium text-[12px] uppercase tracking-[0.05em] whitespace-nowrap">
                 수입
               </th>
-              <th className="min-w-[120px] py-4 px-4 font-medium text-sm text-gray-700">
+              <th data-slot="table-head" className="text-text-secondary h-10 px-4 text-start align-middle font-medium text-[12px] uppercase tracking-[0.05em] whitespace-nowrap">
                 지출
               </th>
-              <th className="min-w-[120px] py-4 px-4 font-medium text-sm text-gray-700">
+              <th data-slot="table-head" className="text-text-secondary h-10 px-4 text-start align-middle font-medium text-[12px] uppercase tracking-[0.05em] whitespace-nowrap">
                 순수익
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody data-slot="table-body" className="[&_tr:last-child]:border-0">
             {data.map((row) => {
               const net = row.income - row.expense;
               return (
-                <tr key={`${row.year}-${row.month}`} className="hover:bg-gray-50">
-                  <td className="border-b border-gray-100 py-5 px-4">
-                    <p className="text-gray-700">
+                <tr key={`${row.year}-${row.month}`} data-slot="table-row" className="border-b border-border transition-colors hover:bg-surface-subtle">
+                  <td data-slot="table-cell" className="py-4 px-4 align-middle whitespace-nowrap">
+                    <p className="text-text-primary font-medium text-[14px]">
                       {row.year}년 {row.month}월
                     </p>
                   </td>
-                  <td className="border-b border-gray-100 py-5 px-4">
-                    <p className="text-blue-600">
+                  <td data-slot="table-cell" className="py-4 px-4 align-middle whitespace-nowrap">
+                    <p className="text-info font-semibold text-[14px]">
                       {row.income.toLocaleString("ko-KR")}원
                     </p>
                   </td>
-                  <td className="border-b border-gray-100 py-5 px-4">
-                    <p className="text-red-600">
+                  <td data-slot="table-cell" className="py-4 px-4 align-middle whitespace-nowrap">
+                    <p className="text-destructive font-semibold text-[14px]">
                       {row.expense.toLocaleString("ko-KR")}원
                     </p>
                   </td>
-                  <td className="border-b border-gray-100 py-5 px-4">
-                    <p className={net >= 0 ? "text-green-600" : "text-red-600"}>
+                  <td data-slot="table-cell" className="py-4 px-4 align-middle whitespace-nowrap">
+                    <p className={`font-semibold text-[14px] ${net >= 0 ? "text-success" : "text-destructive"}`}>
                       {net.toLocaleString("ko-KR")}원
                     </p>
                   </td>
@@ -76,22 +76,22 @@ export default function MonthlySummaryTable({ data }: MonthlySummaryTableProps) 
               );
             })}
             {/* Totals Row */}
-            <tr className="bg-gray-50 font-semibold">
-              <td className="py-5 px-4">
-                <p className="text-gray-800">총합</p>
+            <tr className="bg-surface-subtle font-bold">
+              <td className="py-4 px-4">
+                <p className="text-text-primary text-[14px]">총합</p>
               </td>
-              <td className="py-5 px-4">
-                <p className="text-blue-600">
+              <td className="py-4 px-4">
+                <p className="text-info text-[14px]">
                   {totalIncome.toLocaleString("ko-KR")}원
                 </p>
               </td>
-              <td className="py-5 px-4">
-                <p className="text-red-600">
+              <td className="py-4 px-4">
+                <p className="text-destructive text-[14px]">
                   {totalExpense.toLocaleString("ko-KR")}원
                 </p>
               </td>
-              <td className="py-5 px-4">
-                <p className={totalNet >= 0 ? "text-green-600" : "text-red-600"}>
+              <td className="py-4 px-4">
+                <p className={`text-[14px] ${totalNet >= 0 ? "text-success" : "text-destructive"}`}>
                   {totalNet.toLocaleString("ko-KR")}원
                 </p>
               </td>
