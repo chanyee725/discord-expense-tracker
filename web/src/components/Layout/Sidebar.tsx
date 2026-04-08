@@ -16,11 +16,12 @@ const Sidebar = () => {
 
   return (
     <aside
-      className="fixed top-0 left-0 z-50 h-screen flex flex-col bg-white border-r border-gray-200 w-[290px] px-5"
+      data-slot="sidebar"
+      className="fixed top-0 start-0 z-50 h-screen flex flex-col bg-sidebar border-e border-sidebar-border w-[290px] px-5 shadow-[var(--shadow-elevated)]"
     >
       <div className="py-8 flex">
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xs bg-brand-500 text-white shrink-0">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-brand text-white shrink-0">
             <svg
               className="fill-current"
               width="24"
@@ -54,7 +55,7 @@ const Sidebar = () => {
               />
             </svg>
           </div>
-          <span className="text-xl font-bold text-gray-800">
+          <span className="text-xl font-bold text-foreground">
             가계부
           </span>
         </Link>
@@ -62,11 +63,11 @@ const Sidebar = () => {
 
       <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
         <nav className="mb-6">
-          <div className="mb-4 text-xs uppercase leading-5 text-gray-400">
+          <div className="mb-4 text-[11px] font-semibold tracking-wide uppercase leading-5 text-text-disabled">
             MENU
           </div>
 
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
             <Link
               href="/"
               className={cn(
@@ -82,9 +83,7 @@ const Sidebar = () => {
                   : "menu-item-icon-inactive"
               )}>
                 <svg
-                  className="fill-current"
-                  width="18"
-                  height="18"
+                  className="fill-current size-5"
                   viewBox="0 0 18 18"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -99,7 +98,7 @@ const Sidebar = () => {
             </Link>
 
             {/* 내역 관리 - Collapsible Parent */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
               <button
                 onClick={() => setIsHistoryOpen(!isHistoryOpen)}
                 className={cn(
@@ -115,9 +114,7 @@ const Sidebar = () => {
                     : "menu-item-icon-inactive"
                 )}>
                   <svg
-                    className="fill-current"
-                    width="18"
-                    height="18"
+                    className="fill-current size-5"
                     viewBox="0 0 18 18"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -129,11 +126,10 @@ const Sidebar = () => {
                     <path d="M4.5 10.125H6.75V11.25H4.5V10.125Z" fill="" />
                   </svg>
                 </div>
-                <span className="menu-item-text flex-1 text-left">내역 관리</span>
-                {/* Dropdown Arrow */}
+                <span className="menu-item-text flex-1 text-start">내역 관리</span>
                 <svg
                   className={cn(
-                    "fill-current transition-transform duration-200",
+                    "fill-current text-text-tertiary transition-transform duration-[var(--duration-normal)]",
                     isHistoryOpen ? "rotate-180" : ""
                   )}
                   width="12"
@@ -148,7 +144,7 @@ const Sidebar = () => {
 
               {/* Sub-menu Items */}
               {isHistoryOpen && (
-                <div className="flex flex-col gap-2 ml-6">
+                <div className="flex flex-col gap-1 ms-6">
                   <Link
                     href="/transactions"
                     className={cn(
@@ -177,7 +173,7 @@ const Sidebar = () => {
             </div>
 
             {/* 자산 관리 - Collapsible Parent */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
               <button
                 onClick={() => setIsAssetsOpen(!isAssetsOpen)}
                 className={cn(
@@ -193,9 +189,7 @@ const Sidebar = () => {
                     : "menu-item-icon-inactive"
                 )}>
                   <svg
-                    className="fill-current"
-                    width="18"
-                    height="18"
+                    className="fill-current size-5"
                     viewBox="0 0 18 18"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -211,11 +205,10 @@ const Sidebar = () => {
                     <path d="M12 9.375H14.25V10.5H12V9.375Z" fill="" />
                   </svg>
                 </div>
-                <span className="menu-item-text flex-1 text-left">자산 관리</span>
-                {/* Dropdown Arrow */}
+                <span className="menu-item-text flex-1 text-start">자산 관리</span>
                 <svg
                   className={cn(
-                    "fill-current transition-transform duration-200",
+                    "fill-current text-text-tertiary transition-transform duration-[var(--duration-normal)]",
                     isAssetsOpen ? "rotate-180" : ""
                   )}
                   width="12"
@@ -230,7 +223,7 @@ const Sidebar = () => {
 
               {/* Sub-menu Items */}
                {isAssetsOpen && (
-                 <div className="flex flex-col gap-2 ml-6">
+                 <div className="flex flex-col gap-1 ms-6">
                    <Link
                      href="/assets"
                      className={cn(
@@ -273,9 +266,7 @@ const Sidebar = () => {
                   : "menu-item-icon-inactive"
               )}>
                 <svg
-                  className="fill-current"
-                  width="18"
-                  height="18"
+                  className="fill-current size-5"
                   viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -314,9 +305,7 @@ const Sidebar = () => {
                   : "menu-item-icon-inactive"
               )}>
                 <svg
-                  className="fill-current"
-                  width="18"
-                  height="18"
+                  className="fill-current size-5"
                   viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"

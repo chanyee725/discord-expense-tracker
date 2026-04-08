@@ -8,8 +8,11 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen xl:flex">
       <Sidebar />
-      <div className="flex-1 lg:ml-[290px]">
-        <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+      <div
+        data-slot="layout-content"
+        className="flex-1 lg:ms-[290px] bg-surface-page min-h-screen"
+      >
+        <div className="px-6 py-6">
           {children}
         </div>
       </div>
