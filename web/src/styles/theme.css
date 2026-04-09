@@ -58,6 +58,8 @@
   --chart-3: #8A8A8A;
   --chart-4: #B0B0B0;
   --chart-5: #D5D5D0;
+  --chart-expense: #C07264;
+  --chart-income: #5B9A8B;
 
   --radius: 0.75rem;
 
@@ -142,6 +144,8 @@
   --chart-3: #707070;
   --chart-4: #505050;
   --chart-5: #383838;
+  --chart-expense: #D4897D;
+  --chart-income: #6DB3A2;
   --sidebar: #1C1C1C;
   --sidebar-foreground: #E0E0E0;
   --sidebar-primary: #E0E0E0;
@@ -197,6 +201,8 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-chart-expense: var(--chart-expense);
+  --color-chart-income: var(--chart-income);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

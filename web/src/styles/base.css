@@ -49,6 +49,10 @@
     line-height: 1.5;
   }
 
+  button, a, [role="button"], [tabindex="0"], summary, select, label[for] {
+    cursor: pointer;
+  }
+
   button {
     font-size: var(--text-base);
     font-weight: var(--font-weight-medium);
