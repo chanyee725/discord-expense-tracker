@@ -11,6 +11,7 @@ import {
 } from "@/app/(dashboard)/transactions/actions";
 import { BankAccountRow } from "@/lib/queries";
 import { isSelfTransfer } from "@/lib/transfer-utils";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 interface CalendarTransaction extends Omit<Transaction, "created_at"> {
   created_at: string;
@@ -288,13 +289,13 @@ export default function CalendarView({
               onClick={handlePrevMonth}
               className="flex size-8 items-center justify-center rounded-lg text-icon-default transition-colors hover:bg-surface-subtle"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              <ChevronLeft className="size-4" strokeWidth={2} />
             </button>
             <button
               onClick={handleNextMonth}
               className="flex size-8 items-center justify-center rounded-lg text-icon-default transition-colors hover:bg-surface-subtle"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              <ChevronRight className="size-4" strokeWidth={2} />
             </button>
           </div>
         </div>
@@ -378,7 +379,7 @@ export default function CalendarView({
                     <span
                       className={`flex items-center justify-center text-xs font-medium ${
                         isToday
-                          ? "size-6 rounded-full border border-brand bg-brand/10 text-brand"
+                          ? "size-6 rounded-full border border-text-primary bg-surface-muted text-text-primary"
                           : dayOfWeek === 0
                             ? "text-destructive"
                             : dayOfWeek === 6
@@ -492,7 +493,7 @@ export default function CalendarView({
                   onClick={handleClosePanel}
                   className="flex size-8 items-center justify-center rounded-lg text-icon-default transition-colors hover:bg-surface-subtle"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                  <X className="size-4" strokeWidth={2} />
                 </button>
               </div>
 
@@ -716,7 +717,7 @@ export default function CalendarView({
                   onClick={handleCloseDayModal}
                   className="flex size-8 items-center justify-center rounded-lg text-icon-default transition-colors hover:bg-surface-subtle"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                  <X className="size-4" strokeWidth={2} />
                 </button>
               </div>
 

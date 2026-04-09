@@ -65,8 +65,8 @@ const DailyExpenseChart: React.FC<DailyExpenseChartProps> = ({
   }, [series, chartFilter]);
 
   const colorMap: Record<string, string> = {
-    "지출": "var(--destructive)",
-    "수입": "var(--info)",
+    "지출": "var(--chart-1)",
+    "수입": "var(--chart-5)",
   };
 
   const filterButtons = [

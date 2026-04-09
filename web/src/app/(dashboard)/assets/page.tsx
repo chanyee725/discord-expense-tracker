@@ -184,7 +184,7 @@ export default function AssetsPage() {
               <div className="text-[13px] text-text-secondary">
                 목표: {savedGoalAmount.toLocaleString()}원
               </div>
-              <div className="text-[18px] font-bold text-brand">
+              <div className="text-[18px] font-bold text-success">
                 {goalProgress.toFixed(1)}% 달성
               </div>
               <div className="text-[12px] text-text-disabled">

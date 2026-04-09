@@ -34,8 +34,8 @@ function StatCard({
       {...props}
     >
       <div className="flex items-center gap-2 mb-3">
-        <div className="size-7 rounded-lg bg-brand/10 flex items-center justify-center">
-          <Icon className="size-4 text-brand" strokeWidth={2} />
+        <div className="size-7 rounded-lg bg-surface-muted flex items-center justify-center">
+          <Icon className="size-4 text-text-primary" strokeWidth={2} />
         </div>
         <p className="text-[12px] text-text-secondary font-medium uppercase tracking-[0.05em]">
           {label}

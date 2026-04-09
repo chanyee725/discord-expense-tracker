@@ -50,8 +50,8 @@ function HeroCard({
 
       <div className="relative z-10">
         <div className="flex items-center gap-2 mb-3">
-          <div className="size-8 rounded-xl bg-brand/10 flex items-center justify-center">
-            <Icon className="size-[18px] text-brand" strokeWidth={2} />
+          <div className="size-8 rounded-xl bg-surface-muted flex items-center justify-center">
+            <Icon className="size-[18px] text-text-primary" strokeWidth={2} />
           </div>
           <p className="text-[12px] text-text-secondary font-medium uppercase tracking-[0.05em]">
             {label}

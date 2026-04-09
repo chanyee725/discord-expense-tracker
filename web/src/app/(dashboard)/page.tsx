@@ -21,6 +21,7 @@ import MonthlyExpenseCard from "@/components/Dashboard/MonthlyExpenseCard";
 import MonthSelector from "@/components/Dashboard/MonthSelector";
 import UpcomingPaymentsCard from "@/components/Dashboard/UpcomingPaymentsCard";
 import RecurringCheckTrigger from "@/components/RecurringCheckTrigger";
+import { FileText, AlertCircle } from "lucide-react";
 import dayjs from "dayjs";
 
 export const dynamic = "force-dynamic";
@@ -182,20 +183,7 @@ export default async function DashboardPage({
         <Card
           title="이번 달 거래 건수"
           value={`${transactionCount}건`}
-          icon={
-            <svg
-              className="size-4 text-brand"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"
-              />
-            </svg>
-          }
+          icon={<FileText className="size-4 text-text-primary" strokeWidth={2} />}
         />
         <UpcomingPaymentsCard payments={upcomingPayments} />
         <MonthSelector />
@@ -204,9 +192,7 @@ export default async function DashboardPage({
       {!hasData ? (
         <div className="col-span-12 rounded-2xl bg-card px-6 py-12 text-center shadow-[var(--shadow-card)]">
           <div className="mx-auto mb-3 size-8 rounded-xl bg-surface-muted flex items-center justify-center">
-            <svg className="size-4 text-text-tertiary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-            </svg>
+            <AlertCircle className="size-4 text-text-tertiary" strokeWidth={1.5} />
           </div>
           <h3 className="text-[16px] font-bold text-text-primary tracking-[-0.01em] mb-1.5">
             아직 거래 데이터가 없습니다
@@ -262,7 +248,7 @@ function Card({
 }) {
   return (
     <div data-slot="stat-card" className="rounded-2xl bg-card p-6 shadow-[var(--shadow-card)]">
-      <div className="flex items-center justify-center size-7 rounded-lg bg-brand/10">
+      <div className="flex items-center justify-center size-7 rounded-lg bg-surface-muted">
         {icon}
       </div>
 

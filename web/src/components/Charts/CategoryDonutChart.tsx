@@ -11,14 +11,14 @@ import {
 import type { PieSectorShapeProps } from "recharts/types/polar/Pie";
 
 const COLORS = [
-  "oklch(0.646 0.222 41.116)",
-  "oklch(0.6 0.118 184.704)",
-  "oklch(0.398 0.07 227.392)",
-  "oklch(0.828 0.189 84.429)",
-  "oklch(0.769 0.188 70.08)",
-  "#6B9B7A",
-  "#3B82F6",
-  "#d4183d",
+  "#1A1A1A",
+  "#3A3A3A",
+  "#5A5A5A",
+  "#7A7A7A",
+  "#9A9A9A",
+  "#B5B5B0",
+  "#D0D0CB",
+  "#E5E5E0",
 ];
 
 interface CategoryDonutChartProps {

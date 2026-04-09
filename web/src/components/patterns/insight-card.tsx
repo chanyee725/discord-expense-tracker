@@ -34,8 +34,8 @@ function InsightCard({
       {...props}
     >
       {Icon && (
-        <div className="size-8 rounded-xl bg-brand/10 flex items-center justify-center mb-3">
-          <Icon className="size-[18px] text-brand" strokeWidth={2} />
+        <div className="size-8 rounded-xl bg-surface-muted flex items-center justify-center mb-3">
+          <Icon className="size-[18px] text-text-primary" strokeWidth={2} />
         </div>
       )}
 

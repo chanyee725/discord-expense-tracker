@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { ChevronDown, Check, X } from "lucide-react";
 import { 
   fetchRecurringIncome, 
   fetchRecurringExpenses, 
@@ -203,14 +204,7 @@ export default function BudgetCalculatorPage() {
                 className="mb-4 flex w-full items-center justify-between text-start"
               >
                 <h3 className="text-[18px] font-bold leading-snug text-text-primary">📊 고정비 상세</h3>
-                <svg
-                  className={`size-5 text-icon-default transition-transform ${isExpensesExpanded ? 'rotate-180' : ''}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <ChevronDown className={`size-5 text-icon-default transition-transform ${isExpensesExpanded ? 'rotate-180' : ''}`} strokeWidth={2} />
               </button>
               
               {isExpensesExpanded && (
@@ -293,13 +287,9 @@ export default function BudgetCalculatorPage() {
                     {formatNumber(totalAmount)}원
                   </span>
                   {isValidTotal ? (
-                    <svg className="size-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
+                    <Check className="size-6 text-success" strokeWidth={2} />
                   ) : (
-                    <svg className="size-6 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <X className="size-6 text-destructive" strokeWidth={2} />
                   )}
                 </div>
               </div>

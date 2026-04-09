@@ -59,10 +59,7 @@ function RankedList({
               </div>
               <div className="flex items-center gap-2">
                 <p
-                  className={cn(
-                    "font-bold text-[14px]",
-                    item.isHighlighted ? "text-brand" : "text-text-primary",
-                  )}
+                  className="font-bold text-[14px] text-text-primary"
                 >
                   {item.name}
                 </p>

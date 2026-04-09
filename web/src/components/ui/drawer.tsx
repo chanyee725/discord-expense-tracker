@@ -1,5 +1,6 @@
 import * as React from "react"
 import { cn } from "./utils"
+import { X } from "lucide-react"
 
 interface DrawerProps extends React.ComponentProps<"div"> {
   isOpen: boolean
@@ -57,9 +58,7 @@ function Drawer({
               onClick={onClose}
               className="size-8 flex items-center justify-center rounded-lg active:bg-surface-muted/50 transition-colors"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-text-primary">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <X className="size-4 text-text-primary" strokeWidth={2} />
             </button>
           </div>
 

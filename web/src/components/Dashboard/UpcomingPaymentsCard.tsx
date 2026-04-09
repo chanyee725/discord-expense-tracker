@@ -11,8 +11,8 @@ export default function UpcomingPaymentsCard({
 }: UpcomingPaymentsCardProps) {
   return (
     <div data-slot="stat-card" className="rounded-2xl bg-card p-6 shadow-[var(--shadow-card)]">
-      <div className="flex items-center justify-center size-7 rounded-lg bg-brand/10">
-        <CalendarDays className="size-4 text-brand" strokeWidth={2} />
+      <div className="flex items-center justify-center size-7 rounded-lg bg-surface-muted">
+        <CalendarDays className="size-4 text-text-primary" strokeWidth={2} />
       </div>
 
       <div className="flex items-end justify-between mt-5">

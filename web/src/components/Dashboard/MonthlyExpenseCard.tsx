@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CircleDollarSign } from "lucide-react";
 
 interface MonthlyExpenseCardProps {
   totalExpense: number;
@@ -55,19 +56,8 @@ export default function MonthlyExpenseCard({
   return (
     <>
       <div data-slot="stat-card" className="rounded-2xl bg-card p-6 shadow-[var(--shadow-card)]">
-        <div className="flex items-center justify-center size-7 rounded-lg bg-brand/10">
-          <svg
-            className="size-4 text-brand"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.15-1.46-3.27-3.4h1.96c.1 1.05 1.18 1.91 2.53 1.91 1.29 0 2.13-.81 2.13-1.88 0-2.69-3.77-2.79-3.77-5.32 0-1.28.96-2.28 2.42-2.54V5h2.67v1.95c1.47.34 2.65 1.34 2.87 3.06h-1.99c-.11-.84-.96-1.52-2.12-1.52-1.32 0-1.92.83-1.92 1.76 0 2.8 3.77 2.69 3.77 5.4 0 1.43-1.15 2.37-2.58 2.54z"
-            />
-          </svg>
+        <div className="flex items-center justify-center size-7 rounded-lg bg-surface-muted">
+          <CircleDollarSign className="size-4 text-text-primary" strokeWidth={2} />
         </div>
 
         <div className="flex items-end justify-between mt-5">
@@ -87,7 +77,7 @@ export default function MonthlyExpenseCard({
                   : `목표보다 ${Math.abs(difference).toLocaleString("ko-KR")}원 절약`}
                 <button
                   onClick={openModal}
-                  className="text-xs text-brand hover:underline cursor-pointer ms-1"
+                  className="text-xs text-text-secondary hover:underline cursor-pointer ms-1"
                 >
                   (설정하기)
                 </button>
@@ -95,7 +85,7 @@ export default function MonthlyExpenseCard({
             ) : (
               <button
                 onClick={openModal}
-                className="text-sm mt-1 text-brand hover:underline font-medium"
+                className="text-sm mt-1 text-text-secondary hover:underline font-medium"
               >
                 목표 금액 설정하기
               </button>

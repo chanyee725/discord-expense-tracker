@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { ChevronRight, X, ChevronDown } from "lucide-react";
 import { 
   saveRecurringTransactionAction,
   deleteRecurringTransactionAction,
@@ -285,7 +286,7 @@ export default function RecurringManagementClient({
                   <div className={`flex size-12 items-center justify-center rounded-xl shadow-xs border border-border ${
                     activeTab === "expenses" 
                       ? "bg-destructive/10 text-destructive" 
-                      : "bg-brand/10 text-brand"
+                      : "bg-surface-muted text-text-primary"
                   }`}>
                     <span className="text-xl">
                       {activeTab === "expenses" ? "💸" : "💰"}
@@ -309,9 +310,7 @@ export default function RecurringManagementClient({
                     {item.amount ? `${formatNumber(item.amount)}원` : "0원"}
                   </div>
                   <div className="text-icon-muted group-hover:text-text-secondary transition-colors transform group-hover:translate-x-1 duration-200">
-                    <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
+                    <ChevronRight className="size-5" strokeWidth={2} />
                   </div>
                 </div>
               </div>
@@ -346,9 +345,7 @@ export default function RecurringManagementClient({
                 onClick={handleClose}
                 className="flex size-8 items-center justify-center rounded-lg text-icon-default hover:bg-surface-subtle transition-colors"
               >
-                <svg className="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <X className="size-5" strokeWidth={2} />
               </button>
             </div>
 
@@ -433,9 +430,7 @@ export default function RecurringManagementClient({
                       ))}
                     </select>
                     <div className="absolute right-4 top-4 text-icon-muted pointer-events-none">
-                      <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
+                      <ChevronDown className="size-5" strokeWidth={2} />
                     </div>
                   </div>
                 </div>
@@ -453,9 +448,7 @@ export default function RecurringManagementClient({
                       ))}
                     </select>
                     <div className="absolute right-4 top-4 text-icon-muted pointer-events-none">
-                      <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
+                      <ChevronDown className="size-5" strokeWidth={2} />
                     </div>
                   </div>
                 </div>

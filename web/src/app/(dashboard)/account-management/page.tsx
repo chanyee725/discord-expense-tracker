@@ -6,6 +6,7 @@ import {
   saveBankAccountAction,
   deleteBankAccountAction,
 } from "./actions";
+import { Plus, ChevronRight, ChevronDown, X } from "lucide-react";
 
 interface BankAccount {
   id: string;
@@ -242,7 +243,7 @@ export default function AccountManagementPage() {
               onClick={() => setActiveTab("bank")}
               className={`rounded-lg px-4 py-2 text-[13px] font-semibold transition-all ${
                 activeTab === "bank"
-                  ? "bg-card text-brand shadow-xs"
+                  ? "bg-card text-text-primary shadow-xs"
                   : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
               }`}
             >
@@ -252,7 +253,7 @@ export default function AccountManagementPage() {
               onClick={() => setActiveTab("investment")}
               className={`rounded-lg px-4 py-2 text-[13px] font-semibold transition-all ${
                 activeTab === "investment"
-                  ? "bg-card text-brand shadow-xs"
+                  ? "bg-card text-text-primary shadow-xs"
                   : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
               }`}
             >
@@ -263,19 +264,7 @@ export default function AccountManagementPage() {
             onClick={handleAddAccount}
             className="inline-flex items-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-[13px] font-medium text-white shadow-xs transition-colors hover:bg-brand/90"
           >
-            <svg
-              className="size-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
+            <Plus className="size-4" strokeWidth={2} />
             계좌 추가
           </button>
         </div>
@@ -304,7 +293,7 @@ export default function AccountManagementPage() {
                   className="group flex cursor-pointer items-center justify-between rounded-xl border border-border p-5 transition-all duration-200 hover:bg-surface-subtle"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="flex size-12 items-center justify-center rounded-xl border border-border bg-brand/10 text-xl shadow-xs">
+                    <div className="flex size-12 items-center justify-center rounded-xl border border-border bg-surface-muted text-xl shadow-xs">
                       {BANK_ICONS[account.bankName] ||
                         INVESTMENT_ICONS[account.bankName] ||
                         "🏦"}
@@ -340,19 +329,7 @@ export default function AccountManagementPage() {
                       </div>
                     )}
                     <div className="text-icon-muted transition-colors group-hover:text-icon-default">
-                      <svg
-                        className="size-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
+                      <ChevronRight className="size-5" strokeWidth={2} />
                     </div>
                   </div>
                 </div>
@@ -422,19 +399,7 @@ export default function AccountManagementPage() {
                   onClick={handleClosePanelWithDelay}
                   className="flex size-8 items-center justify-center rounded-lg text-icon-default hover:bg-surface-subtle transition-colors"
                 >
-                  <svg
-                    className="size-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
+                  <X className="size-5" strokeWidth={2} />
                 </button>
               </div>
 
@@ -461,19 +426,7 @@ export default function AccountManagementPage() {
                       ))}
                     </select>
                     <div className="absolute right-4 top-4 text-icon-muted pointer-events-none">
-                      <svg
-                        className="size-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
+                      <ChevronDown className="size-5" strokeWidth={2} />
                     </div>
                   </div>
                 </div>
@@ -638,19 +591,7 @@ export default function AccountManagementPage() {
                   onClick={handleClosePanelWithDelay}
                   className="flex size-8 items-center justify-center rounded-lg text-icon-default hover:bg-surface-subtle transition-colors"
                 >
-                  <svg
-                    className="size-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
+                  <X className="size-5" strokeWidth={2} />
                 </button>
               </div>
 
@@ -678,7 +619,7 @@ export default function AccountManagementPage() {
                         className="group flex items-center justify-between p-5 rounded-xl hover:bg-surface-subtle cursor-pointer transition-all duration-200 border border-border"
                       >
                         <div className="flex items-center gap-4">
-                          <div className="flex size-12 items-center justify-center rounded-xl bg-brand/10 text-xl shadow-xs border border-border">
+                          <div className="flex size-12 items-center justify-center rounded-xl bg-surface-muted text-xl shadow-xs border border-border">
                             {BANK_ICONS[account.bankName] ||
                               INVESTMENT_ICONS[account.bankName] ||
                               "🏦"}
@@ -714,19 +655,7 @@ export default function AccountManagementPage() {
                             </div>
                           )}
                           <div className="text-icon-muted group-hover:text-text-secondary transition-colors">
-                            <svg
-                              className="size-5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M9 5l7 7-7 7"
-                              />
-                            </svg>
+                            <ChevronRight className="size-5" strokeWidth={2} />
                           </div>
                         </div>
                       </div>

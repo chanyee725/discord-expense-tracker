@@ -26,7 +26,7 @@ function DataDisplay({
       {...props}
     >
       {icon && (
-        <div className="size-6 text-brand shrink-0">{icon}</div>
+        <div className="size-6 text-text-primary shrink-0">{icon}</div>
       )}
       <span className="text-[12px] font-medium text-text-secondary min-w-20">
         {label}
@@ -34,7 +34,7 @@ function DataDisplay({
       <span
         className={cn(
           "text-[14px] font-semibold flex-1",
-          highlighted ? "text-brand" : "text-text-primary",
+          highlighted ? "text-success" : "text-text-primary",
         )}
       >
         {typeof value === "number" ? value.toLocaleString("ko-KR") : value}

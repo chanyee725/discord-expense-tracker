@@ -67,7 +67,7 @@
 
   ::selection {
     background-color: var(--brand);
-    color: white;
+    color: var(--primary-foreground);
   }
 }
 

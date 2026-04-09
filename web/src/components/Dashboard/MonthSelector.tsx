@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import React from "react";
 import dayjs from "dayjs";
+import { Calendar, ChevronDown } from "lucide-react";
 
 export default function MonthSelector() {
   const router = useRouter();
@@ -50,11 +51,8 @@ export default function MonthSelector() {
     <div data-slot="month-selector" className="rounded-2xl bg-card p-6 shadow-[var(--shadow-card)] h-full flex flex-col justify-center">
       {/* Header with Icon */}
       <div className="flex items-center gap-2.5 mb-5">
-        <div className="flex items-center justify-center size-7 rounded-lg bg-brand/10">
-          <svg className="size-4 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
+        <div className="flex items-center justify-center size-7 rounded-lg bg-surface-muted">
+          <Calendar className="size-4 text-text-primary" strokeWidth={2} />
         </div>
         <h4 className="text-[12px] text-text-secondary font-medium uppercase tracking-[0.05em]">조회 기간</h4>
       </div>
@@ -79,9 +77,7 @@ export default function MonthSelector() {
               ))}
             </select>
             <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center px-3 text-text-tertiary">
-              <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
+              <ChevronDown className="size-4" strokeWidth={2} />
             </div>
           </div>
         </div>
@@ -105,9 +101,7 @@ export default function MonthSelector() {
               ))}
             </select>
             <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center px-3 text-text-tertiary">
-              <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
+              <ChevronDown className="size-4" strokeWidth={2} />
             </div>
           </div>
         </div>
