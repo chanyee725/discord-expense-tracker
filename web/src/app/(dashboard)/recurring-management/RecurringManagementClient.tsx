@@ -268,9 +268,9 @@ export default function RecurringManagementClient({
           </button>
         </div>
         
-        <div className="divide-y divide-border">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-3">
           {currentList.length === 0 ? (
-            <div className="p-12 text-center">
+            <div className="col-span-full p-12 text-center">
               <div className="text-4xl mb-3">📝</div>
               <div className="text-text-secondary">등록된 반복 내역이 없습니다.</div>
               <div className="text-[13px] text-text-disabled mt-1">새로운 내역을 추가해보세요.</div>
@@ -280,37 +280,35 @@ export default function RecurringManagementClient({
               <div
                 key={item.id}
                 onClick={() => handleEdit(item)}
-                className="group flex items-center justify-between p-5 hover:bg-surface-subtle cursor-pointer transition-all duration-200"
+                className="group flex items-center justify-between p-4 rounded-xl border border-border hover:bg-surface-subtle cursor-pointer transition-all duration-200"
               >
-                <div className="flex items-center gap-4">
-                  <div className={`flex size-12 items-center justify-center rounded-xl shadow-xs border border-border ${
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`flex size-10 shrink-0 items-center justify-center rounded-lg shadow-xs border border-border ${
                     activeTab === "expenses" 
                       ? "bg-destructive/10 text-destructive" 
                       : "bg-surface-muted text-text-primary"
                   }`}>
-                    <span className="text-xl">
+                    <span className="text-lg">
                       {activeTab === "expenses" ? "💸" : "💰"}
                     </span>
                   </div>
-                  <div>
-                    <div className="font-semibold text-text-primary mb-0.5">{item.name || "이름 없음"}</div>
-                    <div className="text-[12px] font-medium text-text-secondary flex items-center gap-2">
-                      <span className="bg-surface-muted px-2 py-0.5 rounded-xs text-text-secondary">매월 {item.date}일</span>
+                  <div className="min-w-0">
+                    <div className="font-semibold text-[14px] text-text-primary mb-0.5 truncate">{item.name || "이름 없음"}</div>
+                    <div className="text-[11px] font-medium text-text-secondary flex items-center gap-1.5">
+                      <span className="bg-surface-muted px-1.5 py-0.5 rounded-xs text-text-secondary">매월 {item.date}일</span>
                       <span className="size-1 bg-icon-muted rounded-full"></span>
-                      <span>{item.category}</span>
-                      <span className="size-1 bg-icon-muted rounded-full"></span>
-                      <span>{item.bankAccount}</span>
+                      <span className="truncate">{item.category}</span>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-5">
-                  <div className={`font-bold text-[18px] ${
+                <div className="flex items-center gap-3 shrink-0 ms-2">
+                  <div className={`font-bold text-[15px] ${
                     activeTab === "expenses" ? "text-destructive" : "text-info"
                   }`}>
                     {item.amount ? `${formatNumber(item.amount)}원` : "0원"}
                   </div>
-                  <div className="text-icon-muted group-hover:text-text-secondary transition-colors transform group-hover:translate-x-1 duration-200">
-                    <ChevronRight className="size-5" strokeWidth={2} />
+                  <div className="text-icon-muted group-hover:text-text-secondary transition-colors">
+                    <ChevronRight className="size-4" strokeWidth={2} />
                   </div>
                 </div>
               </div>
@@ -319,18 +317,18 @@ export default function RecurringManagementClient({
         </div>
       </div>
 
-      {isPanelOpen && (
+      <div
+        className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${isPanelOpen ? "" : "pointer-events-none"}`}
+        onClick={isPanelOpen ? handleClose : undefined}
+      >
+        {isPanelOpen && (
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-300" />
+        )}
         <div 
-          className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 transition-opacity duration-300"
-          onClick={handleClose}
-        />
-      )}
-
-      <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none ${isPanelOpen ? "pointer-events-auto" : ""}`}>
-        <div 
-          className={`bg-card rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden transform transition-all duration-300 ${
+          className={`relative bg-card rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden transform transition-all duration-300 ${
             isPanelOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
           }`}
+          onClick={(e) => e.stopPropagation()}
         >
         {editingItem && (
           <div className="flex flex-col h-full bg-card">
@@ -457,10 +455,10 @@ export default function RecurringManagementClient({
             </div>
 
             <div className="p-6 border-t border-border bg-card z-10 pb-8">
-              <div className="flex flex-col gap-3">
+              <div className="flex gap-3">
                 <button
                   onClick={handleSave}
-                  className="w-full rounded-xl bg-brand py-4 text-[13px] font-bold text-white hover:bg-brand/90 transition-all duration-200"
+                  className="flex-1 rounded-xl bg-brand py-4 text-[13px] font-bold text-white hover:bg-brand/90 transition-all duration-200"
                 >
                   저장하기
                 </button>
@@ -468,7 +466,7 @@ export default function RecurringManagementClient({
                 {editingItem.id && (
                   <button
                     onClick={handleDelete}
-                    className="w-full rounded-xl py-3 text-[13px] font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                    className="flex-1 rounded-xl py-4 text-[13px] font-medium text-destructive border border-destructive/20 hover:bg-destructive/10 transition-colors"
                   >
                     삭제하기
                   </button>

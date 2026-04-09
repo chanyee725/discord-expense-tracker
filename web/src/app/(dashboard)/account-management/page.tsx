@@ -371,20 +371,18 @@ export default function AccountManagementPage() {
         </div>
       </div>
 
-      {isPanelOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 transition-opacity duration-300"
-          onClick={handleClosePanelWithDelay}
-        />
-      )}
-
       <div
-        className={`fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none ${isPanelOpen ? "pointer-events-auto" : ""}`}
+        className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${isPanelOpen ? "" : "pointer-events-none"}`}
+        onClick={isPanelOpen ? handleClosePanelWithDelay : undefined}
       >
+        {isPanelOpen && (
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-300" />
+        )}
         <div
-          className={`bg-card rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden transform transition-all duration-300 ${
+          className={`relative bg-card rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden transform transition-all duration-300 ${
             isPanelOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
           }`}
+          onClick={(e) => e.stopPropagation()}
         >
           {editingAccount ? (
             <div className="flex flex-col min-h-0 flex-1 bg-card">
@@ -559,10 +557,10 @@ export default function AccountManagementPage() {
               </div>
 
               <div className="p-6 border-t border-border bg-card z-10">
-                <div className="flex flex-col gap-3">
+                <div className="flex gap-3">
                   <button
                     onClick={handleSaveAccount}
-                    className="w-full rounded-xl bg-brand py-4 text-[13px] font-bold text-white hover:bg-brand/90 transition-all duration-200"
+                    className="flex-1 rounded-xl bg-brand py-4 text-[13px] font-bold text-white hover:bg-brand/90 transition-all duration-200"
                   >
                     저장하기
                   </button>
@@ -570,7 +568,7 @@ export default function AccountManagementPage() {
                   {editingAccount.id && (
                     <button
                       onClick={handleDeleteAccount}
-                      className="w-full rounded-xl py-3 text-[13px] font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                      className="flex-1 rounded-xl py-4 text-[13px] font-medium text-destructive border border-destructive/20 hover:bg-destructive/10 transition-colors"
                     >
                       삭제하기
                     </button>
