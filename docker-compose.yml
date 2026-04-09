@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: changeme
       POSTGRES_DB: poordb
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./.data/postgres:/var/lib/postgresql/data
       - ./db/migrations:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
@@ -48,5 +48,3 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-volumes:
-  postgres_data:

@@ -7,6 +7,9 @@ opencode.json
 skills/
 styleseed/
 
+# local data (postgres bind mount)
+.data/
+
 # dependencies
 /node_modules
 /.pnp
