@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from google.cloud import vision
-import google.generativeai as genai
+from google import genai
 from PIL import Image
 import numpy as np
 
@@ -85,7 +85,9 @@ def is_blue_text(image_bytes: bytes, bbox: list) -> bool:
 class ExpenseParser:
     def __init__(self, db_pool=None):
         self.api_key = os.getenv("GOOGLE_API_KEY")
-        self.vision_client = vision.ImageAnnotatorClient()
+        self.vision_client = vision.ImageAnnotatorClient(
+            client_options={"api_key": self.api_key}
+        )
         self.genai_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
         self.model_name = "gemini-2.5-flash"
         self.db_pool = db_pool 
