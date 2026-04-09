@@ -35,14 +35,14 @@ const MonthlyExpenseChart: React.FC<MonthlyExpenseChartProps> = ({
   }, [series, categories]);
 
   const colorMap: Record<string, string> = {
-    "지출": "var(--chart-1)",
-    "수입": "var(--chart-5)",
+    "지출": "var(--chart-expense)",
+    "수입": "var(--chart-income)",
   };
 
   return (
     <div
       data-slot="chart-card"
-      className="rounded-2xl bg-card p-6 shadow-[var(--shadow-card)]"
+      className="rounded-2xl bg-card p-6 shadow-[var(--shadow-card)] h-full"
     >
       <div className="mb-6">
         <h3 className="text-[18px] font-bold leading-snug text-text-primary">
