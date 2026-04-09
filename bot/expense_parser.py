@@ -114,7 +114,7 @@ class ExpenseParser:
         registered_accounts = []
         registered_categories = []
         if self.db_pool:
-            from bot.db import get_registered_account_numbers, get_registered_categories
+            from db.db import get_registered_account_numbers, get_registered_categories
             try:
                 registered_accounts = await get_registered_account_numbers(self.db_pool)
                 registered_categories = await get_registered_categories(self.db_pool)

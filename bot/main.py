@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from bot.expense_parser import ExpenseParser
-from bot.db import create_pool, insert_transaction, check_duplicate_transaction
+from db.db import create_pool, insert_transaction, check_duplicate_transaction
 
 load_dotenv()
 
