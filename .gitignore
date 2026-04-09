@@ -1,7 +1,11 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# opencode 
+# opencode
 .sisyphus/
+.playwright-mcp/
+opencode.json
+skills/
+styleseed/
 
 # dependencies
 /node_modules
@@ -260,6 +264,18 @@ secrets/
 !secrets/.gitkeep
 
 # Screenshots (local testing artifacts)
+screenshots/
 스크린샷*.png
 Screenshot*.png
 *.png.tmp
+web/*.png
+
+# Test artifacts
+web/test-results/
+test_qa.mjs
+
+# Log files
+web/nohup.out
+web/server.log
+web/build.log
+logs/
