@@ -47,7 +47,7 @@ export default function CategoryDetailList({
 
   if (!selectedCategory) {
     return (
-      <div data-slot="empty-state" className="flex flex-col items-center justify-center py-12 px-6 text-center h-full">
+      <div data-slot="empty-state" className="flex h-full flex-col items-center justify-center px-6 text-center">
         <div className="size-8 rounded-xl bg-surface-muted flex items-center justify-center mb-3">
           <Info className="size-4 text-text-tertiary" strokeWidth={1.5} />
         </div>
@@ -97,7 +97,7 @@ export default function CategoryDetailList({
                   {txn.title}
                 </span>
                 <span className="text-[12px] text-text-secondary">
-                  {new Date(txn.created_at).toLocaleDateString("ko-KR", { 
+                  {txn.transaction_date || new Date(txn.created_at).toLocaleDateString("ko-KR", { 
                     year: 'numeric', 
                     month: 'long', 
                     day: 'numeric' 
