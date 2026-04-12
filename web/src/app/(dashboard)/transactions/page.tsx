@@ -22,9 +22,8 @@ export default async function TransactionsPage({
   const params = await searchParams;
   const now = dayjs();
 
-  // Parse year and month from URL params, defaulting to current
   const yearParam = params?.year ? Number(params.year) : now.year();
-  const monthParam = params?.month ? Number(params.month) : now.month() + 1; // 1-12
+  const monthParam = params?.month ? Number(params.month) : now.month() + 1;
 
   // Construct a valid date string for the calendar
   // Use dayjs to ensure valid date formatting (e.g., 2023-01-01)

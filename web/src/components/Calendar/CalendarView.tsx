@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { Transaction } from "@/types/transaction";
 import { useRouter } from "next/navigation";
@@ -11,7 +11,7 @@ import {
 } from "@/app/(dashboard)/transactions/actions";
 import { BankAccountRow } from "@/lib/queries";
 import { isSelfTransfer } from "@/lib/transfer-utils";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Calendar, List, Plus } from "lucide-react";
 
 interface CalendarTransaction extends Omit<Transaction, "created_at"> {
   created_at: string;
@@ -98,6 +98,10 @@ export default function CalendarView({
 }: CalendarViewProps) {
   const router = useRouter();
   const current = dayjs(currentDate);
+  const [viewMode, setViewMode] = useState<"calendar" | "list">(() => {
+    if (typeof window === "undefined") return "calendar";
+    return window.matchMedia("(max-width: 640px)").matches ? "list" : "calendar";
+  });
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [isEditPanelOpen, setIsEditPanelOpen] = useState(false);
   const [isDayModalOpen, setIsDayModalOpen] = useState(false);
@@ -277,12 +281,37 @@ export default function CalendarView({
   return (
     <div data-slot="calendar-card" className="rounded-2xl bg-card shadow-[var(--shadow-card)]">
       <div className="flex items-center justify-between border-b border-border px-4 py-4 sm:px-6 xl:px-7.5">
-        <h3 className="font-bold text-[18px] text-text-primary">{monthName}</h3>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3 text-[13px]">
+        <h3 className="font-bold text-[18px] text-text-primary sm:block hidden">{monthName}</h3>
+        <h3 className="font-bold text-[16px] text-text-primary sm:hidden">{current.format("YY년 M월")}</h3>
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="hidden items-center gap-3 text-[13px] sm:flex">
             <span className="font-medium text-info">수입 {totalIncome.toLocaleString("ko-KR")}원</span>
             <span className="text-text-disabled">|</span>
             <span className="font-medium text-destructive">지출 {totalExpense.toLocaleString("ko-KR")}원</span>
+          </div>
+          <div className="flex items-center gap-1 rounded-lg border border-border p-0.5">
+            <button
+              onClick={() => setViewMode("calendar")}
+              className={`flex size-7 items-center justify-center rounded-md transition-colors ${
+                viewMode === "calendar"
+                  ? "bg-surface-muted text-text-primary"
+                  : "text-icon-default hover:bg-surface-subtle"
+              }`}
+              aria-label="캘린더 보기"
+            >
+              <Calendar className="size-3.5" strokeWidth={2} />
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+              className={`flex size-7 items-center justify-center rounded-md transition-colors ${
+                viewMode === "list"
+                  ? "bg-surface-muted text-text-primary"
+                  : "text-icon-default hover:bg-surface-subtle"
+              }`}
+              aria-label="목록 보기"
+            >
+              <List className="size-3.5" strokeWidth={2} />
+            </button>
           </div>
           <div className="flex gap-1">
             <button
@@ -301,6 +330,13 @@ export default function CalendarView({
         </div>
       </div>
 
+      <div className="flex items-center justify-center gap-3 border-b border-border px-4 py-2.5 text-[12px] sm:hidden">
+        <span className="font-medium text-info">수입 {totalIncome.toLocaleString("ko-KR")}원</span>
+        <span className="text-text-disabled">|</span>
+        <span className="font-medium text-destructive">지출 {totalExpense.toLocaleString("ko-KR")}원</span>
+      </div>
+
+      {viewMode === "calendar" && (
       <div className="p-4">
         <div data-slot="calendar-grid" className="grid grid-cols-7 gap-px border-b border-s border-border bg-border">
           {weekDays.map((day, index) => (
@@ -321,7 +357,7 @@ export default function CalendarView({
           {Array.from({ length: firstDayOfMonth }).map((_, i) => (
             <div
               key={`empty-${i}`}
-              className="flex h-[117px] flex-col border-e border-border bg-card p-1"
+              className="flex h-[80px] flex-col border-e border-border bg-card p-1 sm:h-[117px]"
             />
           ))}
 
@@ -371,7 +407,7 @@ export default function CalendarView({
             return (
               <div
                 key={day}
-                className={`group relative flex h-[117px] cursor-pointer flex-col overflow-hidden border-e border-b border-border bg-card p-1 transition hover:bg-surface-subtle`}
+                className={`group relative flex h-[80px] cursor-pointer flex-col overflow-hidden border-e border-b border-border bg-card p-1 transition hover:bg-surface-subtle sm:h-[117px]`}
                 onClick={() => handleDayClick(currentDayDate, dayTransactions)}
               >
                 <div className="flex h-full w-full flex-col">
@@ -391,7 +427,18 @@ export default function CalendarView({
                     </span>
                   </div>
 
-                  <div className="flex min-h-0 flex-1 flex-col gap-0.5 w-full">
+                  {dayTransactions.length > 0 && (
+                    <div className="mt-auto flex items-center justify-center gap-0.5 sm:hidden">
+                      <span className="size-1.5 rounded-full bg-text-secondary" />
+                      {dayTransactions.length > 1 && (
+                        <span className="text-[9px] text-text-secondary">
+                          {dayTransactions.length}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="hidden min-h-0 flex-1 flex-col gap-0.5 w-full sm:flex">
                     {dayTransactions.slice(0, 2).map((t) => {
                       const isFuture = isFutureTransaction(t.created_at);
                       return (
@@ -446,7 +493,7 @@ export default function CalendarView({
                   </div>
 
                   {dayTransactions.length > 2 && (
-                    <div className="mt-auto shrink-0 px-0.5 pt-0.5 text-start text-[10px] font-medium text-text-secondary">
+                    <div className="mt-auto hidden shrink-0 px-0.5 pt-0.5 text-start text-[10px] font-medium text-text-secondary sm:block">
                       +{dayTransactions.length - 2} more
                     </div>
                   )}
@@ -460,13 +507,191 @@ export default function CalendarView({
           }).map((_, i) => (
             <div
               key={`empty-end-${i}`}
-              className="flex h-[117px] flex-col border-e border-border bg-card p-1"
+              className="flex h-[80px] flex-col border-e border-border bg-card p-1 sm:h-[117px]"
             />
           ))}
         </div>
       </div>
+      )}
 
-      {/* Edit Panel Backdrop */}
+      {viewMode === "list" && (() => {
+        const currentYear = current.year();
+        const currentMonth = current.month() + 1;
+
+        const grouped = new Map<number, CalendarTransaction[]>();
+        for (const t of transactions) {
+          if (!t.transaction_date) continue;
+          const txDate = parseTransactionDate(t.transaction_date, currentYear, currentMonth);
+          if (!txDate) continue;
+          const dayNum = txDate.getDate();
+          if (!grouped.has(dayNum)) grouped.set(dayNum, []);
+          grouped.get(dayNum)!.push(t);
+        }
+
+        const sortedDays = [...grouped.keys()].sort((a, b) => b - a);
+
+        return (
+          <div className="max-h-[70vh] space-y-1 overflow-y-auto p-4">
+            {sortedDays.length === 0 ? (
+              <div className="py-16 text-center text-[13px] text-text-secondary">
+                거래 내역이 없습니다.
+              </div>
+            ) : (
+              sortedDays.map((dayNum) => {
+                const dayTxns = grouped.get(dayNum)!;
+                dayTxns.sort(
+                  (a, b) =>
+                    new Date(b.created_at).getTime() -
+                    new Date(a.created_at).getTime(),
+                );
+
+                const dayDate = current.date(dayNum);
+                const dayOfWeek = ["일", "월", "화", "수", "목", "금", "토"][dayDate.day()];
+                const isToday = dayjs().isSame(dayDate, "day");
+
+                const dayExpense = dayTxns
+                  .filter(
+                    (t) =>
+                      t.type === "지출" &&
+                      !isFutureTransaction(t.created_at) &&
+                      !isSelfTransfer(t as unknown as Transaction, bankAccounts),
+                  )
+                  .reduce((sum, t) => sum + Number(t.amount), 0);
+
+                const dayIncome = dayTxns
+                  .filter(
+                    (t) =>
+                      t.type === "수입" &&
+                      !isFutureTransaction(t.created_at) &&
+                      !isSelfTransfer(t as unknown as Transaction, bankAccounts),
+                  )
+                  .reduce((sum, t) => sum + Number(t.amount), 0);
+
+                return (
+                  <div key={dayNum}>
+                    <div className="sticky top-0 z-10 flex items-center justify-between bg-card px-2 py-2.5">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`flex size-7 items-center justify-center rounded-full text-[13px] font-semibold ${
+                            isToday
+                              ? "border border-text-primary bg-surface-muted text-text-primary"
+                              : "text-text-primary"
+                          }`}
+                        >
+                          {dayNum}
+                        </span>
+                        <span className={`text-[12px] ${
+                          dayDate.day() === 0
+                            ? "text-destructive"
+                            : dayDate.day() === 6
+                              ? "text-info"
+                              : "text-text-secondary"
+                        }`}>
+                          {dayOfWeek}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3 text-[11px]">
+                        {dayIncome > 0 && (
+                          <span className="font-medium text-info">
+                            +{dayIncome.toLocaleString("ko-KR")}
+                          </span>
+                        )}
+                        {dayExpense > 0 && (
+                          <span className="font-medium text-destructive">
+                            -{dayExpense.toLocaleString("ko-KR")}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5 px-1">
+                      {dayTxns.map((t) => {
+                        const isFuture = isFutureTransaction(t.created_at);
+                        const isTransfer = isSelfTransfer(
+                          t as unknown as Transaction,
+                          bankAccounts,
+                        );
+                        return (
+                          <div
+                            key={t.id}
+                            onClick={() => handleTransactionClick(t)}
+                            className={`flex cursor-pointer items-center justify-between rounded-xl border border-border bg-surface-subtle px-4 py-3 transition-colors hover:bg-surface-muted ${isFuture ? "opacity-50" : ""}`}
+                          >
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="truncate text-[13px] font-medium text-text-primary">
+                                  {t.title}
+                                </span>
+                                {isFuture && (
+                                  <span className="shrink-0 rounded-full bg-amber-100 px-1.5 text-[9px] font-medium text-amber-700">
+                                    예정
+                                  </span>
+                                )}
+                              </div>
+                              <div className="mt-0.5 flex items-center gap-2 text-[11px] text-text-secondary">
+                                <span className="truncate">
+                                  {t.type === "지출"
+                                    ? parseAccountName(t.withdrawal_source, bankAccounts)
+                                    : parseAccountName(t.deposit_destination, bankAccounts)}
+                                </span>
+                                {t.category && (
+                                  <>
+                                    <span className="text-text-disabled">·</span>
+                                    <span className="shrink-0">{t.category}</span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                            <span
+                              className={`ms-3 shrink-0 text-[14px] font-semibold ${
+                                isTransfer
+                                  ? "text-text-disabled"
+                                  : t.type === "수입"
+                                    ? "text-info"
+                                    : "text-destructive"
+                              }`}
+                            >
+                              {t.type === "수입" ? "+" : "-"}
+                              {Number(t.amount).toLocaleString("ko-KR")}원
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+
+            <div className="sticky bottom-0 pt-3 pb-1 bg-card">
+              <button
+                onClick={() => {
+                  const todayStr = dayjs().format("YYYY-MM-DD");
+                  setSelectedDate(todayStr);
+                  setEditingTransaction(null);
+                  setIsCreatingNew(true);
+                  setEditFormData({
+                    title: "",
+                    amount: 0,
+                    category: "",
+                    transaction_date: current.format("YYYY-MM-DD"),
+                    type: "지출",
+                    withdrawal_source: "",
+                    deposit_destination: "",
+                    selectedAccountId: bankAccounts.length > 0 ? bankAccounts[0].id : "",
+                  });
+                  setIsEditPanelOpen(true);
+                }}
+                className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-border py-2.5 text-[13px] font-medium text-text-secondary transition-colors hover:border-brand hover:text-brand"
+              >
+                <Plus className="size-4" strokeWidth={2} />
+                거래 추가
+              </button>
+            </div>
+          </div>
+        );
+      })()}
+
       {isEditPanelOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs transition-opacity"
