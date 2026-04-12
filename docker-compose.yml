@@ -38,6 +38,8 @@ services:
       context: .
       dockerfile: bot/Dockerfile
     container_name: poor-guy-bot
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       DATABASE_URL: postgresql://postgres:changeme@db:5432/poordb
       DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}

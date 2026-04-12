@@ -1,7 +1,9 @@
 import os
 import sys
+import logging
 import discord
 import json
+import aiohttp
 
 from pathlib import Path
 from dotenv import load_dotenv
@@ -12,6 +14,15 @@ from bot.expense_parser import ExpenseParser
 from db.db import create_pool, insert_transaction, check_duplicate_transaction
 
 load_dotenv()
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+logger = logging.getLogger("poor-guy-bot")
+
+WEB_URL = os.getenv("WEB_URL", "http://host.docker.internal:3000")
 
 # class ConfirmView(discord.ui.View):
 #     def __init__(self, data):
@@ -36,13 +47,27 @@ client = discord.Client(intents=intents)
 expense_parser = None
 db_pool = None
 
+
+async def notify_web_revalidate():
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                f"{WEB_URL}/api/revalidate", timeout=aiohttp.ClientTimeout(total=5)
+            ) as resp:
+                if resp.status == 200:
+                    logger.info("웹 revalidation 완료")
+                else:
+                    logger.warning("웹 revalidation 실패 — status=%d", resp.status)
+    except Exception as e:
+        logger.warning("웹 revalidation 요청 실패 — %s", e)
+
 @client.event
 async def on_ready():
     global expense_parser, db_pool
     db_pool = await create_pool()
     expense_parser = ExpenseParser(db_pool=db_pool)
-    print(f"Bot logged in as {client.user}")
-    print(f"DB pool created")
+    logger.info("Bot logged in as %s", client.user)
+    logger.info("DB pool created")
 
 @client.event
 async def on_message(message):
@@ -54,18 +79,24 @@ async def on_message(message):
     
     for attachment in message.attachments:
         if attachment.content_type and attachment.content_type.startswith('image/'):
+            logger.info(
+                "이미지 수신 — user=%s, file=%s, size=%dKB",
+                message.author, attachment.filename, attachment.size // 1024,
+            )
             async with message.channel.typing():
                 try:
                     image_bytes = await attachment.read()
                     result = await expense_parser.analyze(image_bytes)
+                    logger.info("파싱 결과: %s", json.dumps(result, ensure_ascii=False, default=str))
 
-                    # Skip DB insert if Gemini parsing failed
                     if 'error' not in result:
-                        # Check for duplicate transaction
                         is_duplicate = await check_duplicate_transaction(db_pool, result)
                         
                         if is_duplicate:
-                            # Show duplicate warning embed
+                            logger.warning(
+                                "중복 거래 감지 — amount=%s, date=%s",
+                                result.get('amount'), result.get('transaction_date'),
+                            )
                             duplicate_embed = discord.Embed(
                                 title="⚠️ 이미 업로드된 항목입니다",
                                 description="동일한 날짜에 같은 거래 내역이 이미 존재합니다.",
@@ -82,8 +113,12 @@ async def on_message(message):
                             await message.reply(embed=duplicate_embed)
                             continue
 
-                        # No duplicate found - proceed with insert
                         await insert_transaction(db_pool, result)
+                        logger.info(
+                            "DB 저장 완료 — type=%s, amount=%s, category=%s",
+                            result.get('type'), result.get('amount'), result.get('category'),
+                        )
+                        await notify_web_revalidate()
 
                     embed = discord.Embed(
                         title=f"{result.get('title', '지출 내역 확인')}",
@@ -105,6 +140,7 @@ async def on_message(message):
                     await message.reply(embed=embed)  # , view=view)
 
                 except Exception as e:
+                    logger.error("처리 실패 — user=%s, error=%s", message.author, e, exc_info=True)
                     error_embed = discord.Embed(
                         title="❌ 분석 오류",
                         description=f"데이터를 읽는 중 오류가 발생했습니다:\n```{str(e)}```",
